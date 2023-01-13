@@ -1,0 +1,41 @@
+version: '3.7'
+
+# Settings and configurations that are common for all containers
+x-minio-common: &minio-common
+ # image: minio:1.0
+  image: quay.io/minio/minio:RELEASE.2023-01-12T02-06-16Z
+  command: server --console-address ":9001" http://minio1/data{1...2}
+  environment:
+    MINIO_ROOT_USER: wwlhuayu
+    MINIO_ROOT_PASSWORD: wwlhuayu
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+    interval: 30s
+    timeout: 20s
+    retries: 3
+
+# starts 4 docker containers running minio server instances.
+# using nginx reverse proxy, load balancing, you can access
+# it through port 9000.
+services:
+  minio1:
+    <<: *minio-common
+    hostname: minio
+    volumes:
+      - minio-data1-1:/data1
+      - minio-data1-2:/data2
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+  nginx:
+    image: nginx:latest
+    hostname: nginx
+    ports:
+      - "80:80"
+      - "443-443"
+    volumes:
+      - /opt/nginx/conf:/etc/nginx/
+      - /opt/nginx/html:/usr/share/nginx/html
+volumes:
+  minio-data1-1:
+  minio-data1-2:

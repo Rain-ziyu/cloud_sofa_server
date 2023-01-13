@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>cloud_sofa_server</artifactId>
+        <groupId>asia.huayu</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>base_common</artifactId>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/log4j/log4j -->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+        </dependency>
+    </dependencies>
+    <!--    添加maven远程仓库 使用deploy进行jar的上传-->
+    <distributionManagement>
+        <repository>
+            <id>release_cn-north-4_07bbcc41a1000f0d0f3fc00ce6f589a0_maven_1_0</id>
+            <url>
+                https://devrepo.devcloud.cn-north-4.huaweicloud.com/artgalaxy/cn-north-4_07bbcc41a1000f0d0f3fc00ce6f589a0_maven_1_0/
+            </url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshot_cn-north-4_07bbcc41a1000f0d0f3fc00ce6f589a0_maven_2_0</id>
+            <url>
+                https://devrepo.devcloud.cn-north-4.huaweicloud.com/artgalaxy/cn-north-4_07bbcc41a1000f0d0f3fc00ce6f589a0_maven_2_0/
+            </url>
+        </snapshotRepository>
+    </distributionManagement>
+</project>
