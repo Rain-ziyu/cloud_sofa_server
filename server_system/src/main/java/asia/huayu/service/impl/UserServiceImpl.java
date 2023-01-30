@@ -2,6 +2,7 @@ package asia.huayu.service.impl;
 
 import asia.huayu.entity.User;
 import asia.huayu.mapper.UserMapper;
+import asia.huayu.service.FileService;
 import asia.huayu.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     private UserMapper userMapper;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private FileService fileService;
 
     /**
      * 方法<code>createUser</code>作用为：

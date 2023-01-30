@@ -19,6 +19,8 @@
         <module>base_common</module>
         <module>server_security</module>
         <module>server_system</module>
+        <module>server_file</module>
+        <module>server_pic</module>
     </modules>
     <properties>
         <java.version>17</java.version>
