@@ -1,4 +1,4 @@
-import asia.huayu.generate.GeneratePic;
+import asia.huayu.pic.generate.GeneratePic;
 import org.junit.Test;
 
 import java.awt.*;

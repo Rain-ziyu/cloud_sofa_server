@@ -1,4 +1,4 @@
-package asia.huayu.color;
+package asia.huayu.pic.color;
 
 import java.awt.*;
 

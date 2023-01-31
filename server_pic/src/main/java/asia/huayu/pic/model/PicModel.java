@@ -1,4 +1,4 @@
-package asia.huayu.model;
+package asia.huayu.pic.model;
 
 import java.awt.*;
 

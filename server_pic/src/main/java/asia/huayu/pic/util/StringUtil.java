@@ -1,4 +1,4 @@
-package asia.huayu.util;
+package asia.huayu.pic.util;
 
 import java.util.UUID;
 

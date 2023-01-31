@@ -1,10 +1,10 @@
-package asia.huayu.generate;
+package asia.huayu.pic.generate;
 
-import asia.huayu.color.DefaultColor;
-import asia.huayu.model.PicModel;
-import asia.huayu.util.PictureUtil;
-import asia.huayu.util.RandomUtil;
-import asia.huayu.util.StringUtil;
+import asia.huayu.pic.color.DefaultColor;
+import asia.huayu.pic.model.PicModel;
+import asia.huayu.pic.util.PictureUtil;
+import asia.huayu.pic.util.RandomUtil;
+import asia.huayu.pic.util.StringUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

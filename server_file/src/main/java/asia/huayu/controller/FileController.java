@@ -22,7 +22,7 @@ public class FileController extends BaseController {
     MinioService minioService;
 
     @PostMapping
-    public Result createFile(@RequestAttribute MultipartFile multipartFile) {
+    public Result uploadFile(@RequestAttribute MultipartFile multipartFile) {
         return restProcessor(() -> {
             Boolean upload = false;
             try {

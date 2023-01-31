@@ -1,6 +1,6 @@
-package asia.huayu.util;
+package asia.huayu.pic.util;
 
-import asia.huayu.color.DefaultColor;
+import asia.huayu.pic.color.DefaultColor;
 
 /**
  * @author RainZiYu
