@@ -33,6 +33,17 @@ public interface UserMapper extends BaseMapper<User> {
      * @author RainZiYu
      */
     User selectUserByName(String userName);
+
+    /**
+     * 方法selectUserCountByName作用为：
+     * 判断当前用户名是否已经存在
+     *
+     * @param userName
+     * @return java.lang.Integer
+     * @throws
+     * @author RainZiYu
+     */
+    Integer selectUserCountByName(String userName);
 }
 
 

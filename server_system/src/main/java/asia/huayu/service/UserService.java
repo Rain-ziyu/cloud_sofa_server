@@ -18,7 +18,7 @@ public interface UserService extends IService<User> {
      * @throws
      * @author RainZiYu
      */
-    User createUser(User user);
+    User createUser(User user, String token);
 
     /**
      * 方法<code>selectUser</code>作用为：

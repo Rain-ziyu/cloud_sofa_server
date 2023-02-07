@@ -22,8 +22,11 @@
             <artifactId>server_auth</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-
-
+        <!--测试es注入-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
         <!--nacos-config 配置中心-自带动态刷新-->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>

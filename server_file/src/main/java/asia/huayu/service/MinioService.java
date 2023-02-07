@@ -3,7 +3,6 @@ package asia.huayu.service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
@@ -28,7 +27,6 @@ public interface MinioService {
         if (pos != -1) {
             filename = filename.substring(pos + 1);
         }
-        System.out.println(filename);
         return filename;
     }
 
@@ -92,7 +90,7 @@ public interface MinioService {
      * @param bucketName 存储bucket
      * @return Boolean 成功true
      */
-    Boolean upload(MultipartFile file, String bucketName, String fileName) throws IOException;
+    Boolean upload(MultipartFile file, String bucketName, String fileName);
 
     Boolean upload(byte[] in, String fileType, String bucketName, String fileName);
 
@@ -104,7 +102,7 @@ public interface MinioService {
      * @param file 文件
      * @return Boolean 成功true
      */
-    Boolean upload(MultipartFile file, String fileName) throws IOException;
+    Boolean upload(MultipartFile file, String fileName);
 
     /**
      * 文件下载
@@ -162,7 +160,7 @@ public interface MinioService {
      * @throws
      * @author RainZiYu
      */
-    String upload(String userAvatar, String fileName) throws IOException;
+    String upload(String userAvatar, String fileName);
 
     /**
      * 方法<code>upload</code>作用为：

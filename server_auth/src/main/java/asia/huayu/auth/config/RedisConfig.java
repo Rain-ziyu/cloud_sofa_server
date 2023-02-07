@@ -3,6 +3,9 @@ package asia.huayu.auth.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.lettuce.core.ClientOptions;
+import io.lettuce.core.SocketOptions;
+import org.springframework.boot.autoconfigure.data.redis.LettuceClientConfigurationBuilderCustomizer;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
@@ -11,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
@@ -40,6 +44,33 @@ public class RedisConfig extends CachingConfigurerSupport {
         // value hashmap序列化
         template.setHashValueSerializer(jackson2JsonRedisSerializer);
         return template;
+    }
+
+    /**
+     * 自定义lettuce客户端配置
+     * 基于Springboot 提供得 LettuceClientConfigurationBuilderCustomizer 自定义客户端配置
+     * 防止redis长时间不发送消息服务端关闭连接导致客户端超时
+     * 在tcp协议规范上启用 keep alive 机制自动发送心跳包
+     *
+     * @return LettuceClientConfigurationBuilderCustomizer
+     */
+    @Bean
+    public LettuceClientConfigurationBuilderCustomizer lettuceClientConfigurationBuilderCustomizer() {
+        return clientConfigurationBuilder -> {
+            LettuceClientConfiguration clientConfiguration = clientConfigurationBuilder.build();
+            ClientOptions clientOptions = clientConfiguration.getClientOptions().orElseGet(ClientOptions::create);
+            ClientOptions build = clientOptions.mutate().build();
+            SocketOptions.KeepAliveOptions.Builder builder = build.getSocketOptions().getKeepAlive().mutate();
+            // 保活配置
+            builder.enable(true);
+            builder.idle(Duration.ofSeconds(30));
+            SocketOptions.Builder socketOptionsBuilder = clientOptions.getSocketOptions().mutate();
+            SocketOptions.KeepAliveOptions keepAliveOptions = builder.build();
+            socketOptionsBuilder.keepAlive(keepAliveOptions);
+            SocketOptions socketOptions = socketOptionsBuilder.build();
+            ClientOptions clientOptions1 = ClientOptions.builder().socketOptions(socketOptions).build();
+            clientConfigurationBuilder.clientOptions(clientOptions1);
+        };
     }
 
     @Bean

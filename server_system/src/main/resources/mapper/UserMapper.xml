@@ -31,4 +31,9 @@
         <include refid="asia.huayu.mapper.UserMapper.Base_Column_List"></include>
         from user where username=#{username}
     </select>
+    <select id="selectUserCountByName" resultType="integer">
+        select count(*)
+        from user
+        where username = #{username}
+    </select>
 </mapper>

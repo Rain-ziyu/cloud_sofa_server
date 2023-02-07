@@ -29,6 +29,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/pic")
 public class PicController extends BaseController {
+
     @GetMapping
     public void generatePicByKeyword(String keyword, HttpServletResponse response) {
         restProcessor(() -> {

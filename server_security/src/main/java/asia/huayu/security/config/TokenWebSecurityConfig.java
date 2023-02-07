@@ -76,7 +76,7 @@ public class TokenWebSecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers("/api/**", "/alipay/**",
                 "/user-info", "/wxlogin", "/alipaylogin/**",
                 "/user-info/wx", "/user-info/alipay", "/swagger-ui/**",
-                "/swagger-resources/**", "/v2/**", "/v3/**", "/pic/**")
+                "/swagger-resources/**", "/v2/**", "/v3/**", "/pic/**", "/user/**")
         ;
 
     }

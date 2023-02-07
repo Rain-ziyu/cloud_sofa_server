@@ -1,5 +1,6 @@
 package asia.huayu.controller;
 
+import asia.huayu.common.annotation.LoggerManager;
 import asia.huayu.common.controller.base.BaseController;
 import asia.huayu.common.entity.Result;
 import asia.huayu.common.exception.ServiceProcessException;
@@ -21,13 +22,14 @@ public class FileController extends BaseController {
     @Autowired
     MinioService minioService;
 
+
+    @LoggerManager
     @PostMapping
     public Result uploadFile(@RequestPart("file") MultipartFile multipartFile) {
         return restProcessor(() -> {
             Boolean upload = false;
             String filename = MinioService.getFilename(multipartFile);
             try {
-
                 upload = minioService.upload(multipartFile, filename);
                 String previewFileUrl = minioService.getPreviewFileUrl(filename);
                 return Result.OK("图片上传完成", previewFileUrl);

@@ -1,7 +1,5 @@
 package asia.huayu.service.impl;
 
-import asia.huayu.annotation.FileLogManager;
-import asia.huayu.common.annotation.LoggerManager;
 import asia.huayu.common.exception.ServiceProcessException;
 import asia.huayu.common.util.FileTypeTool;
 import asia.huayu.config.MinioConfig;
@@ -169,8 +167,13 @@ public class MinioServiceImpl implements MinioService {
      * @return Boolean 成功true
      */
     @Override
-    public Boolean upload(MultipartFile file, String bucketName, String fileName) throws IOException {
-        return upload(file.getContentType(), bucketName, fileName, file.getInputStream(), file.getSize());
+    public Boolean upload(MultipartFile file, String bucketName, String fileName) {
+        try (InputStream inputStream = file.getInputStream()) {
+            return upload(file.getContentType(), bucketName, fileName, inputStream, file.getSize());
+        } catch (IOException e) {
+            throw new ServiceProcessException("MultipartFile获取IO流出现问题", e);
+        }
+
     }
 
     @Override
@@ -191,7 +194,7 @@ public class MinioServiceImpl implements MinioService {
      * @return Boolean 成功true
      */
     @Override
-    public Boolean upload(MultipartFile file, String fileName) throws IOException {
+    public Boolean upload(MultipartFile file, String fileName) {
         return upload(file, minioConfig.getBucketName(), fileName);
     }
 
@@ -205,7 +208,7 @@ public class MinioServiceImpl implements MinioService {
      * @author RainZiYu
      */
     @Override
-    public String upload(String userAvatar, String fileName) throws IOException {
+    public String upload(String userAvatar, String fileName) {
         byte[] decode = Base64.decode(userAvatar);
         String fileType = FileTypeTool.getFileType(decode);
         fileName += "." + fileType;
@@ -252,16 +255,16 @@ public class MinioServiceImpl implements MinioService {
      * @throws
      * @author RainZiYu
      */
-    @FileLogManager(description = "minio文件上传")
-    @LoggerManager(description = "minio文件上传")
+
     @Override
     public Boolean upload(String fileType, String bucketName, String fileName, InputStream inputStream, Long bytesLength) {
-        try {
+        try (inputStream) {
             PutObjectArgs objectArgs = PutObjectArgs.builder()
                     .bucket(bucketName).object(fileName)
                     .stream(inputStream, bytesLength, -1).contentType(fileType).build();
             // 文件名称相同会覆盖
             ObjectWriteResponse objectWriteResponse = minioClient.putObject(objectArgs);
+            // io流使用完之后记得close 不然tomcat无法删除该临时文件
 
         } catch (Exception e) {
             throw new ServiceProcessException(e);
@@ -278,7 +281,6 @@ public class MinioServiceImpl implements MinioService {
      */
     @Override
     public void download(String bucketName, String fileName, HttpServletResponse res) {
-        System.out.println(fileName);
         GetObjectArgs objectArgs = GetObjectArgs.builder().bucket(bucketName)
                 .object(fileName).build();
         try (GetObjectResponse response = minioClient.getObject(objectArgs)) {
