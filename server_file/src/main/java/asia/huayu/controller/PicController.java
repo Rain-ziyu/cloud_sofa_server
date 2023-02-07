@@ -60,14 +60,13 @@ public class PicController extends BaseController {
                 response.flushBuffer();
             } catch (IOException e) {
                 throw new ServiceProcessException("返回文件出现问题", e);
-            }
-
-
-            // 删除创建的文件
-            try {
-                Files.delete(Paths.get(picPath));
-            } catch (IOException e) {
-                throw new ServiceProcessException("临时文件删除异常", e);
+            } finally {
+                // 删除创建的文件  写在finally中保证一定删除防止残留
+                try {
+                    Files.delete(Paths.get(picPath));
+                } catch (IOException e) {
+                    throw new ServiceProcessException("临时文件删除异常", e);
+                }
             }
             return Result.OK();
         });
