@@ -84,8 +84,8 @@ public class GeneratePic {
                 fontColors);
         String file = StringUtil.getUUID(true) + ".jpg";
         try {
-            ImageIO.write(buffer, "JPG", new File(path + "/" + file));
-            return path + "/" + file;
+            ImageIO.write(buffer, "JPG", new File(path + "\\" + file));
+            return path + "\\" + file;
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("IOException图片保存失败!");

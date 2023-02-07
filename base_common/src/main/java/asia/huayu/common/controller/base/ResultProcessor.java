@@ -14,7 +14,6 @@ public interface ResultProcessor {
      *
      * @param
      * @return asia.huayu.common.entity.Result
-     * @throws
      * @author RainZiYu
      */
     Result process();

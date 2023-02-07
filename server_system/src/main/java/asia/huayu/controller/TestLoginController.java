@@ -15,4 +15,5 @@ public class TestLoginController extends BaseController {
     public Result get() {
         return Result.OK("访问么有问题");
     }
+
 }
