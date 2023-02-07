@@ -28,6 +28,9 @@ public class ServiceProcessExceptionHandler {
         log.error("产生异常的类为:" + hm.getBean().getClass());
         // 在哪个方法的
         log.error("产生异常的方法为:" + hm.getMethod().getName());
+        log.error("异常信息详细内容为");
+
+        ex.printStackTrace();
         return Result.ERROR(500, ex.getMessage());
     }
 
@@ -40,6 +43,9 @@ public class ServiceProcessExceptionHandler {
         log.error("产生异常的类为:" + hm.getBean().getClass());
         // 在哪个方法的
         log.error("产生异常的方法为:" + hm.getMethod().getName());
+        log.error("异常信息详细内容为");
+
+        ex.printStackTrace();
         return Result.ERROR(500, "执行SQL出现异常");
     }
 
@@ -50,9 +56,12 @@ public class ServiceProcessExceptionHandler {
         // 异常信息
         log.error("异常信息为：" + ex.getMessage());
         // 哪个类下
-        log.error("产生异常的类为:" + hm.getBean().getClass());
+        log.error("产生异常的Controller类为:" + hm.getBean().getClass());
         // 在哪个方法的
-        log.error("产生异常的方法为:" + hm.getMethod().getName());
+        log.error("产生异常的Controller方法为:" + hm.getMethod().getName());
+        log.error("异常信息详细内容为");
+
+        ex.printStackTrace();
         return Result.ERROR(500, ex.getMessage());
     }
 }

@@ -5,10 +5,7 @@ import asia.huayu.service.fallback.FileFallbackService;
 import feign.Response;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -17,9 +14,10 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @FeignClient(value = "cloud-sofa-server-file", fallback = FileFallbackService.class)
 public interface FileService {
-    @PostMapping("/file")
-    Result createFile(@RequestAttribute MultipartFile multipartFile);
+    // 使用@RequestHeader方式主动携带请求头      consumes告诉feign这里传递表单数据
+    @PostMapping(value = "/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    Result createFile(@RequestPart("file") MultipartFile multipartFile, @RequestHeader("token") String token);
 
-    @GetMapping(value = "/pic", consumes = MediaType.APPLICATION_PROBLEM_JSON_VALUE)
+    @GetMapping(value = "/pic")
     Response generatePicByKeyword(@RequestParam String keyword);
 }

@@ -22,15 +22,20 @@ public class FileController extends BaseController {
     MinioService minioService;
 
     @PostMapping
-    public Result uploadFile(@RequestAttribute MultipartFile multipartFile) {
+    public Result uploadFile(@RequestPart("file") MultipartFile multipartFile) {
         return restProcessor(() -> {
             Boolean upload = false;
+            String filename = MinioService.getFilename(multipartFile);
             try {
-                upload = minioService.upload(multipartFile, MinioService.getFilename(multipartFile));
+
+                upload = minioService.upload(multipartFile, filename);
+                String previewFileUrl = minioService.getPreviewFileUrl(filename);
+                return Result.OK("图片上传完成", previewFileUrl);
             } catch (IOException e) {
                 throw new ServiceProcessException("文件上传失败", e);
+            } catch (Exception e) {
+                throw new ServiceProcessException("文件上传之后获取预览链接失败", e);
             }
-            return Result.OK(upload);
         });
     }
 

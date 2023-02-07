@@ -46,12 +46,16 @@ public class PicController extends BaseController {
             // Content-disposition: attachment; filename=foobar.pdf
             // 在响应头中设置文件名
             response.setHeader("Content-Disposition", "inline; filename=" + new File(picPath).getName());
-            try (FileChannel channel = new FileInputStream(picPath).getChannel();
+
+            try (FileInputStream fileInputStream = new FileInputStream(picPath);
+                 FileChannel channel = fileInputStream.getChannel();
                  ServletOutputStream outputStream = response.getOutputStream()) {
                 // 申请1M的ByteBuffer从头像的channel中读取ByteBuffer
                 ByteBuffer allocate = ByteBuffer.allocate(1024 * 1024);
-                while (channel.read(allocate) > 0) {
-                    outputStream.write(allocate.array());
+                int read;
+                while ((read = channel.read(allocate)) > 0) {
+                    // 防止最后一次读时没有读满
+                    outputStream.write(allocate.array(), 0, read);
                 }
                 response.flushBuffer();
             } catch (IOException e) {
