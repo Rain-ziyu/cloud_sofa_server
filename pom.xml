@@ -21,6 +21,7 @@
         <module>server_system</module>
         <module>server_file</module>
         <module>server_pic</module>
+        <module>server_admin</module>
     </modules>
     <properties>
         <java.version>17</java.version>
