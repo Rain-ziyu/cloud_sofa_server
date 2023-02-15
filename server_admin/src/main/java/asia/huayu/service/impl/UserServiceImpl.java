@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.http.MediaType;
@@ -51,7 +51,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Autowired
     private UserDao userDao;
     @Autowired
-    private ElasticsearchRestTemplate elasticsearchRestTemplate;
+    private ElasticsearchOperations elasticsearchRestTemplate;
 
     /**
      * 方法<code>createUser</code>作用为：

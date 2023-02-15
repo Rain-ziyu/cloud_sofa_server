@@ -82,7 +82,7 @@ public class UserController extends BaseController {
     }
 
     @GetMapping("/list")
-    public Result getUserList(int page, int pageSize) {
+    public Result getUserList(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int pageSize) {
         return restProcessor(() -> {
             Page<User> userPage = new Page<>(page, pageSize);
             IPage<User> userIPage = userService.selectUserListByPage(userPage);

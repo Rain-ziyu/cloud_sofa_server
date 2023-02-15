@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="asia.huayu.mapper.MenuRoleMapper">
+    <resultMap id="permissionMap" type="asia.huayu.entity.MenuRole">
+        <result property="id" column="id"/>
+        <result property="pid" column="pid"/>
+        <result property="name" column="name"/>
+        <result property="type" column="type"/>
+        <result property="permissionValue" column="permission_value"/>
+        <result property="path" column="path"/>
+        <result property="iframeUrl" column="iframe_url"/>
+        <result property="icon" column="icon"/>
+        <result property="status" column="status"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="rank" column="rank"/>
+        <collection property="roles" ofType="String">
+            <result column="role_id" jdbcType="VARCHAR"></result>
+        </collection>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="columns">
+        p
+        .
+        id
+        ,p.pid,p.name,p.type,p.permission_value,path,
+        p.iframe_url,p.icon,p.status,p.is_deleted,
+        p.gmt_create,p.gmt_modified,p.rank
+    </sql>
+    <sql id="role">
+        role
+        .
+        id
+        role_id,role.role_name,role.remark,role.is_deleted
+    </sql>
+    <select id="getAllMenuAndRole" resultMap="permissionMap">
+        select
+        <include refid="columns"></include>,
+        <include refid="role"></include>
+        from
+        acl_permission p
+        left join acl_role_permission
+        on p.id=acl_role_permission.permission_id
+        left join acl_role `role` on acl_role_permission.role_id = role.id
+    </select>
+
+</mapper>

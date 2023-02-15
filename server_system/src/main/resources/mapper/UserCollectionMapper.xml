@@ -5,14 +5,15 @@
 <mapper namespace="asia.huayu.mapper.UserCollectionMapper">
 
     <resultMap id="BaseResultMap" type="asia.huayu.entity.UserCollection">
-            <id property="id" column="id" jdbcType="INTEGER"/>
-            <result property="userId" column="user_id" jdbcType="INTEGER"/>
-            <result property="collectionContent" column="collection_content" jdbcType="INTEGER"/>
-            <result property="collectionType" column="collection_type" jdbcType="INTEGER"/>
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="collectionContent" column="collection_content" jdbcType="INTEGER"/>
+        <result property="collectionType" column="collection_type" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,collection_content,
+        id
+        ,user_id,collection_content,
         collection_type
     </sql>
 </mapper>

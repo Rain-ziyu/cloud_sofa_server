@@ -73,8 +73,8 @@ public class TokenWebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) {
         // 注意swagger占有很多path 需要逐个开放
-        web.ignoring().antMatchers("/api/**", "/alipay/**",
-                "/user-info", "/wxlogin", "/alipaylogin/**",
+        web.ignoring().antMatchers("/api/**", "/captcha/**",
+                "/refreshToken", "/register", "/alipaylogin/**",
                 "/user-info/wx", "/user-info/alipay", "/swagger-ui/**",
                 "/swagger-resources/**", "/v2/**", "/v3/**", "/pic/**", "/user/**", "/captcha/**")
         ;

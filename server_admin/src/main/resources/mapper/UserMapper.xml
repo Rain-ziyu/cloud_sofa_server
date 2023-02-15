@@ -47,9 +47,9 @@
         from user
         where username = #{username}
     </select>
-    <select id="selectUserByPage" resultType="asia.huayu.entity.User">
-        select user.id, user.username, user.nicek_name, salt, token
+    <select id="selectUserByPage" resultMap="BaseResultMap">
+        select user.id, user.username, user.nick_name, salt, token, gmt_create, is_deleted
         from user
-        where is_deleted = 0;
+        where is_deleted = 0
     </select>
 </mapper>

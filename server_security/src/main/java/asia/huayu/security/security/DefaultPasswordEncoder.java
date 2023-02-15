@@ -17,12 +17,12 @@ public class DefaultPasswordEncoder implements PasswordEncoder {
     // 进行MD5加密
     @Override
     public String encode(CharSequence charSequence) {
-        return MD5.create().digestHex16(charSequence.toString());
+        return MD5.create().digestHex(charSequence.toString());
     }
 
     // 进行密码比对
     @Override
     public boolean matches(CharSequence charSequence, String encodedPassword) {
-        return encodedPassword.equals(MD5.create().digestHex16(charSequence.toString()));
+        return encodedPassword.equals(MD5.create().digestHex(charSequence.toString()));
     }
 }

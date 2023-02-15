@@ -46,13 +46,17 @@ public class Permission implements Serializable {
     private String path;
 
     @ApiModelProperty(value = "组件路径")
-    private String component;
+    private String iframeUrl;
 
     @ApiModelProperty(value = "图标")
     private String icon;
 
     @ApiModelProperty(value = "状态(0:禁止,1:正常)")
     private Integer status;
+    @ApiModelProperty(value = "排序参数")
+    // 注意这里的rank是mysql的关键字需要``进行包裹
+    @TableField("`rank`")
+    private Integer rank;
 
     @ApiModelProperty(value = "层级")
     @TableField(exist = false)

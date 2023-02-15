@@ -14,9 +14,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Service
 public class TokenServiceImpl implements TokenService {
+    private final ConcurrentHashMap<String, String> concurrentHashMap = new ConcurrentHashMap();
     @Autowired
     TokenManager tokenManager;
-    private final ConcurrentHashMap<String, String> concurrentHashMap = new ConcurrentHashMap();
 
     @Override
     public String getSystemToken() {

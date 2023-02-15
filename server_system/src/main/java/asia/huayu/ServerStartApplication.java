@@ -24,14 +24,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 @SpringBootApplication
 @MapperScans({@MapperScan("asia.huayu.mapper"), @MapperScan("asia.huayu.auth.mapper")})
 public class ServerStartApplication extends SpringBootServletInitializer implements CommandLineRunner {
-    public static void main(String[] args) {
-        SpringApplication.run(ServerStartApplication.class, args);
-    }
-
     @Autowired
     RedisTemplate redisTemplate;
     @Autowired
     UserDetailsService userDetailsService;
+
+    public static void main(String[] args) {
+        SpringApplication.run(ServerStartApplication.class, args);
+    }
 
     /**
      * 方法configure

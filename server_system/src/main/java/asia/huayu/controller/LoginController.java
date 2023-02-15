@@ -24,10 +24,10 @@ import javax.validation.Valid;
 @Slf4j
 public class LoginController extends BaseController {
     @Autowired
+    TokenService tokenService;
+    @Autowired
     @Qualifier("userServiceImpl")
     private UserService userService;
-    @Autowired
-    TokenService tokenService;
 
     @PostMapping("/user")
     public Result createUser(@RequestBody @Valid User user) {

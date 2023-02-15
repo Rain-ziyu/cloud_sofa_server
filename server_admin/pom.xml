@@ -75,6 +75,8 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
+<!--        import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;等注解需要该包-->
         <dependency>
             <groupId>jakarta.json</groupId>
             <artifactId>jakarta.json-api</artifactId>

@@ -2,6 +2,7 @@ package asia.huayu.security.filter;
 
 
 import asia.huayu.security.security.TokenManager;
+import asia.huayu.security.util.SystemEnums;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,7 +44,7 @@ public class TokenAuthFilter extends BasicAuthenticationFilter {
 
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         // 从header获取token
-        String token = request.getHeader("token");
+        String token = request.getHeader(SystemEnums.AUTH_NAME.VALUE);
         if (token != null) {
             // 从token获取用户名
             String username = tokenManager.getUserInfoFromToken(token);

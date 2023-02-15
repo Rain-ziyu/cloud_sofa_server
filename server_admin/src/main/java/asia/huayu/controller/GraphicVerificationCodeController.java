@@ -29,7 +29,7 @@ public class GraphicVerificationCodeController extends BaseController {
     public Result getCaptcha() {
         return restProcessor(() -> {
             // 记住Hutool工具类生成验证码对象
-            CircleCaptcha circleCaptcha = CaptchaUtil.createCircleCaptcha(200, 90, 4, 100);
+            CircleCaptcha circleCaptcha = CaptchaUtil.createCircleCaptcha(120, 40, 4, 20);
             String code = circleCaptcha.getCode();
             CircleCaptchaDTO captchaDTO = new CircleCaptchaDTO();
             // 创建一个随机uuid 与该验证码绑定
@@ -46,7 +46,7 @@ public class GraphicVerificationCodeController extends BaseController {
     public Result verifyCaptcha(@RequestBody CircleCaptchaDTO captchaDTO) {
         return restProcessor(() -> {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            String code = valueOperations.getAndDelete(captchaDTO.getUuid());
+            String code = valueOperations.get(captchaDTO.getUuid());
             if (captchaDTO.getUserInput().equals(code)) {
                 return Result.OK(SystemEnums.CAPTCHA_VERIFY_SUCCESSFULLY.VALUE);
             } else {
