@@ -11,6 +11,10 @@ import java.util.Map;
 
 import static com.huayu.enums.SearchModeEnum.getStrategy;
 
+/**
+ * @author User
+ * es格式文章搜索
+ */
 @Service
 public class SearchStrategyContext {
 

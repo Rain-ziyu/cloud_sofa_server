@@ -1,4 +1,4 @@
-package com.huayu.strategy.impl;
+package com.huayu.strategy.impl.upload;
 
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;

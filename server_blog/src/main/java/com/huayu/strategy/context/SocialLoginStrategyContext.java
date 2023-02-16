@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
+/**
+ * @author User
+ * QQ登录
+ */
 @Service
 public class SocialLoginStrategyContext {
 

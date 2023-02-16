@@ -2,34 +2,6 @@ server:
   port: 8080
 
 spring:
-  datasource:
-    type: com.zaxxer.hikari.HikariDataSource
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://huayu.asia:3306/aurora?serverTimezone=Asia/Shanghai&allowMultiQueries=true
-    username: 账号
-    password: 密码
-    hikari:
-      minimum-idle: 10
-      idle-timeout: 180000
-      maximum-pool-size: 100
-      auto-commit: true
-      pool-name: MyHikariCP
-      max-lifetime: 60000
-      connection-timeout: 30000
-      connection-test-query: SELECT 1
-
-  redis:
-    host: redis的ip
-    port: 6379
-    password: 密码
-    database: 1
-    lettuce:
-      pool:
-        min-idle: 10
-        max-idle: 100
-        max-active: 100
-        max-wait: 10000
-
   rabbitmq:
     host: rabbitmq的ip
     port: 5672
@@ -43,12 +15,13 @@ spring:
           initial-interval: 3000
 
   elasticsearch:
-    rest:
-      uris: es的ip:9200
+    uris: xqyprod.huayu.asia:9200
+    password: c=cqm5pq-Fhq_mNVCexY
+    username: elastic
 
   mail:
     host: smtp.163.com
-    username: 邮箱
+    username:
     password: 密码
     default-encoding: UTF-8
     protocol: smtp
@@ -65,7 +38,6 @@ spring:
           starttls:
             enable: true
             required: true
-
   servlet:
     multipart:
       max-file-size: 100MB
@@ -79,9 +51,9 @@ mybatis-plus:
 
 search:
   mode: elasticsearch
-
+# 微服务形式  Feign调用file模块
 upload:
-  mode: oss
+  mode: minio
   oss:
     url: http://Bucket域名/
     endpoint: OSS配置endpoint
@@ -89,14 +61,14 @@ upload:
     accessKeySecret: OSS配置accessKeySecret
     bucketName: OSS配置bucketName
   minio:
-    url: http://minio的ip:9000/
+    url: http://huayu.asia:9000
     endpoint: http://minio的ip:9000
     accesskey: 用户名
     secretKey: 密码
     bucketName: 桶的名称
 
 website:
-  url: https://前台域名
+  url: https://prod.huayu.asia
 
 qq:
   app-id: QQ APPID

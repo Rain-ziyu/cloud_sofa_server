@@ -1,4 +1,4 @@
-package com.huayu.strategy.impl;
+package com.huayu.strategy.impl.search;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;

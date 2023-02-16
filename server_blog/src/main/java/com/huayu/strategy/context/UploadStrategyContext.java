@@ -11,6 +11,10 @@ import java.util.Map;
 
 import static com.huayu.enums.UploadModeEnum.getStrategy;
 
+/**
+ * @author User
+ * 上传模式
+ */
 @Service
 public class UploadStrategyContext {
 

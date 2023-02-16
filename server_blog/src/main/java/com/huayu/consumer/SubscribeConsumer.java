@@ -23,6 +23,10 @@ import java.util.stream.Collectors;
 import static com.huayu.constant.CommonConstant.TRUE;
 import static com.huayu.constant.RabbitMQConstant.SUBSCRIBE_QUEUE;
 
+/**
+ * @author User
+ * 订阅邮件推送消费者
+ */
 @Component
 @RabbitListener(queues = SUBSCRIBE_QUEUE)
 public class SubscribeConsumer {

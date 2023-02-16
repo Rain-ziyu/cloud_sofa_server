@@ -4,19 +4,19 @@ import com.huayu.annotation.OptLog;
 import com.huayu.model.dto.LabelOptionDTO;
 import com.huayu.model.dto.ResourceDTO;
 import com.huayu.model.vo.ConditionVO;
-import com.huayu.model.vo.ResourceVO;
 import com.huayu.model.vo.ResultVO;
 import com.huayu.service.ResourceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.List;
 
 import static com.huayu.constant.OptTypeConstant.DELETE;
-import static com.huayu.constant.OptTypeConstant.SAVE_OR_UPDATE;
 
 @Api(tags = "资源模块")
 @RestController
@@ -39,13 +39,13 @@ public class ResourceController {
         return ResultVO.ok();
     }
 
-    @OptLog(optType = SAVE_OR_UPDATE)
+/*     @OptLog(optType = SAVE_OR_UPDATE)
     @ApiOperation(value = "新增或修改资源")
     @PostMapping("/admin/resources")
     public ResultVO<?> saveOrUpdateResource(@RequestBody @Valid ResourceVO resourceVO) {
         resourceService.saveOrUpdateResource(resourceVO);
         return ResultVO.ok();
-    }
+    } */
 
     @ApiOperation(value = "查看角色资源选项")
     @GetMapping("/admin/role/resources")

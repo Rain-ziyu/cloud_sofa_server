@@ -8,7 +8,6 @@ import com.huayu.entity.RoleMenu;
 import com.huayu.entity.RoleResource;
 import com.huayu.entity.UserRole;
 import com.huayu.exception.BizException;
-import com.huayu.handler.FilterInvocationSecurityMetadataSourceImpl;
 import com.huayu.mapper.RoleMapper;
 import com.huayu.mapper.UserRoleMapper;
 import com.huayu.model.dto.PageResultDTO;
@@ -47,8 +46,8 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     @Autowired
     private RoleMenuService roleMenuService;
 
-    @Autowired
-    private FilterInvocationSecurityMetadataSourceImpl filterInvocationSecurityMetadataSource;
+/*     @Autowired
+    private FilterInvocationSecurityMetadataSourceImpl filterInvocationSecurityMetadataSource; */
 
     @Override
     public List<UserRoleDTO> listUserRoles() {
@@ -94,7 +93,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
                             .build())
                     .collect(Collectors.toList());
             roleResourceService.saveBatch(roleResourceList);
-            filterInvocationSecurityMetadataSource.clearDataSource();
+            /*             filterInvocationSecurityMetadataSource.clearDataSource(); */
         }
         if (Objects.nonNull(roleVO.getMenuIds())) {
             if (Objects.nonNull(roleVO.getId())) {

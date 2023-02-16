@@ -1,4 +1,4 @@
-package com.huayu.strategy.impl;
+package com.huayu.strategy.impl.login;
 
 import com.alibaba.fastjson2.JSON;
 import com.huayu.config.properties.QQConfigProperties;

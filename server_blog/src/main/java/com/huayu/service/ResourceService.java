@@ -5,7 +5,6 @@ import com.huayu.entity.Resource;
 import com.huayu.model.dto.LabelOptionDTO;
 import com.huayu.model.dto.ResourceDTO;
 import com.huayu.model.vo.ConditionVO;
-import com.huayu.model.vo.ResourceVO;
 
 import java.util.List;
 
@@ -13,7 +12,7 @@ public interface ResourceService extends IService<Resource> {
 
     void importSwagger();
 
-    void saveOrUpdateResource(ResourceVO resourceVO);
+/*     void saveOrUpdateResource(ResourceVO resourceVO); */
 
     void deleteResource(Integer resourceId);
 

@@ -1,4 +1,4 @@
-package com.huayu.strategy.impl;
+package com.huayu.strategy.impl.upload;
 
 import com.huayu.exception.BizException;
 import com.huayu.strategy.UploadStrategy;
