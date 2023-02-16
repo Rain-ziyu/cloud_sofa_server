@@ -41,4 +41,14 @@ public class FileController extends BaseController {
         });
     }
 
+    @GetMapping
+    public Result getFileAccessUrl(String filePath) {
+        return restProcessor(() -> {
+            try {
+                return Result.OK(minioService.getPreviewFileUrl(filePath));
+            } catch (Exception e) {
+                throw new ServiceProcessException("获取minio预览地址异常", e);
+            }
+        });
+    }
 }

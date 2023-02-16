@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="asia.huayu.mapper.UserMapper">
+    <resultMap id="UserAdminMap" type="asia.huayu.model.dto.UserAdminDTO">
+        <id property="id" column="id"/>
+        <result property="userInfoId" column="user_info_id"/>
+        <result property="avatar" column="avatar"/>
+        <result property="nickname" column="nickname"/>
+        <result property="loginType" column="login_type"/>
+        <result property="ipAddress" column="ip_address"/>
+        <result property="ipSource" column="ip_source"/>
+        <result property="createTime" column="create_time"/>
+        <result property="lastLoginTime" column="last_login_time"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <collection property="roles" ofType="asia.huayu.model.dto.UserRoleDTO">
+            <id property="id" column="role_id"/>
+            <result property="roleName" column="role_name"/>
+        </collection>
+    </resultMap>
+    <select id="listUsers" resultMap="UserAdminMap">
+        SELECT
+        u.id,
+        avatar,
+        nickname,
+        login_type,
+        r.id as role_id,
+        role_name,
+        ip_address,
+        ip_source,
+        ua.create_time,
+        last_login_time,
+        u.is_deleted
+        FROM
+        (
+        SELECT
+        user_info.id,
+        avatar,
+        nickname,
+        ip_address,
+        ip_source,
+        login_type,
+        login_time last_login_time
+        FROM
+        user_info
+        right join last_login_info
+        on user_info.id = last_login_info.user_id
+        <where>
+            <if test="conditionVO.loginType != null">
+                user_login_info.login_type = #{conditionVO.loginType}
+            </if>
+            <if test="conditionVO.keywords != null">
+                and nickname like concat('%',#{conditionVO.keywords},'%')
+            </if>
+        </where>
+        LIMIT #{current},#{size}
+        ) ui
+        LEFT JOIN user u ON u.id = ui.id
+        LEFT JOIN user_role ur ON ui.id = ur.user_id
+        LEFT JOIN role r ON ur.role_id = r.id
+    </select>
+    <select id="countUser" resultType="java.lang.Integer">
+        SELECT
+        count( 1 )
+        FROM
+        user u
+        LEFT JOIN user_info ui ON u.user_info_id = ui.id
+        <where>
+            <if test="conditionVO.keywords != null">
+                nickname like concat('%',#{conditionVO.keywords},'%')
+            </if>
+            <if test="conditionVO.loginType != null">
+                and register_type = #{conditionVO.loginType}
+            </if>
+        </where>
+    </select>
+    <select id="getUserByUsername" resultType="asia.huayu.entity.User">
+        select *
+        from user
+        where username = {#userName}
+    </select>
+</mapper>

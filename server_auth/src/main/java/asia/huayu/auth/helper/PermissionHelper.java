@@ -25,8 +25,7 @@ public class PermissionHelper {
     public static List<Permission> bulid(List<Permission> treeNodes) {
         List<Permission> trees = new ArrayList<>();
         for (Permission treeNode : treeNodes) {
-            if ("0".equals(treeNode.getPid())) {
-                treeNode.setLevel(1);
+            if ("0".equals(treeNode.getParentId())) {
                 trees.add(findChildren(treeNode, treeNodes));
             }
         }
@@ -43,9 +42,7 @@ public class PermissionHelper {
         treeNode.setChildren(new ArrayList<Permission>());
 
         for (Permission it : treeNodes) {
-            if (treeNode.getId().equals(it.getPid())) {
-                int level = treeNode.getLevel() + 1;
-                it.setLevel(level);
+            if (treeNode.getId().equals(it.getParentId())) {
                 if (treeNode.getChildren() == null) {
                     treeNode.setChildren(new ArrayList<>());
                 }

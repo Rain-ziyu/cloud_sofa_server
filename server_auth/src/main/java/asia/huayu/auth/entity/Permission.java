@@ -3,6 +3,7 @@ package asia.huayu.auth.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -18,9 +19,10 @@ import java.util.List;
  * @since 2020-01-12
  */
 @Data
+@Builder
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("acl_permission")
+@TableName("permission")
 @ApiModel(value = "Permission对象", description = "权限")
 public class Permission implements Serializable {
 
@@ -28,10 +30,10 @@ public class Permission implements Serializable {
 
     @ApiModelProperty(value = "编号")
     @TableId(value = "id", type = IdType.ASSIGN_ID)
-    private String id;
+    private Integer id;
 
     @ApiModelProperty(value = "所属上级")
-    private String pid;
+    private Integer parentId;
 
     @ApiModelProperty(value = "名称")
     private String name;
@@ -42,11 +44,11 @@ public class Permission implements Serializable {
     @ApiModelProperty(value = "权限值")
     private String permissionValue;
 
-    @ApiModelProperty(value = "访问路径")
+    @ApiModelProperty(value = "菜单路径")
     private String path;
 
     @ApiModelProperty(value = "组件路径")
-    private String iframeUrl;
+    private String component;
 
     @ApiModelProperty(value = "图标")
     private String icon;
@@ -58,29 +60,18 @@ public class Permission implements Serializable {
     @TableField("`rank`")
     private Integer rank;
 
-    @ApiModelProperty(value = "层级")
-    @TableField(exist = false)
-    private Integer level;
 
     @ApiModelProperty(value = "下级")
     @TableField(exist = false)
     private List<Permission> children;
 
-    @ApiModelProperty(value = "是否选中")
-    @TableField(exist = false)
-    private boolean isSelect;
-
-
-    @ApiModelProperty(value = "逻辑删除 1（true）已删除， 0（false）未删除")
-    private Boolean isDeleted;
-
     @ApiModelProperty(value = "创建时间")
     @TableField(fill = FieldFill.INSERT)
-    private Date gmtCreate;
+    private Date createTime;
 
     @ApiModelProperty(value = "更新时间")
     @TableField(fill = FieldFill.INSERT_UPDATE)
-    private Date gmtModified;
+    private Date updateTime;
 
 
 }

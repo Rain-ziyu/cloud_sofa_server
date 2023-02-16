@@ -46,8 +46,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     private static List<Permission> bulid(List<Permission> treeNodes) {
         List<Permission> trees = new ArrayList<>();
         for (Permission treeNode : treeNodes) {
-            if ("0".equals(treeNode.getPid())) {
-                treeNode.setLevel(1);
+            if ("0".equals(treeNode.getParentId())) {
                 trees.add(findChildren(treeNode, treeNodes));
             }
         }
@@ -68,9 +67,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         treeNode.setChildren(new ArrayList<Permission>());
 
         for (Permission it : treeNodes) {
-            if (treeNode.getId().equals(it.getPid())) {
-                int level = treeNode.getLevel() + 1;
-                it.setLevel(level);
+            if (treeNode.getId().equals(it.getParentId())) {
                 if (treeNode.getChildren() == null) {
                     treeNode.setChildren(new ArrayList<>());
                 }
@@ -115,7 +112,6 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
             for (int m = 0; m < rolePermissionList.size(); m++) {
                 RolePermission rolePermission = rolePermissionList.get(m);
                 if (rolePermission.getPermissionId().equals(permission.getId())) {
-                    permission.setSelect(true);
                 }
             }
         }
@@ -139,8 +135,8 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
             }
 
             RolePermission rolePermission = new RolePermission();
-            rolePermission.setRoleId(roleId);
-            rolePermission.setPermissionId(permissionId);
+            rolePermission.setRoleId(Integer.valueOf(roleId));
+            rolePermission.setPermissionId(Integer.valueOf(permissionId));
             rolePermissionList.add(rolePermission);
         }
         rolePermissionService.saveBatch(rolePermissionList);
@@ -177,7 +173,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
             // 如果是超级管理员，获取所有菜单
             selectPermissionList = baseMapper.selectList(null);
         } else {
-            selectPermissionList = baseMapper.selectPermissionByUserId(userId);
+            selectPermissionList = baseMapper.selectPermissionByUserId(Integer.valueOf(userId));
         }
 
         List<Permission> permissionList = PermissionHelper.bulid(selectPermissionList);
@@ -206,8 +202,8 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     private void selectChildListById(String id, List<String> idList) {
         List<Permission> childList = baseMapper.selectList(new QueryWrapper<Permission>().eq("pid", id).select("id"));
         childList.stream().forEach(item -> {
-            idList.add(item.getId());
-            this.selectChildListById(item.getId(), idList);
+            idList.add(String.valueOf(item.getId()));
+            this.selectChildListById(String.valueOf(item.getId()), idList);
         });
     }
 
@@ -234,9 +230,9 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         // 把childIdList里面菜单id值获取出来，封装idList里面，做递归查询
         childIdList.stream().forEach(item -> {
             // 封装idList里面
-            idList.add(item.getId());
+            idList.add(String.valueOf(item.getId()));
             // 递归查询
-            this.selectPermissionChildById(item.getId(), idList);
+            this.selectPermissionChildById(String.valueOf(item.getId()), idList);
         });
     }
 
@@ -251,8 +247,8 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         for (String perId : permissionIds) {
             // RolePermission对象
             RolePermission rolePermission = new RolePermission();
-            rolePermission.setRoleId(roleId);
-            rolePermission.setPermissionId(perId);
+            rolePermission.setRoleId(Integer.valueOf(roleId));
+            rolePermission.setPermissionId(Integer.valueOf(perId));
             // 封装到list集合
             rolePermissionList.add(rolePermission);
         }

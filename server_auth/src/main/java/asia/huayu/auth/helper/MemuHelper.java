@@ -33,7 +33,7 @@ public class MemuHelper {
             for (Permission one : oneMeunList) {
                 JSONObject oneMeun = new JSONObject();
                 oneMeun.put("path", one.getPath());
-                oneMeun.put("component", one.getIframeUrl());
+                oneMeun.put("component", one.getComponent());
                 oneMeun.put("redirect", "noredirect");
                 oneMeun.put("name", "name_" + one.getId());
                 oneMeun.put("hidden", false);
@@ -48,7 +48,7 @@ public class MemuHelper {
                 for (Permission two : twoMeunList) {
                     JSONObject twoMeun = new JSONObject();
                     twoMeun.put("path", two.getPath());
-                    twoMeun.put("component", two.getIframeUrl());
+                    twoMeun.put("component", two.getComponent());
                     twoMeun.put("name", "name_" + two.getId());
                     twoMeun.put("hidden", false);
 
@@ -64,7 +64,7 @@ public class MemuHelper {
 
                         JSONObject threeMeun = new JSONObject();
                         threeMeun.put("path", three.getPath());
-                        threeMeun.put("component", three.getIframeUrl());
+                        threeMeun.put("component", three.getComponent());
                         threeMeun.put("name", "name_" + three.getId());
                         threeMeun.put("hidden", true);
 

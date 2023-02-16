@@ -26,11 +26,11 @@ public class RolePermission implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.ASSIGN_ID)
-    private String id;
+    private Integer id;
 
-    private String roleId;
+    private Integer roleId;
 
-    private String permissionId;
+    private Integer permissionId;
 
     @ApiModelProperty(value = "逻辑删除 1（true）已删除， 0（false）未删除")
     private Boolean isDeleted;
