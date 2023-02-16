@@ -1,0 +1,209 @@
+package com.huayu.service.impl;
+
+import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.huayu.entity.About;
+import com.huayu.entity.Article;
+import com.huayu.entity.Comment;
+import com.huayu.entity.WebsiteConfig;
+import com.huayu.mapper.*;
+import com.huayu.model.dto.*;
+import com.huayu.model.vo.AboutVO;
+import com.huayu.model.vo.WebsiteConfigVO;
+import com.huayu.service.AuroraInfoService;
+import com.huayu.service.RedisService;
+import com.huayu.service.UniqueViewService;
+import com.huayu.util.BeanCopyUtil;
+import com.huayu.util.IpUtil;
+import eu.bitwalker.useragentutils.Browser;
+import eu.bitwalker.useragentutils.OperatingSystem;
+import eu.bitwalker.useragentutils.UserAgent;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.DigestUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
+import static com.huayu.constant.CommonConstant.*;
+import static com.huayu.constant.RedisConstant.*;
+
+@Service
+public class AuroraInfoServiceImpl implements AuroraInfoService {
+
+    @Autowired
+    private WebsiteConfigMapper websiteConfigMapper;
+
+    @Autowired
+    private ArticleMapper articleMapper;
+
+    @Autowired
+    private CategoryMapper categoryMapper;
+
+    @Autowired
+    private TagMapper tagMapper;
+
+    @Autowired
+    private CommentMapper commentMapper;
+
+    @Autowired
+    private TalkMapper talkMapper;
+
+    @Autowired
+    private UserInfoMapper userInfoMapper;
+
+    @Autowired
+    private AboutMapper aboutMapper;
+
+    @Autowired
+    private RedisService redisService;
+
+    @Autowired
+    private UniqueViewService uniqueViewService;
+
+    @Autowired
+    private HttpServletRequest request;
+
+    @Override
+    public void report() {
+        String ipAddress = IpUtil.getIpAddress(request);
+        UserAgent userAgent = IpUtil.getUserAgent(request);
+        Browser browser = userAgent.getBrowser();
+        OperatingSystem operatingSystem = userAgent.getOperatingSystem();
+        String uuid = ipAddress + browser.getName() + operatingSystem.getName();
+        String md5 = DigestUtils.md5DigestAsHex(uuid.getBytes());
+        if (!redisService.sIsMember(UNIQUE_VISITOR, md5)) {
+            String ipSource = IpUtil.getIpSource(ipAddress);
+            if (StringUtils.isNotBlank(ipSource)) {
+                String ipProvince = IpUtil.getIpProvince(ipSource);
+                redisService.hIncr(VISITOR_AREA, ipProvince, 1L);
+            } else {
+                redisService.hIncr(VISITOR_AREA, UNKNOWN, 1L);
+            }
+            redisService.incr(BLOG_VIEWS_COUNT, 1);
+            redisService.sAdd(UNIQUE_VISITOR, md5);
+        }
+    }
+
+    @SneakyThrows
+    @Override
+    public AuroraHomeInfoDTO getAuroraHomeInfo() {
+        CompletableFuture<Long> asyncArticleCount = CompletableFuture.supplyAsync(() -> articleMapper.selectCount(new LambdaQueryWrapper<Article>().eq(Article::getIsDelete, FALSE)));
+        CompletableFuture<Long> asyncCategoryCount = CompletableFuture.supplyAsync(() -> categoryMapper.selectCount(null));
+        CompletableFuture<Long> asyncTagCount = CompletableFuture.supplyAsync(() -> tagMapper.selectCount(null));
+        CompletableFuture<Long> asyncTalkCount = CompletableFuture.supplyAsync(() -> talkMapper.selectCount(null));
+        CompletableFuture<WebsiteConfigDTO> asyncWebsiteConfig = CompletableFuture.supplyAsync(this::getWebsiteConfig);
+        CompletableFuture<Long> asyncViewCount = CompletableFuture.supplyAsync(() -> {
+            Object count = redisService.get(BLOG_VIEWS_COUNT);
+            return Long.parseLong(Optional.ofNullable(count).orElse(0).toString());
+        });
+        return AuroraHomeInfoDTO.builder()
+                .articleCount(Math.toIntExact(asyncArticleCount.get()))
+                .categoryCount(Math.toIntExact(asyncCategoryCount.get()))
+                .tagCount(Math.toIntExact(asyncTagCount.get()))
+                .talkCount(Math.toIntExact(asyncTalkCount.get()))
+                .websiteConfigDTO(asyncWebsiteConfig.get())
+                .viewCount(Math.toIntExact(asyncViewCount.get())).build();
+    }
+
+    @Override
+    public AuroraAdminInfoDTO getAuroraAdminInfo() {
+        Object count = redisService.get(BLOG_VIEWS_COUNT);
+        Integer viewsCount = Integer.parseInt(Optional.ofNullable(count).orElse(0).toString());
+        Integer messageCount = Math.toIntExact(commentMapper.selectCount(new LambdaQueryWrapper<Comment>().eq(Comment::getType, 2)));
+        Integer userCount = Math.toIntExact(userInfoMapper.selectCount(null));
+        Integer articleCount = Math.toIntExact(articleMapper.selectCount(new LambdaQueryWrapper<Article>()
+                .eq(Article::getIsDelete, FALSE)));
+        List<UniqueViewDTO> uniqueViews = uniqueViewService.listUniqueViews();
+        List<ArticleStatisticsDTO> articleStatisticsDTOs = articleMapper.listArticleStatistics();
+        List<CategoryDTO> categoryDTOs = categoryMapper.listCategories();
+        List<TagDTO> tagDTOs = BeanCopyUtil.copyList(tagMapper.selectList(null), TagDTO.class);
+        Map<Object, Double> articleMap = redisService.zReverseRangeWithScore(ARTICLE_VIEWS_COUNT, 0, 4);
+        AuroraAdminInfoDTO auroraAdminInfoDTO = AuroraAdminInfoDTO.builder()
+                .articleStatisticsDTOs(articleStatisticsDTOs)
+                .tagDTOs(tagDTOs)
+                .viewsCount(viewsCount)
+                .messageCount(messageCount)
+                .userCount(userCount)
+                .articleCount(articleCount)
+                .categoryDTOs(categoryDTOs)
+                .uniqueViewDTOs(uniqueViews)
+                .build();
+        if (CollectionUtils.isNotEmpty(articleMap)) {
+            List<ArticleRankDTO> articleRankDTOList = listArticleRank(articleMap);
+            auroraAdminInfoDTO.setArticleRankDTOs(articleRankDTOList);
+        }
+        return auroraAdminInfoDTO;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateWebsiteConfig(WebsiteConfigVO websiteConfigVO) {
+        WebsiteConfig websiteConfig = WebsiteConfig.builder()
+                .id(DEFAULT_CONFIG_ID)
+                .config(JSON.toJSONString(websiteConfigVO))
+                .build();
+        websiteConfigMapper.updateById(websiteConfig);
+        redisService.del(WEBSITE_CONFIG);
+    }
+
+    @Override
+    public WebsiteConfigDTO getWebsiteConfig() {
+        WebsiteConfigDTO websiteConfigDTO;
+        Object websiteConfig = redisService.get(WEBSITE_CONFIG);
+        if (Objects.nonNull(websiteConfig)) {
+            websiteConfigDTO = JSON.parseObject(websiteConfig.toString(), WebsiteConfigDTO.class);
+        } else {
+            String config = websiteConfigMapper.selectById(DEFAULT_CONFIG_ID).getConfig();
+            websiteConfigDTO = JSON.parseObject(config, WebsiteConfigDTO.class);
+            redisService.set(WEBSITE_CONFIG, config);
+        }
+        return websiteConfigDTO;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateAbout(AboutVO aboutVO) {
+        About about = About.builder()
+                .id(DEFAULT_ABOUT_ID)
+                .content(JSON.toJSONString(aboutVO))
+                .build();
+        aboutMapper.updateById(about);
+        redisService.del(ABOUT);
+    }
+
+    @Override
+    public AboutDTO getAbout() {
+        AboutDTO aboutDTO;
+        Object about = redisService.get(ABOUT);
+        if (Objects.nonNull(about)) {
+            aboutDTO = JSON.parseObject(about.toString(), AboutDTO.class);
+        } else {
+            String content = aboutMapper.selectById(DEFAULT_ABOUT_ID).getContent();
+            aboutDTO = JSON.parseObject(content, AboutDTO.class);
+            redisService.set(ABOUT, content);
+        }
+        return aboutDTO;
+    }
+
+    private List<ArticleRankDTO> listArticleRank(Map<Object, Double> articleMap) {
+        List<Integer> articleIds = new ArrayList<>(articleMap.size());
+        articleMap.forEach((key, value) -> articleIds.add((Integer) key));
+        return articleMapper.selectList(new LambdaQueryWrapper<Article>()
+                        .select(Article::getId, Article::getArticleTitle)
+                        .in(Article::getId, articleIds))
+                .stream().map(article -> ArticleRankDTO.builder()
+                        .articleTitle(article.getArticleTitle())
+                        .viewsCount(articleMap.get(article.getId()).intValue())
+                        .build())
+                .sorted(Comparator.comparingInt(ArticleRankDTO::getViewsCount).reversed())
+                .collect(Collectors.toList());
+    }
+
+}
