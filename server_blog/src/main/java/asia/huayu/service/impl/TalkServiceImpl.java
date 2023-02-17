@@ -1,6 +1,7 @@
 package asia.huayu.service.impl;
 
 import asia.huayu.entity.Talk;
+import asia.huayu.entity.UserInfo;
 import asia.huayu.enums.CommentTypeEnum;
 import asia.huayu.exception.BizException;
 import asia.huayu.mapper.CommentMapper;
@@ -12,6 +13,7 @@ import asia.huayu.model.dto.TalkDTO;
 import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.model.vo.TalkVO;
 import asia.huayu.service.TalkService;
+import asia.huayu.service.UserInfoService;
 import asia.huayu.util.BeanCopyUtil;
 import asia.huayu.util.CommonUtil;
 import asia.huayu.util.PageUtil;
@@ -35,7 +37,8 @@ public class TalkServiceImpl extends ServiceImpl<TalkMapper, Talk> implements Ta
 
     @Autowired
     private TalkMapper talkMapper;
-
+    @Autowired
+    private UserInfoService userInfoService;
     @Autowired
     private CommentMapper commentMapper;
 
@@ -81,7 +84,9 @@ public class TalkServiceImpl extends ServiceImpl<TalkMapper, Talk> implements Ta
     @Override
     public void saveOrUpdateTalk(TalkVO talkVO) {
         Talk talk = BeanCopyUtil.copyObject(talkVO, Talk.class);
-        talk.setUserId(UserUtil.getUserDetailsDTO().getUserInfoId());
+        String name = UserUtil.getAuthentication().getName();
+        UserInfo userInfoByName = userInfoService.getUserInfoByName(name);
+        talk.setUserId(userInfoByName.getId());
         this.saveOrUpdate(talk);
     }
 

@@ -1,10 +1,11 @@
 package asia.huayu.service.impl;
 
+import asia.huayu.auth.entity.UserRole;
+import asia.huayu.auth.service.UserRoleService;
 import asia.huayu.common.exception.ServiceProcessException;
 import asia.huayu.constant.RedisConstant;
 import asia.huayu.entity.User;
 import asia.huayu.entity.UserInfo;
-import asia.huayu.entity.UserRole;
 import asia.huayu.enums.FilePathEnum;
 import asia.huayu.mapper.UserInfoMapper;
 import asia.huayu.mapper.UserMapper;
@@ -15,7 +16,6 @@ import asia.huayu.model.dto.UserOnlineDTO;
 import asia.huayu.model.vo.*;
 import asia.huayu.service.RedisService;
 import asia.huayu.service.UserInfoService;
-import asia.huayu.service.UserRoleService;
 import asia.huayu.strategy.context.UploadStrategyContext;
 import asia.huayu.util.BeanCopyUtil;
 import asia.huayu.util.UserUtil;
@@ -90,8 +90,10 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         if (!emailVO.getCode().equals(redisService.get(RedisConstant.USER_CODE_KEY + emailVO.getEmail()).toString())) {
             throw new ServiceProcessException("验证码错误！");
         }
+        String name = UserUtil.getAuthentication().getName();
+        User user = userMapper.getUserByUsername(name);
         UserInfo userInfo = UserInfo.builder()
-                .id(UserUtil.getUserDetailsDTO().getId())
+                .id(user.getId())
                 .email(emailVO.getEmail())
                 .build();
         userInfoMapper.updateById(userInfo);
@@ -119,8 +121,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                 .eq(UserRole::getUserId, userRoleVO.getUserId()));
         List<UserRole> userRoleList = userRoleVO.getRoleIds().stream()
                 .map(roleId -> UserRole.builder()
-                        .roleId(roleId)
-                        .userId(userRoleVO.getUserId())
+                        .roleId(String.valueOf(roleId))
+                        .userId(String.valueOf(userRoleVO.getUserId()))
                         .build())
                 .collect(Collectors.toList());
         userRoleService.saveBatch(userRoleList);
@@ -169,6 +171,13 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         UserInfo userInfo = userInfoMapper.selectById(id);
         // TODO: 查询对应的ip地址等信息
         return BeanCopyUtil.copyObject(userInfo, UserInfoDTO.class);
+    }
+
+    @Override
+    public UserInfo getUserInfoByName(String username) {
+        User user = userMapper.getUserByUsername(username);
+        UserInfo userInfo = userInfoMapper.selectById(user.getId());
+        return userInfo;
     }
 
 }

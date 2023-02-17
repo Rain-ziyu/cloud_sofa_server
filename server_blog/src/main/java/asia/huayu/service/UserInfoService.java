@@ -28,4 +28,6 @@ public interface UserInfoService extends IService<UserInfo> {
 
     UserInfoDTO getUserInfoById(Integer id);
 
+    UserInfo getUserInfoByName(String username);
+
 }

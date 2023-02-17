@@ -3,8 +3,7 @@ package asia.huayu.auth.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
@@ -21,7 +20,10 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("acl_user_role")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@TableName("user_role")
 @ApiModel(value = "UserRole对象", description = "")
 public class UserRole implements Serializable {
 

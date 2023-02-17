@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface RoleMapper extends BaseMapper<Role> {
+public interface BlogRoleMapper extends BaseMapper<Role> {
 
     List<ResourceRoleDTO> listResourceRoles();
 

@@ -2,7 +2,9 @@ package asia.huayu.aspect;
 
 import asia.huayu.annotation.OptLog;
 import asia.huayu.entity.OperationLog;
+import asia.huayu.entity.UserInfo;
 import asia.huayu.event.OperationLogEvent;
+import asia.huayu.service.UserInfoService;
 import asia.huayu.util.IpUtil;
 import asia.huayu.util.UserUtil;
 import com.alibaba.fastjson2.JSON;
@@ -30,7 +32,8 @@ public class OperationLogAspect {
 
     @Autowired
     private ApplicationContext applicationContext;
-
+    @Autowired
+    private UserInfoService userInfoService;
     @Pointcut("@annotation(asia.huayu.annotation.OptLog)")
     public void operationLogPointCut() {
     }
@@ -61,10 +64,11 @@ public class OperationLogAspect {
                 operationLog.setRequestParam(JSON.toJSONString(joinPoint.getArgs()));
             }
         }
+        String name = UserUtil.getAuthentication().getName();
         operationLog.setResponseData(JSON.toJSONString(keys));
-        User
-        operationLog.setUserId(UserUtil.getUserDetailsDTO().getId());
-        operationLog.setNickname(UserUtil.getUserDetailsDTO().getNickname());
+        UserInfo user = userInfoService.getUserInfoByName(name);
+        operationLog.setUserId(user.getId());
+        operationLog.setNickname(user.getNickname());
         String ipAddress = IpUtil.getIpAddress(request);
         operationLog.setIpAddress(ipAddress);
         operationLog.setIpSource(IpUtil.getIpSource(ipAddress));

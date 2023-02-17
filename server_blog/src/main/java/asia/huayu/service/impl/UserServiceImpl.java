@@ -1,18 +1,18 @@
 package asia.huayu.service.impl;
 
+import asia.huayu.auth.entity.UserRole;
+import asia.huayu.auth.mapper.UserRoleMapper;
 import asia.huayu.common.exception.ServiceProcessException;
 import asia.huayu.constant.CommonConstant;
 import asia.huayu.constant.RabbitMQConstant;
 import asia.huayu.constant.RedisConstant;
 import asia.huayu.entity.User;
 import asia.huayu.entity.UserInfo;
-import asia.huayu.entity.UserRole;
 import asia.huayu.enums.LoginTypeEnum;
 import asia.huayu.enums.RoleEnum;
 import asia.huayu.exception.BizException;
 import asia.huayu.mapper.UserInfoMapper;
 import asia.huayu.mapper.UserMapper;
-import asia.huayu.mapper.UserRoleMapper;
 import asia.huayu.model.dto.*;
 import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.model.vo.QQLoginVO;
@@ -139,8 +139,8 @@ public class UserServiceImpl implements UserService {
                 .build();
         userInfoMapper.insert(userInfo);
         UserRole userRole = UserRole.builder()
-                .userId(userInfo.getId())
-                .roleId(RoleEnum.USER.getRoleId())
+                .userId(String.valueOf(userInfo.getId()))
+                .roleId(String.valueOf(RoleEnum.USER.getRoleId()))
                 .build();
         userRoleMapper.insert(userRole);
         User user = User.builder()

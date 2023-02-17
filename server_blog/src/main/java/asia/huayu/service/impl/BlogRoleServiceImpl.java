@@ -1,21 +1,21 @@
 package asia.huayu.service.impl;
 
+import asia.huayu.auth.entity.UserRole;
+import asia.huayu.auth.mapper.UserRoleMapper;
 import asia.huayu.constant.CommonConstant;
 import asia.huayu.entity.Role;
 import asia.huayu.entity.RoleMenu;
 import asia.huayu.entity.RoleResource;
-import asia.huayu.entity.UserRole;
 import asia.huayu.exception.BizException;
-import asia.huayu.mapper.RoleMapper;
-import asia.huayu.mapper.UserRoleMapper;
+import asia.huayu.mapper.BlogRoleMapper;
 import asia.huayu.model.dto.PageResultDTO;
 import asia.huayu.model.dto.RoleDTO;
 import asia.huayu.model.dto.UserRoleDTO;
 import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.model.vo.RoleVO;
+import asia.huayu.service.BlogRoleService;
 import asia.huayu.service.RoleMenuService;
 import asia.huayu.service.RoleResourceService;
-import asia.huayu.service.RoleService;
 import asia.huayu.util.BeanCopyUtil;
 import asia.huayu.util.PageUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -32,10 +32,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
-public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements RoleService {
+public class BlogRoleServiceImpl extends ServiceImpl<BlogRoleMapper, Role> implements BlogRoleService {
 
     @Autowired
-    private RoleMapper roleMapper;
+    private BlogRoleMapper blogRoleMapper;
 
     @Autowired
     private UserRoleMapper userRoleMapper;
@@ -51,7 +51,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
     @Override
     public List<UserRoleDTO> listUserRoles() {
-        List<Role> roleList = roleMapper.selectList(new LambdaQueryWrapper<Role>()
+        List<Role> roleList = blogRoleMapper.selectList(new LambdaQueryWrapper<Role>()
                 .select(Role::getId, Role::getRoleName));
         return BeanCopyUtil.copyList(roleList, UserRoleDTO.class);
     }
@@ -61,15 +61,15 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     public PageResultDTO<RoleDTO> listRoles(ConditionVO conditionVO) {
         LambdaQueryWrapper<Role> queryWrapper = new LambdaQueryWrapper<Role>()
                 .like(StringUtils.isNotBlank(conditionVO.getKeywords()), Role::getRoleName, conditionVO.getKeywords());
-        CompletableFuture<Long> asyncCount = CompletableFuture.supplyAsync(() -> roleMapper.selectCount(queryWrapper));
-        List<RoleDTO> roleDTOs = roleMapper.listRoles(PageUtil.getLimitCurrent(), PageUtil.getSize(), conditionVO);
+        CompletableFuture<Long> asyncCount = CompletableFuture.supplyAsync(() -> blogRoleMapper.selectCount(queryWrapper));
+        List<RoleDTO> roleDTOs = blogRoleMapper.listRoles(PageUtil.getLimitCurrent(), PageUtil.getSize(), conditionVO);
         return new PageResultDTO<>(roleDTOs, asyncCount.get());
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void saveOrUpdateRole(RoleVO roleVO) {
-        Role roleCheck = roleMapper.selectOne(new LambdaQueryWrapper<Role>()
+        Role roleCheck = blogRoleMapper.selectOne(new LambdaQueryWrapper<Role>()
                 .select(Role::getId)
                 .eq(Role::getRoleName, roleVO.getRoleName()));
         if (Objects.nonNull(roleCheck) && !(roleCheck.getId().equals(roleVO.getId()))) {
@@ -116,7 +116,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         if (count > 0) {
             throw new BizException("该角色下存在用户");
         }
-        roleMapper.deleteBatchIds(roleIdList);
+        blogRoleMapper.deleteBatchIds(roleIdList);
     }
 
 }

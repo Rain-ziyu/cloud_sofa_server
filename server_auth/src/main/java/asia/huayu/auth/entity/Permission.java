@@ -3,9 +3,7 @@ package asia.huayu.auth.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
@@ -21,6 +19,8 @@ import java.util.List;
 @Data
 @Builder
 @EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
+@AllArgsConstructor
 @Accessors(chain = true)
 @TableName("permission")
 @ApiModel(value = "Permission对象", description = "权限")

@@ -1,15 +1,15 @@
 package asia.huayu.strategy.impl.login;
 
+import asia.huayu.auth.entity.UserRole;
+import asia.huayu.auth.mapper.UserRoleMapper;
 import asia.huayu.common.exception.ServiceProcessException;
 import asia.huayu.common.util.RequestUtil;
 import asia.huayu.entity.User;
 import asia.huayu.entity.UserInfo;
 import asia.huayu.entity.UserLoginInfo;
-import asia.huayu.entity.UserRole;
 import asia.huayu.enums.RoleEnum;
 import asia.huayu.mapper.UserInfoMapper;
 import asia.huayu.mapper.UserMapper;
-import asia.huayu.mapper.UserRoleMapper;
 import asia.huayu.model.dto.SocialTokenDTO;
 import asia.huayu.model.dto.SocialUserInfoDTO;
 import asia.huayu.model.dto.UserDetailsDTO;
@@ -119,8 +119,8 @@ public abstract class AbstractSocialLoginStrategyImpl implements SocialLoginStra
         userLoginInfo.setLoginType(user.getRegisterType());
         createUserLoginInfo(request, userLoginInfo);
         UserRole userRole = UserRole.builder()
-                .userId(userInfo.getId())
-                .roleId(RoleEnum.USER.getRoleId())
+                .userId(String.valueOf(userInfo.getId()))
+                .roleId(String.valueOf(RoleEnum.USER.getRoleId()))
                 .build();
         // 插入角色
         userRoleMapper.insert(userRole);
