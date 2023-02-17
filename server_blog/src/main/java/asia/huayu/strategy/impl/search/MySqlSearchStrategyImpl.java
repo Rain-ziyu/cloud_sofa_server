@@ -52,9 +52,9 @@ public class MySqlSearchStrategyImpl implements SearchStrategy {
                         int postIndex = postLength > 35 ? last + 35 : last + postLength;
                         String postText = item.getArticleContent().substring(contentIndex, postIndex);
                         if (isLowerCase) {
-                            articleContent = (preText + postText).replaceAll(keywords.toLowerCase(), PRE_TAG + keywords.toLowerCase() + POST_TAG);
+                            articleContent = (preText + postText).replaceAll(keywords.toLowerCase(), PRE_TAG + keywords.toLowerCase() + POSTAG);
                         } else {
-                            articleContent = (preText + postText).replaceAll(keywords.toUpperCase(), PRE_TAG + keywords.toUpperCase() + POST_TAG);
+                            articleContent = (preText + postText).replaceAll(keywords.toUpperCase(), PRE_TAG + keywords.toUpperCase() + POSTAG);
                         }
                     } else {
                         return null;
@@ -69,9 +69,9 @@ public class MySqlSearchStrategyImpl implements SearchStrategy {
                     }
                     String articleTitle;
                     if (isLowerCase) {
-                        articleTitle = item.getArticleTitle().replaceAll(keywords.toLowerCase(), PRE_TAG + keywords.toLowerCase() + POST_TAG);
+                        articleTitle = item.getArticleTitle().replaceAll(keywords.toLowerCase(), PRE_TAG + keywords.toLowerCase() + POSTAG);
                     } else {
-                        articleTitle = item.getArticleTitle().replaceAll(keywords.toUpperCase(), PRE_TAG + keywords.toUpperCase() + POST_TAG);
+                        articleTitle = item.getArticleTitle().replaceAll(keywords.toUpperCase(), PRE_TAG + keywords.toUpperCase() + POSTAG);
                     }
                     return ArticleSearchDTO.builder()
                             .id(item.getId())

@@ -21,7 +21,7 @@ public enum StatusCodeEnum {
 
     USERNAME_EXIST(52001, "用户名已存在"),
 
-    USERNAME_NOT_EXIST(52002, "用户名不存在"),
+    USERNAME_NOEXIST(52002, "用户名不存在"),
 
     ARTICLE_ACCESS_FAIL(52003, "文章密码认证未通过"),
 

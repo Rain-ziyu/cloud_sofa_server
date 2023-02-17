@@ -123,7 +123,7 @@ public class AuroraInfoServiceImpl implements AuroraInfoService {
     @Transactional(rollbackFor = Exception.class)
     public void updateWebsiteConfig(WebsiteConfigVO websiteConfigVO) {
         WebsiteConfig websiteConfig = WebsiteConfig.builder()
-                .id(CommonConstant.DEFAULT_CONFIG_ID)
+                .id(CommonConstant.DEFAULCONFIG_ID)
                 .config(JSON.toJSONString(websiteConfigVO))
                 .build();
         websiteConfigMapper.updateById(websiteConfig);
@@ -137,7 +137,7 @@ public class AuroraInfoServiceImpl implements AuroraInfoService {
         if (Objects.nonNull(websiteConfig)) {
             websiteConfigDTO = JSON.parseObject(websiteConfig.toString(), WebsiteConfigDTO.class);
         } else {
-            String config = websiteConfigMapper.selectById(CommonConstant.DEFAULT_CONFIG_ID).getConfig();
+            String config = websiteConfigMapper.selectById(CommonConstant.DEFAULCONFIG_ID).getConfig();
             websiteConfigDTO = JSON.parseObject(config, WebsiteConfigDTO.class);
             redisService.set(RedisConstant.WEBSITE_CONFIG, config);
         }
@@ -148,7 +148,7 @@ public class AuroraInfoServiceImpl implements AuroraInfoService {
     @Transactional(rollbackFor = Exception.class)
     public void updateAbout(AboutVO aboutVO) {
         About about = About.builder()
-                .id(CommonConstant.DEFAULT_ABOUT_ID)
+                .id(CommonConstant.DEFAULABOUID)
                 .content(JSON.toJSONString(aboutVO))
                 .build();
         aboutMapper.updateById(about);
@@ -162,7 +162,7 @@ public class AuroraInfoServiceImpl implements AuroraInfoService {
         if (Objects.nonNull(about)) {
             aboutDTO = JSON.parseObject(about.toString(), AboutDTO.class);
         } else {
-            String content = aboutMapper.selectById(CommonConstant.DEFAULT_ABOUT_ID).getContent();
+            String content = aboutMapper.selectById(CommonConstant.DEFAULABOUID).getContent();
             aboutDTO = JSON.parseObject(content, AboutDTO.class);
             redisService.set(RedisConstant.ABOUT, content);
         }

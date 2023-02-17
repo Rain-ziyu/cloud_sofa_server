@@ -39,7 +39,7 @@ public class IpUtil {
             ipAddress = request.getHeader("WL-Proxy-Client-IP");
         }
         if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
-            ipAddress = request.getHeader("HTTP_CLIENT_IP");
+            ipAddress = request.getHeader("HTTP_CLIENIP");
         }
         if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
             ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR");

@@ -20,7 +20,7 @@
     <resultMap id="resourceRoleResultMap" type="asia.huayu.model.dto.ResourceRoleDTO">
         <id property="id" column="id"/>
         <result property="url" column="url"/>
-        <result property="requestMethod" column="request_method"/>
+        <result property="requestMethod" column="requesmethod"/>
         <collection property="roleList" ofType="java.lang.String">
             <constructor>
                 <arg column="role_name"/>
@@ -30,18 +30,18 @@
     <select id="listResourceRoles" resultMap="resourceRoleResultMap">
         select re.id as id,
                url,
-               request_method,
+               requesmethod,
                role_name
-        from t_resource re
-                 left join t_role_resource rr on re.id = rr.resource_id
-                 left join t_role ro on rr.role_id = ro.id
-        where re.parent_id is not null
+        from resource re
+                 left join role_resource rr on re.id = rr.resource_id
+                 left join role ro on rr.role_id = ro.id
+        where re.parenid is not null
           and is_anonymous = 0;
     </select>
     <select id="listRolesByUserInfoId" resultType="java.lang.String">
         SELECT role_name
         FROM role r
-                 LEFT JOIN t_user_role ur ON r.id = ur.role_id
+                 LEFT JOIN user_role ur ON r.id = ur.role_id
         WHERE ur.user_id = #{userInfoId}
     </select>
     <select id="listRoles" resultMap="roleMap">
@@ -68,7 +68,7 @@
         </where>
         LIMIT #{current}, #{size}
         ) r
-        LEFT JOIN t_role_resource rr ON r.id = rr.role_id
+        LEFT JOIN role_resource rr ON r.id = rr.role_id
         LEFT JOIN role_permission rp on r.id = rp.role_id
         ORDER BY r.id
     </select>

@@ -9,7 +9,7 @@
         <result property="ipAddress" column="ip_address"/>
         <result property="ipSource" column="ip_source"/>
         <result property="createTime" column="create_time"/>
-        <result property="lastLoginTime" column="last_login_time"/>
+        <result property="lastLoginTime" column="laslogin_time"/>
         <result property="isDisable" column="is_disable"/>
         <collection property="roles" ofType="asia.huayu.model.dto.UserRoleDTO">
             <id property="id" column="role_id"/>
@@ -27,7 +27,7 @@
         ip_address,
         ip_source,
         u.create_time,
-        last_login_time,
+        laslogin_time,
         u.is_disable
         FROM
         (
@@ -38,11 +38,11 @@
         ip_address,
         ip_source,
         login_type,
-        login_time last_login_time
+        login_time laslogin_time
         FROM
         user_info
-        right join last_login_info
-        on user_info.id = last_login_info.user_id
+        right join laslogin_info
+        on user_info.id = laslogin_info.user_id
         <where>
             <if test="conditionVO.loginType != null">
                 user_login_info.login_type = #{conditionVO.loginType}

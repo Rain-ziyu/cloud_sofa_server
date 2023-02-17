@@ -5,11 +5,11 @@
         SELECT t.id,
                tag_name,
                COUNT(aat.article_id) AS count
-        FROM t_tag t
+        FROM tag t
             LEFT JOIN (
             SELECT a.id AS article_id, at.tag_id AS tag_id
-            FROM t_article_tag at
-            LEFT JOIN t_article a ON at.article_id = a.id
+            FROM article_tag at
+            LEFT JOIN article a ON at.article_id = a.id
             WHERE a.is_delete = 0
             AND a.STATUS in (1, 2)
             ) aat
@@ -20,11 +20,11 @@
         SELECT t.id,
                tag_name,
                COUNT(aat.article_id) AS count
-        FROM t_tag t
+        FROM tag t
             LEFT JOIN (
             SELECT a.id AS article_id, at.tag_id AS tag_id
-            FROM t_article_tag at
-            LEFT JOIN t_article a ON at.article_id = a.id
+            FROM article_tag at
+            LEFT JOIN article a ON at.article_id = a.id
             WHERE a.is_delete = 0
             AND a.STATUS in (1, 2)
             ) aat
@@ -34,8 +34,8 @@
     </select>
     <select id="listTagNamesByArticleId" resultType="java.lang.String">
         SELECT tag_name
-        FROM t_tag t
-                 JOIN t_article_tag at
+        FROM tag t
+                 JOIN article_tag at
         ON t.id = at.tag_id
         WHERE article_id = #{articleId}
     </select>
@@ -46,8 +46,8 @@
         COUNT( at.article_id ) AS article_count,
         t.create_time
         FROM
-        t_tag t
-        LEFT JOIN t_article_tag at ON t.id = at.tag_id
+        tag t
+        LEFT JOIN article_tag at ON t.id = at.tag_id
         <where>
             <if test="conditionVO.keywords != null">
                 tag_name like concat('%',#{conditionVO.keywords},'%')

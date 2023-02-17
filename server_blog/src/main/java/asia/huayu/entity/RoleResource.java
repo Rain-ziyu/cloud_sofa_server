@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("t_role_resource")
+@TableName("role_resource")
 public class RoleResource {
 
     @TableId(value = "id", type = IdType.AUTO)

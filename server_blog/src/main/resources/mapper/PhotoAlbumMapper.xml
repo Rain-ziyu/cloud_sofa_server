@@ -18,7 +18,7 @@
         album_cover,
         status
         FROM
-        t_photo_album
+        photo_album
         WHERE
         is_delete = 0
         <if test="condition.keywords != null">
@@ -34,7 +34,7 @@
         id,
         album_id
         FROM
-        t_photo
+        photo
         WHERE
         is_delete = 0
         )

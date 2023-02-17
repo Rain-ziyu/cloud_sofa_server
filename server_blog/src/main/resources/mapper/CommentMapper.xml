@@ -8,18 +8,18 @@
         u.website,
         c.user_id,
         c.id,
-        c.comment_content,
+        c.commencontent,
         c.create_time
         FROM
-        t_comment c
-        JOIN t_user_info u ON c.user_id = u.id
+        comment c
+        JOIN user_info u ON c.user_id = u.id
         <where>
             <if test="commentVO.topicId != null">
                 topic_id = #{commentVO.topicId}
             </if>
             AND type = #{commentVO.type}
             AND c.is_review = 1
-            AND parent_id IS NULL
+            AND parenid IS NULL
         </where>
         ORDER BY
         c.id DESC
@@ -39,18 +39,18 @@
         r.nickname AS reply_nickname,
         r.website AS reply_website,
         c.id,
-        c.parent_id,
-        c.comment_content,
+        c.parenid,
+        c.commencontent,
         c.create_time,
-        row_number () over ( PARTITION BY parent_id ORDER BY create_time ASC ) row_num
+        row_number () over ( PARTITION BY parenid ORDER BY create_time ASC ) row_num
         FROM
-        t_comment c
-        JOIN t_user_info u ON c.user_id = u.id
-        JOIN t_user_info r ON c.reply_user_id = r.id
+        comment c
+        JOIN user_info u ON c.user_id = u.id
+        JOIN user_info r ON c.reply_user_id = r.id
         WHERE
         c.is_review = 1
         AND
-        parent_id IN
+        parenid IN
         (
         <foreach collection="commentIds" item="commentId" separator=",">
             #{commentId}
@@ -65,10 +65,10 @@
                u.website,
                c.user_id,
                c.id,
-               c.comment_content,
+               c.commencontent,
                c.create_time
-        FROM t_comment c
-                 JOIN t_user_info u ON c.user_id = u.id
+        FROM comment c
+                 JOIN user_info u ON c.user_id = u.id
         where c.is_review = 1
         ORDER BY c.id DESC LIMIT 0 , 6
     </select>
@@ -76,8 +76,8 @@
         SELECT
         count(1)
         from
-        t_comment c
-        LEFT JOIN t_user_info u ON c.user_id = u.id
+        comment c
+        LEFT JOIN user_info u ON c.user_id = u.id
         <where>
             <if test="conditionVO.type != null">
                 c.type = #{conditionVO.type}
@@ -97,15 +97,15 @@
         u.nickname,
         r.nickname AS reply_nickname,
         a.article_title,
-        c.comment_content,
+        c.commencontent,
         c.type,
         c.create_time,
         c.is_review
         FROM
-        t_comment c
-        LEFT JOIN t_article a ON c.topic_id = a.id
-        LEFT JOIN t_user_info u ON c.user_id = u.id
-        LEFT JOIN t_user_info r ON c.reply_user_id = r.id
+        comment c
+        LEFT JOIN article a ON c.topic_id = a.id
+        LEFT JOIN user_info u ON c.user_id = u.id
+        LEFT JOIN user_info r ON c.reply_user_id = r.id
         <where>
             <if test="conditionVO.type != null">
                 c.type = #{conditionVO.type}
@@ -124,9 +124,9 @@
     <select id="listCommentCountByTypeAndTopicIds" resultType="asia.huayu.model.dto.CommentCountDTO">
         SELECT
         topic_id as id,
-        COUNT( 1 ) AS comment_count
+        COUNT( 1 ) AS commencount
         FROM
-        t_comment
+        comment
         WHERE type = #{type}
         AND
         topic_id IN
@@ -138,8 +138,8 @@
     </select>
     <select id="listCommentCountByTypeAndTopicId" resultType="asia.huayu.model.dto.CommentCountDTO">
         SELECT topic_id as id,
-               COUNT(1) AS comment_count
-        FROM t_comment
+               COUNT(1) AS commencount
+        FROM comment
         WHERE type = #{type}
           AND topic_id = #{topicId}
         GROUP BY topic_id

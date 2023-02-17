@@ -3,7 +3,7 @@
 <mapper namespace="asia.huayu.mapper.JobMapper">
     <select id="countJobs" resultType="java.lang.Integer">
         select count(DISTINCT j.id)
-        from t_job j
+        from job j
         <where>
             <if test="jobSearchVO.jobName!=null">
                 and j.job_name like concat('%',#{jobSearchVO.jobName},'%')
@@ -18,7 +18,7 @@
     </select>
     <select id="listJobs" resultType="asia.huayu.model.dto.JobDTO">
         select *
-        from t_job j
+        from job j
         <where>
             <if test="jobSearchVO.jobName!=null">
                 and j.job_name like concat('%',#{jobSearchVO.jobName},'%')
@@ -35,6 +35,6 @@
     </select>
     <select id="listJobGroups" resultType="java.lang.String">
         select DISTINCT job_group
-        from t_job
+        from job
     </select>
 </mapper>

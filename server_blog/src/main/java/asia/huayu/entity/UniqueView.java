@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("t_unique_view")
+@TableName("unique_view")
 public class UniqueView {
 
     @TableId(value = "id", type = IdType.AUTO)

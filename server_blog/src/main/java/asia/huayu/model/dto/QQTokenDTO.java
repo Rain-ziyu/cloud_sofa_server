@@ -13,6 +13,6 @@ public class QQTokenDTO {
 
     private String openid;
 
-    private String client_id;
+    private String clienid;
 
 }

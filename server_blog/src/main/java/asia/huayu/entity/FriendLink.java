@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("t_friend_link")
+@TableName("friend_link")
 public class FriendLink {
 
     @TableId(value = "id", type = IdType.AUTO)

@@ -3,6 +3,6 @@
 <mapper namespace="asia.huayu.mapper.JobLogMapper">
     <select id="listJobLogGroups" resultType="java.lang.String">
         select DISTINCT job_group
-        from t_job_log
+        from job_log
     </select>
 </mapper>

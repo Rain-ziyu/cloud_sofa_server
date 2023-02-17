@@ -12,21 +12,21 @@ public interface CommonConstant {
 
     int BLOGGER_ID = 1;
 
-    int DEFAULT_CONFIG_ID = 1;
+    int DEFAULCONFIG_ID = 1;
 
-    int DEFAULT_ABOUT_ID = 1;
+    int DEFAULABOUID = 1;
 
     String PRE_TAG = "<mark>";
 
-    String POST_TAG = "</mark>";
+    String POSTAG = "</mark>";
 
     String CURRENT = "current";
 
     String SIZE = "size";
 
-    String DEFAULT_SIZE = "10";
+    String DEFAULSIZE = "10";
 
-    String DEFAULT_NICKNAME = "用户";
+    String DEFAULNICKNAME = "用户";
 
     String COMPONENT = "Layout";
 
@@ -38,7 +38,7 @@ public interface CommonConstant {
 
     String CHECK_REMIND = "审核提醒";
 
-    String COMMENT_REMIND = "评论提醒";
+    String COMMENREMIND = "评论提醒";
 
     String MENTION_REMIND = "@提醒";
 

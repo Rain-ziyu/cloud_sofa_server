@@ -4,7 +4,7 @@
     <select id="listUniqueViews" resultType="asia.huayu.model.dto.UniqueViewDTO">
         SELECT DATE_FORMAT(create_time, "%Y-%m-%d") as `day`,
                views_count
-        FROM `t_unique_view`
+        FROM `unique_view`
         WHERE create_time &gt; #{startTime}
           AND create_time &lt;= #{endTime}
         ORDER BY create_time

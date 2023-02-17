@@ -50,10 +50,10 @@ public class EsSearchStrategyImpl implements SearchStrategy {
     private List<ArticleSearchDTO> search(NativeSearchQueryBuilder nativeSearchQueryBuilder) {
         HighlightBuilder.Field titleField = new HighlightBuilder.Field("articleTitle");
         titleField.preTags(PRE_TAG);
-        titleField.postTags(POST_TAG);
+        titleField.postTags(POSTAG);
         HighlightBuilder.Field contentField = new HighlightBuilder.Field("articleContent");
         contentField.preTags(PRE_TAG);
-        contentField.postTags(POST_TAG);
+        contentField.postTags(POSTAG);
         contentField.fragmentSize(50);
         nativeSearchQueryBuilder.withHighlightFields(titleField, contentField);
         try {

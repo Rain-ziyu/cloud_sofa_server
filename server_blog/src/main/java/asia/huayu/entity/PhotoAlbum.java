@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@TableName(value = "t_photo_album")
+@TableName(value = "photo_album")
 public class PhotoAlbum {
 
     @TableId(type = IdType.AUTO)

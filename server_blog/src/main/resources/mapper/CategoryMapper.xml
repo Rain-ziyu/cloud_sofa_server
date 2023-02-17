@@ -5,9 +5,9 @@
         SELECT c.id,
                c.category_name,
                COUNT(a.id) AS article_count
-        FROM t_category c
+        FROM category c
                  LEFT JOIN (SELECT *
-                            FROM t_article
+                            FROM article
                             WHERE is_delete = 0
                               and status in (1, 2)) a ON c.id = a.category_id
         GROUP BY c.id
@@ -19,8 +19,8 @@
         COUNT( a.id ) AS article_count,
         c.create_time
         FROM
-        t_category c
-        LEFT JOIN t_article a ON c.id = a.category_id
+        category c
+        LEFT JOIN article a ON c.id = a.category_id
         <where>
             <if test="conditionVO.keywords != null">
                 category_name like concat('%',#{conditionVO.keywords},'%')

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("t_category")
+@TableName("category")
 public class Category {
 
     @TableId(value = "id", type = IdType.AUTO)

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("t_exception_log")
+@TableName("exception_log")
 public class ExceptionLog {
 
     @TableId(type = IdType.AUTO)

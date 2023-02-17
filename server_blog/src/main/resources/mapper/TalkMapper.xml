@@ -9,8 +9,8 @@
                images,
                t.is_top,
                t.create_time
-        FROM t_talk t
-                 JOIN t_user_info ui ON t.user_id = ui.id
+        FROM talk t
+                 JOIN user_info ui ON t.user_id = ui.id
         WHERE t.status = 1
         ORDER BY t.is_top DESC,
                  t.id DESC
@@ -23,8 +23,8 @@
                content,
                images,
                t.create_time
-        FROM t_talk t
-                 JOIN t_user_info ui ON t.user_id = ui.id
+        FROM talk t
+                 JOIN user_info ui ON t.user_id = ui.id
         WHERE t.id = #{talkId}
           AND t.status = 1
     </select>
@@ -39,8 +39,8 @@
         t.status,
         t.create_time
         FROM
-        t_talk t
-        JOIN t_user_info ui ON t.user_id = ui.id
+        talk t
+        JOIN user_info ui ON t.user_id = ui.id
         <where>
             <if test="conditionVO.status != null">
                 t.status = #{conditionVO.status}
@@ -60,8 +60,8 @@
                t.is_top,
                t.status,
                t.create_time
-        FROM t_talk t
-                 JOIN t_user_info ui ON t.user_id = ui.id
+        FROM talk t
+                 JOIN user_info ui ON t.user_id = ui.id
         WHERE t.id = #{talkId}
     </select>
 </mapper>

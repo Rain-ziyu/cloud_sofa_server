@@ -133,7 +133,7 @@ public class UserServiceImpl implements UserService {
         }
         UserInfo userInfo = UserInfo.builder()
                 .email(userVO.getUsername())
-                .nickname(CommonConstant.DEFAULT_NICKNAME + IdWorker.getId())
+                .nickname(CommonConstant.DEFAULNICKNAME + IdWorker.getId())
                 .avatar(auroraInfoService.getWebsiteConfig().getUserAvatar())
                 .build();
         userInfoMapper.insert(userInfo);

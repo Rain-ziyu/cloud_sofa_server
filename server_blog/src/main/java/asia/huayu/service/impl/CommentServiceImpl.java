@@ -272,7 +272,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             String url = websiteUrl + getCommentPath(comment.getType()) + topicId;
             if (Objects.isNull(comment.getParentId())) {
                 emailDTO.setEmail(userInfo.getEmail());
-                emailDTO.setSubject(CommonConstant.COMMENT_REMIND);
+                emailDTO.setSubject(CommonConstant.COMMENREMIND);
                 emailDTO.setTemplate("owner.html");
                 String createTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").format(comment.getCreateTime());
                 map.put("time", createTime);
@@ -286,7 +286,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                     userInfo = userInfoMapper.selectById(parentComment.getUserId());
                 }
                 emailDTO.setEmail(userInfo.getEmail());
-                emailDTO.setSubject(CommonConstant.COMMENT_REMIND);
+                emailDTO.setSubject(CommonConstant.COMMENREMIND);
                 emailDTO.setTemplate("user.html");
                 map.put("url", url);
                 map.put("title", title);

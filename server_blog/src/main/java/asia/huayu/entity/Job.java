@@ -13,7 +13,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("t_job")
+@TableName("job")
 public class Job {
 
     @TableId(value = "id", type = IdType.AUTO)

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("t_article_tag")
+@TableName("article_tag")
 public class ArticleTag {
 
     @TableId(value = "id", type = IdType.AUTO)
