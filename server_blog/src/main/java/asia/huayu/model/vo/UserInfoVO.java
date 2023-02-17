@@ -23,7 +23,7 @@ public class UserInfoVO {
     @ApiModelProperty(name = "intro", value = "介绍", dataType = "String")
     private String intro;
 
-    @ApiModelProperty(name = "webSite", value = "个人网站", dataType = "String")
+    @ApiModelProperty(name = "website", value = "个人网站", dataType = "String")
     private String website;
 
 }

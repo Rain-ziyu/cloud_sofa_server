@@ -126,6 +126,7 @@ public class AuroraQuartz {
         }
         roleResourceService.saveBatch(roleResources);
     }
+    // 现已弃用
 
     public void importDataIntoES() {
         elasticsearchMapper.deleteAll();

@@ -30,6 +30,8 @@ public interface MinioService {
         return filename;
     }
 
+    Boolean fileExists(String bucketName, String fileName);
+
     /**
      * 查看存储bucket是否存在
      *

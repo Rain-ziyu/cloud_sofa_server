@@ -30,7 +30,6 @@ public class UserInfo {
 
     private Integer isSubscribe;
 
-    private Integer isDisable;
 
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;

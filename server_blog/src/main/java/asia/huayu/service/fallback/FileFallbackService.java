@@ -19,8 +19,18 @@ public class FileFallbackService implements FileService {
     }
 
     @Override
+    public Result createFile(MultipartFile multipartFile, String token, String path) {
+        return Result.ERROR(405, "服务降级返回,---FileFallbackService");
+    }
+
+    @Override
     public Response generatePicByKeyword(String keyword) {
         throw new ServiceProcessException("生成头像图片Feign调用异常");
+    }
+
+    @Override
+    public Result checkFileExist(String filePath, String token) {
+        return null;
     }
 
     @Override

@@ -9,9 +9,10 @@ import asia.huayu.model.vo.*;
 import asia.huayu.service.ArticleService;
 import asia.huayu.strategy.context.ArticleImportStrategyContext;
 import asia.huayu.strategy.context.UploadStrategyContext;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +22,7 @@ import java.util.List;
 
 import static asia.huayu.constant.OptTypeConstant.*;
 
-@Api(tags = "文章模块")
+@Tag(name = "文章模块")
 @RestController
 public class ArticleController extends BaseController {
 
@@ -34,19 +35,19 @@ public class ArticleController extends BaseController {
     @Autowired
     private ArticleImportStrategyContext articleImportStrategyContext;
 
-    @ApiOperation("获取置顶和推荐文章")
+    @Operation(summary = "获取置顶和推荐文章")
     @GetMapping("/articles/topAndFeatured")
     public Result<TopAndFeaturedArticlesDTO> listTopAndFeaturedArticles() {
         return restProcessor(() -> asia.huayu.common.entity.Result.OK(articleService.listTopAndFeaturedArticles()));
     }
 
-    @ApiOperation("获取所有文章")
+    @Operation(summary = "获取所有文章")
     @GetMapping("/articles/all")
     public Result<PageResultDTO<ArticleCardDTO>> listArticles() {
         return Result.OK(articleService.listArticles());
     }
 
-    @ApiOperation("根据分类id获取文章")
+    @Operation(summary = "根据分类id获取文章")
     @GetMapping("/articles/categoryId")
     public Result<PageResultDTO<ArticleCardDTO>> getArticlesByCategoryId(@RequestParam Integer categoryId) {
         return Result.OK(articleService.listArticlesByCategoryId(categoryId));

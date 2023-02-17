@@ -17,7 +17,6 @@ public class UserAdminDTO {
 
     private Integer id;
 
-    private Integer userInfoId;
 
     private String avatar;
 
@@ -35,7 +34,7 @@ public class UserAdminDTO {
 
     private Date lastLoginTime;
 
-    private Integer isDeleted;
+    private Integer isDisable;
 
     private Integer status;
 

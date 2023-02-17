@@ -30,7 +30,6 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,21 +77,21 @@ public class UserServiceImpl implements UserService {
     ;
 
     @Override
-    public void sendCode(String username) {
-        if (!checkEmail(username)) {
+    public void sendCode(String userEmail) {
+        if (!checkEmail(userEmail)) {
             throw new ServiceProcessException("请输入正确邮箱");
         }
         String code = getRandomCode();
         Map<String, Object> map = new HashMap<>();
         map.put("content", "您的验证码为 " + code + " 有效期15分钟，请不要告诉他人哦！");
         EmailDTO emailDTO = EmailDTO.builder()
-                .email(username)
+                .email(userEmail)
                 .subject(CommonConstant.CAPTCHA)
                 .template("common.html")
                 .commentMap(map)
                 .build();
         rabbitTemplate.convertAndSend(RabbitMQConstant.EMAIL_EXCHANGE, "*", new Message(JSON.toJSONBytes(emailDTO), new MessageProperties()));
-        redisService.set(RedisConstant.USER_CODE_KEY + username, code, RedisConstant.CODE_EXPIRE_TIME);
+        redisService.set(RedisConstant.USER_CODE_KEY + userEmail, code, RedisConstant.CODE_EXPIRE_TIME);
     }
 
     @Override
@@ -144,8 +143,9 @@ public class UserServiceImpl implements UserService {
                 .build();
         userRoleMapper.insert(userRole);
         User user = User.builder()
+                .id(userInfo.getId())
                 .username(userVO.getUsername())
-                .password(BCrypt.hashpw(userVO.getPassword(), BCrypt.gensalt()))
+                .password(passwordEncoder.encode(userVO.getPassword()))
                 .build();
         userMapper.insert(user);
     }

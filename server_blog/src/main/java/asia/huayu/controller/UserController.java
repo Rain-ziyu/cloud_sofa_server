@@ -1,9 +1,9 @@
 package asia.huayu.controller;
 
 
-import asia.huayu.annotation.AccessLimit;
 import asia.huayu.annotation.OptLog;
 import asia.huayu.common.entity.Result;
+import asia.huayu.constant.ReturnMessageConstant;
 import asia.huayu.model.dto.PageResultDTO;
 import asia.huayu.model.dto.UserAdminDTO;
 import asia.huayu.model.dto.UserAreaDTO;
@@ -30,13 +30,12 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @AccessLimit(seconds = 60, maxCount = 1)
     @ApiOperation(value = "发送邮箱验证码")
-    @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String")
+    @ApiImplicitParam(name = "userEmail", value = "邮箱", required = true, dataType = "String")
     @GetMapping("/users/code")
-    public Result<?> sendCode(String username) {
-        userService.sendCode(username);
-        return Result.OK();
+    public Result<?> sendCode(String userEmail) {
+        userService.sendCode(userEmail);
+        return Result.OK(ReturnMessageConstant.SEND_VERIFY_SUCCESS);
     }
 
     @ApiOperation(value = "获取用户区域分布")
@@ -54,9 +53,8 @@ public class UserController {
     @ApiOperation(value = "用户注册")
     @PostMapping("/users/register")
     public Result<?> register(@Valid @RequestBody UserVO userVO) {
-        // TODO: 引入User注册
         userService.register(userVO);
-        return Result.OK();
+        return Result.OK("用户注册成功");
     }
 
     @OptLog(optType = UPDATE)
@@ -64,7 +62,7 @@ public class UserController {
     @PutMapping("/users/password")
     public Result<?> updatePassword(@Valid @RequestBody UserVO user) {
         userService.updatePassword(user);
-        return Result.OK();
+        return Result.OK("修改密码成功");
     }
 
 

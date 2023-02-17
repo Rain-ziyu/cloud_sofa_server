@@ -1,6 +1,6 @@
 package asia.huayu.service;
 
-import asia.huayu.entity.Role;
+import asia.huayu.auth.entity.Role;
 import asia.huayu.model.dto.PageResultDTO;
 import asia.huayu.model.dto.RoleDTO;
 import asia.huayu.model.dto.UserRoleDTO;

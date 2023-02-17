@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("role_per")
+@TableName("role_permission")
 public class RoleMenu {
 
     @TableId(value = "id", type = IdType.AUTO)

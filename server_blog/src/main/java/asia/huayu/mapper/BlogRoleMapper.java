@@ -1,6 +1,6 @@
 package asia.huayu.mapper;
 
-import asia.huayu.entity.Role;
+import asia.huayu.auth.entity.Role;
 import asia.huayu.model.dto.ResourceRoleDTO;
 import asia.huayu.model.dto.RoleDTO;
 import asia.huayu.model.vo.ConditionVO;

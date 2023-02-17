@@ -1,8 +1,7 @@
 package asia.huayu.auth.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
@@ -16,12 +15,15 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("role")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Role implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "id", type = IdType.ASSIGN_ID)
-    private String id;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
 
     private String roleName;
 
@@ -29,13 +31,13 @@ public class Role implements Serializable {
 
     private String remark;
 
-    private Boolean isDeleted;
+    private Integer isDisable;
 
     @TableField(fill = FieldFill.INSERT)
-    private Date gmtCreate;
+    private Date createTime;
 
     @TableField(fill = FieldFill.INSERT_UPDATE)
-    private Date gmtModified;
+    private Date updateTime;
 
 
 }

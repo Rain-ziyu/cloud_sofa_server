@@ -42,7 +42,10 @@ public class MenuVO {
 
     @ApiModelProperty(name = "parentId", value = "父id", dataType = "Integer")
     private Integer parentId;
-
+    @ApiModelProperty(name = "type", value = "菜单类型", dataType = "Integer")
+    private Integer type;
+    @ApiModelProperty(name = "permissionValue", value = "权限值 菜单类型为按钮时需要有对应权限", dataType = "String")
+    private String permissionValue;
     @ApiModelProperty(name = "isHidden", value = "是否隐藏", dataType = "Integer")
     private Integer isHidden;
 

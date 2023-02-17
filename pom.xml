@@ -39,6 +39,7 @@
         <springfox.version>3.0.0</springfox.version>
         <minio.version>8.4.5</minio.version>
         <spring-cloud-bootstrap.version>3.1.5</spring-cloud-bootstrap.version>
+        <knife4j.version>4.0.0</knife4j.version>
     </properties>
 
 
@@ -126,6 +127,12 @@
                 <artifactId>minio</artifactId>
                 <version>${minio.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-openapi3-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
+            </dependency>
+
         </dependencies>
 
     </dependencyManagement>

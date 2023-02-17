@@ -36,6 +36,7 @@ public class RoleController {
     @ApiOperation(value = "查询角色列表")
     @GetMapping("/admin/roles")
     public Result<PageResultDTO<RoleDTO>> listRoles(ConditionVO conditionVO) {
+
         return Result.OK(blogRoleService.listRoles(conditionVO));
     }
 

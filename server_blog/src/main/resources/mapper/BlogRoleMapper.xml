@@ -5,7 +5,7 @@
         <id property="id" column="id"/>
         <result property="roleName" column="role_name"/>
         <result property="createTime" column="create_time"/>
-        <result property="isDisable" column="is_disabled"/>
+        <result property="isDisable" column="is_disable"/>
         <collection property="resourceIds" ofType="java.lang.Integer">
             <constructor>
                 <arg column="resource_id"/>
@@ -13,7 +13,7 @@
         </collection>
         <collection property="menuIds" ofType="java.lang.Integer">
             <constructor>
-                <arg column="menu_id"/>
+                <arg column="permission_id"/>
             </constructor>
         </collection>
     </resultMap>
@@ -40,7 +40,7 @@
     </select>
     <select id="listRolesByUserInfoId" resultType="java.lang.String">
         SELECT role_name
-        FROM t_role r
+        FROM role r
                  LEFT JOIN t_user_role ur ON r.id = ur.role_id
         WHERE ur.user_id = #{userInfoId}
     </select>
@@ -51,7 +51,7 @@
         r.create_time,
         r.is_disable,
         rr.resource_id,
-        rm.menu_id
+        rp.permission_id
         FROM
         (
         SELECT
@@ -60,7 +60,7 @@
         create_time,
         is_disable
         FROM
-        t_role
+        role
         <where>
             <if test="conditionVO.keywords != null ">
                 role_name like concat('%',#{conditionVO.keywords},'%')
@@ -69,7 +69,7 @@
         LIMIT #{current}, #{size}
         ) r
         LEFT JOIN t_role_resource rr ON r.id = rr.role_id
-        LEFT JOIN t_role_menu rm on r.id = rm.role_id
+        LEFT JOIN role_permission rp on r.id = rp.role_id
         ORDER BY r.id
     </select>
 </mapper>

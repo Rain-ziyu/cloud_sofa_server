@@ -56,7 +56,7 @@ public class MenuController {
         return Result.OK();
     }
 
-    @ApiOperation(value = "查看角色菜单选项")
+    @ApiOperation(value = "查看所有菜单选项")
     @GetMapping("/admin/role/menus")
     public Result<List<LabelOptionDTO>> listMenuOptions() {
         return Result.OK(menuService.listMenuOptions());

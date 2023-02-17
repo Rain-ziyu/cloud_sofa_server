@@ -12,6 +12,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * @author User
+ * 全局判断用户权限自定义处理
+ */
 @Component
 public class AccessDecisionManagerImpl implements AccessDecisionManager {
     @Override

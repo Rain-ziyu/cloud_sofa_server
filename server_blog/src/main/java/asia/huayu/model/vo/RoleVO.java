@@ -17,7 +17,7 @@ import java.util.List;
 @ApiModel(description = "角色")
 public class RoleVO {
 
-    @ApiModelProperty(name = "id", value = "用户id", dataType = "Integer")
+    @ApiModelProperty(name = "id", value = "角色id", dataType = "Integer")
     private Integer id;
 
     @NotBlank(message = "角色名不能为空")

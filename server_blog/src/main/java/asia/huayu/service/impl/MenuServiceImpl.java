@@ -76,7 +76,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Permission> impleme
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void saveOrUpdateMenu(MenuVO menuVO) {
-        Permission permssion = BeanCopyUtil.copyObject(menuVO, Permission.class);
+        Permission permssion = Permission.builder().id(menuVO.getId()).icon(menuVO.getIcon()).status(menuVO.getIsHidden())
+                .parentId(menuVO.getParentId()).path(menuVO.getPath()).name(menuVO.getName()).type(menuVO.getType())
+                .permissionValue(menuVO.getPermissionValue()).component(menuVO.getComponent()).rank(menuVO.getOrderNum()).build();
         this.saveOrUpdate(permssion);
     }
 
@@ -157,8 +159,10 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Permission> impleme
             UserMenuDTO userMenuDTO = new UserMenuDTO();
             List<UserMenuDTO> list = new ArrayList<>();
             List<Permission> children = childrenMap.get(item.getId());
+            // 如果该顶级节点具有孩子节点
             if (CollectionUtils.isNotEmpty(children)) {
                 userMenuDTO = BeanCopyUtil.copyObject(item, UserMenuDTO.class);
+                userMenuDTO.setHidden(item.getStatus() == 0);
                 list = children.stream()
                         .sorted(Comparator.comparing(Permission::getRank))
                         .map(permssion -> {

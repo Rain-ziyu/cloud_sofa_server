@@ -1,12 +1,13 @@
 package asia.huayu.service.impl;
 
+import asia.huayu.auth.entity.Role;
+import asia.huayu.auth.entity.RolePermission;
 import asia.huayu.auth.entity.UserRole;
 import asia.huayu.auth.mapper.UserRoleMapper;
+import asia.huayu.auth.service.RolePermissionService;
+import asia.huayu.common.exception.ServiceProcessException;
 import asia.huayu.constant.CommonConstant;
-import asia.huayu.entity.Role;
-import asia.huayu.entity.RoleMenu;
 import asia.huayu.entity.RoleResource;
-import asia.huayu.exception.BizException;
 import asia.huayu.mapper.BlogRoleMapper;
 import asia.huayu.model.dto.PageResultDTO;
 import asia.huayu.model.dto.RoleDTO;
@@ -14,7 +15,6 @@ import asia.huayu.model.dto.UserRoleDTO;
 import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.model.vo.RoleVO;
 import asia.huayu.service.BlogRoleService;
-import asia.huayu.service.RoleMenuService;
 import asia.huayu.service.RoleResourceService;
 import asia.huayu.util.BeanCopyUtil;
 import asia.huayu.util.PageUtil;
@@ -44,7 +44,7 @@ public class BlogRoleServiceImpl extends ServiceImpl<BlogRoleMapper, Role> imple
     private RoleResourceService roleResourceService;
 
     @Autowired
-    private RoleMenuService roleMenuService;
+    private RolePermissionService rolePermissionService;
 
 /*     @Autowired
     private FilterInvocationSecurityMetadataSourceImpl filterInvocationSecurityMetadataSource; */
@@ -69,18 +69,13 @@ public class BlogRoleServiceImpl extends ServiceImpl<BlogRoleMapper, Role> imple
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void saveOrUpdateRole(RoleVO roleVO) {
-        Role roleCheck = blogRoleMapper.selectOne(new LambdaQueryWrapper<Role>()
-                .select(Role::getId)
-                .eq(Role::getRoleName, roleVO.getRoleName()));
-        if (Objects.nonNull(roleCheck) && !(roleCheck.getId().equals(roleVO.getId()))) {
-            throw new BizException("该角色存在");
-        }
         Role role = Role.builder()
                 .id(roleVO.getId())
                 .roleName(roleVO.getRoleName())
                 .isDisable(CommonConstant.FALSE)
                 .build();
-        this.saveOrUpdate(role);
+        saveOrUpdate(role);
+        // 循环赋予资源列表
         if (Objects.nonNull(roleVO.getResourceIds())) {
             if (Objects.nonNull(roleVO.getId())) {
                 roleResourceService.remove(new LambdaQueryWrapper<RoleResource>()
@@ -95,17 +90,18 @@ public class BlogRoleServiceImpl extends ServiceImpl<BlogRoleMapper, Role> imple
             roleResourceService.saveBatch(roleResourceList);
             /*             filterInvocationSecurityMetadataSource.clearDataSource(); */
         }
+        // 循环赋予菜单权限
         if (Objects.nonNull(roleVO.getMenuIds())) {
             if (Objects.nonNull(roleVO.getId())) {
-                roleMenuService.remove(new LambdaQueryWrapper<RoleMenu>().eq(RoleMenu::getRoleId, roleVO.getId()));
+                rolePermissionService.remove(new LambdaQueryWrapper<RolePermission>().eq(RolePermission::getRoleId, roleVO.getId()));
             }
-            List<RoleMenu> roleMenuList = roleVO.getMenuIds().stream()
-                    .map(menuId -> RoleMenu.builder()
+            List<RolePermission> roleMenuList = roleVO.getMenuIds().stream()
+                    .map(menuId -> RolePermission.builder()
                             .roleId(role.getId())
-                            .menuId(menuId)
+                            .permissionId(menuId)
                             .build())
                     .collect(Collectors.toList());
-            roleMenuService.saveBatch(roleMenuList);
+            rolePermissionService.saveBatch(roleMenuList);
         }
     }
 
@@ -114,7 +110,7 @@ public class BlogRoleServiceImpl extends ServiceImpl<BlogRoleMapper, Role> imple
         Long count = userRoleMapper.selectCount(new LambdaQueryWrapper<UserRole>()
                 .in(UserRole::getRoleId, roleIdList));
         if (count > 0) {
-            throw new BizException("该角色下存在用户");
+            throw new ServiceProcessException("角色下存在用户");
         }
         blogRoleMapper.deleteBatchIds(roleIdList);
     }

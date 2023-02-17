@@ -31,7 +31,7 @@ public class UserInfoController {
     @PutMapping("/users/info")
     public Result<?> updateUserInfo(@Valid @RequestBody UserInfoVO userInfoVO) {
         userInfoService.updateUserInfo(userInfoVO);
-        return Result.OK();
+        return Result.OK("用户信息更新成功");
     }
 
     @OptLog(optType = UPDATE)
@@ -55,7 +55,7 @@ public class UserInfoController {
     @PutMapping("/users/subscribe")
     public Result<?> updateUserSubscribe(@RequestBody SubscribeVO subscribeVO) {
         userInfoService.updateUserSubscribe(subscribeVO);
-        return Result.OK();
+        return Result.OK("用户更新订阅状态成功");
     }
 
     @OptLog(optType = UPDATE)

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -17,13 +18,17 @@ import java.util.Optional;
  * @author RainZiYu
  * @Date 2023/2/16
  */
+@Service
 public class MinioUploadStrategyImpl extends AbstractUploadStrategyImpl {
     @Autowired
     FileService fileService;
 
     @Override
     public Boolean exists(String filePath) {
-        return null;
+        String token = RequestUtil.getRequest().getHeader("token");
+        // TODO: 判断文件是否已存在
+        Result<Boolean> result = fileService.checkFileExist(filePath, token);
+        return result.getData();
     }
 
     @Override
@@ -33,7 +38,7 @@ public class MinioUploadStrategyImpl extends AbstractUploadStrategyImpl {
         String contentType = mediaType.orElse(MediaType.APPLICATION_OCTET_STREAM).toString();
         MultipartFile multipartFile = new MockMultipartFile(fileName, fileName, contentType, inputStream);
         String token = RequestUtil.getRequest().getHeader("token");
-        fileService.createFile(multipartFile, token);
+        fileService.createFile(multipartFile, token, path);
     }
 
     @Override

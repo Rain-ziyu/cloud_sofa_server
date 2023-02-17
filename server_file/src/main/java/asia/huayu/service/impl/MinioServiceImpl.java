@@ -41,6 +41,16 @@ public class MinioServiceImpl implements MinioService {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Override
+    public Boolean fileExists(String bucketName, String fileName) {
+        try {
+            minioClient.statObject(StatObjectArgs.builder().bucket(bucketName).object(fileName).build());
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * 查看存储bucket是否存在
      *
