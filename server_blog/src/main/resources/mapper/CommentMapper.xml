@@ -65,7 +65,7 @@
                u.website,
                c.user_id,
                c.id,
-               c.commencontent,
+               c.comment_content,
                c.create_time
         FROM comment c
                  JOIN user_info u ON c.user_id = u.id

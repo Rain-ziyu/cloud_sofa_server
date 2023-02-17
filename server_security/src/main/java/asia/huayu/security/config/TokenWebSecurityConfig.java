@@ -72,7 +72,7 @@ public class TokenWebSecurityConfig extends WebSecurityConfigurerAdapter {
     // 不进行认证的路径，可以直接访问
     @Override
     public void configure(WebSecurity web) {
-        // 注意swagger占有很多path 需要逐个开放
+        // 注意swagger占有很多path 需要逐个开放     不能全部不拦截 login接口将会消失 导致没有请求接口
         web.ignoring().antMatchers("/api/**", "/v3/api-docs", "/webjars/**", "/doc.html", "/captcha/**",
                 "/refreshToken", "/register", "/alipaylogin/**",
                 "/user-info/wx", "/user-info/alipay", "/swagger-ui/**",

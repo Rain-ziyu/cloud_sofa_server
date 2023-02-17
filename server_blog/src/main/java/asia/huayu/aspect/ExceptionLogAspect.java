@@ -33,7 +33,7 @@ public class ExceptionLogAspect {
     @Autowired
     private ApplicationContext applicationContext;
 
-    @Pointcut("execution(* com.huayu.controller..*.*(..))")
+    @Pointcut("execution(* asia.huayu.controller..*.*(..))")
     public void exceptionLogPointcut() {
     }
 
