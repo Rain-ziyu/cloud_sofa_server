@@ -128,7 +128,7 @@ public class Result<T> implements Serializable {
     /**
      * 无权限访问返回结果
      */
-    public static <T> Result<T> noauth(String msg) {
+    public static <T> Result<T> NO_AUTH(String msg) {
         return ERROR(510, msg);
     }
 

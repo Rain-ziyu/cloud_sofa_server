@@ -15,6 +15,6 @@ import java.io.IOException;
 public class UnauthEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
-        ResponseUtil.out(httpServletResponse, Result.ERROR(SystemEnums.TOKEN_ERROR.VALUE));
+        ResponseUtil.out(httpServletResponse, Result.NO_AUTH(SystemEnums.TOKEN_ERROR.VALUE));
     }
 }

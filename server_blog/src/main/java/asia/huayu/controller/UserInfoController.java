@@ -39,7 +39,7 @@ public class UserInfoController {
     @ApiImplicitParam(name = "file", value = "用户头像", required = true, dataType = "MultipartFile")
     @PostMapping("/users/avatar")
     public Result<String> updateUserAvatar(MultipartFile file) {
-        return Result.OK(userInfoService.updateUserAvatar(file));
+        return Result.OK("更新用户头像成功", userInfoService.updateUserAvatar(file));
     }
 
     @OptLog(optType = UPDATE)
@@ -94,4 +94,9 @@ public class UserInfoController {
         return Result.OK(userInfoService.getUserInfoById(userInfoId));
     }
 
+    @ApiOperation("根据token获取用户信息")
+    @GetMapping("/users/info")
+    public Result<UserInfoDTO> getUserInfo() {
+        return Result.OK(userInfoService.getUserInfo());
+    }
 }

@@ -65,7 +65,6 @@ public class AuroraInfoServiceImpl implements AuroraInfoService {
     public void report() {
 // TODO: 使用request 判断是否是统一用户访问 不是计数+1
         redisService.incr(RedisConstant.BLOG_VIEWS_COUNT, 1);
-
     }
 
     @SneakyThrows

@@ -30,4 +30,5 @@ public interface UserInfoService extends IService<UserInfo> {
 
     UserInfo getUserInfoByName(String username);
 
+    UserInfoDTO getUserInfo();
 }

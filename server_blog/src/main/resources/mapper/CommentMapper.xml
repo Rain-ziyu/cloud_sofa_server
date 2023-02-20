@@ -8,7 +8,7 @@
         u.website,
         c.user_id,
         c.id,
-        c.commencontent,
+        c.comment_content,
         c.create_time
         FROM
         comment c
@@ -40,7 +40,7 @@
         r.website AS reply_website,
         c.id,
         c.parenid,
-        c.commencontent,
+        c.comment_content,
         c.create_time,
         row_number () over ( PARTITION BY parenid ORDER BY create_time ASC ) row_num
         FROM
@@ -97,7 +97,7 @@
         u.nickname,
         r.nickname AS reply_nickname,
         a.article_title,
-        c.commencontent,
+        c.comment_content,
         c.type,
         c.create_time,
         c.is_review

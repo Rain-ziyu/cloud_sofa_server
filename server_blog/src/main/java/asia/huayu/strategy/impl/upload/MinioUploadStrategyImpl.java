@@ -28,7 +28,7 @@ public class MinioUploadStrategyImpl extends AbstractUploadStrategyImpl {
         String token = RequestUtil.getRequest().getHeader("token");
         // TODO: 判断文件是否已存在
         Result<Boolean> result = fileService.checkFileExist(filePath, token);
-        return result.getData();
+        return result.getData() == null ? false : result.getData();
     }
 
     @Override

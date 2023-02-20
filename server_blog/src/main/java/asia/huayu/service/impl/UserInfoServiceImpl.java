@@ -3,6 +3,7 @@ package asia.huayu.service.impl;
 import asia.huayu.auth.entity.UserRole;
 import asia.huayu.auth.service.UserRoleService;
 import asia.huayu.common.exception.ServiceProcessException;
+import asia.huayu.common.util.RequestUtil;
 import asia.huayu.constant.RedisConstant;
 import asia.huayu.entity.User;
 import asia.huayu.entity.UserInfo;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -177,6 +179,17 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     public UserInfo getUserInfoByName(String username) {
         User user = userMapper.getUserByUsername(username);
         UserInfo userInfo = userInfoMapper.selectById(user.getId());
+        return userInfo;
+    }
+
+    @Override
+    public UserInfoDTO getUserInfo() {
+        User userByUsername = userMapper.getUserByUsername(UserUtil.getAuthentication().getName());
+        UserInfoDTO userInfo = userInfoMapper.selectDTOById(userByUsername.getId());
+        HttpServletRequest request = RequestUtil.getRequest();
+
+        userInfo.setToken(request.getParameter("token"));
+        userInfo.setRefreshToken(request.getParameter("refreshToken"));
         return userInfo;
     }
 

@@ -41,8 +41,8 @@
         login_time laslogin_time
         FROM
         user_info
-        right join laslogin_info
-        on user_info.id = laslogin_info.user_id
+        right join last_login_info
+        on user_info.id = last_login_info.user_id
         <where>
             <if test="conditionVO.loginType != null">
                 user_login_info.login_type = #{conditionVO.loginType}

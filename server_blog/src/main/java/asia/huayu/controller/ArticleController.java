@@ -9,6 +9,7 @@ import asia.huayu.model.vo.*;
 import asia.huayu.service.ArticleService;
 import asia.huayu.strategy.context.ArticleImportStrategyContext;
 import asia.huayu.strategy.context.UploadStrategyContext;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,6 +24,7 @@ import java.util.List;
 import static asia.huayu.constant.OptTypeConstant.*;
 
 @Tag(name = "文章模块")
+@Api(tags = "文章模块")
 @RestController
 public class ArticleController extends BaseController {
 
@@ -89,7 +91,7 @@ public class ArticleController extends BaseController {
     @PostMapping("/admin/articles")
     public Result<?> saveOrUpdateArticle(@Valid @RequestBody ArticleVO articleVO) {
         articleService.saveOrUpdateArticle(articleVO);
-        return Result.OK();
+        return Result.OK("保存成功");
     }
 
     @OptLog(optType = UPDATE)
