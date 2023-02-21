@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+  blog:
+    hostname: blog
+    image: swr.cn-east-3.myhuaweicloud.com/huayu/sofa_server-blog:12
+    ports:
+      - "8080:8080"
+    labels:
+      "type": "1"
+    networks:
+      - ali
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+  file:
+    hostname: file
+    image: swr.cn-east-3.myhuaweicloud.com/huayu/sofa_server-file:12
+    ports:
+      - "3378:3378"
+    labels:
+      "type": "1"
+    networks:
+      - ali
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+networks:
+  ali:
+    external: true
+    name: huayu
