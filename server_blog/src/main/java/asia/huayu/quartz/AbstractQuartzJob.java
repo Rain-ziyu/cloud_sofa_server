@@ -53,7 +53,9 @@ public abstract class AbstractQuartzJob implements org.quartz.Job {
         jobLog.setJobMessage(jobLog.getJobName() + " 总共耗时：" + runMs + "毫秒");
         if (e != null) {
             jobLog.setStatus(CommonConstant.ZERO);
-            jobLog.setExceptionInfo(ExceptionUtil.getTrace(e));
+            if (ExceptionUtil.getTrace(e).length() > 6000) {
+                jobLog.setExceptionInfo(ExceptionUtil.getTrace(e).substring(0, 6000));
+            }
         } else {
             jobLog.setStatus(CommonConstant.ONE);
         }

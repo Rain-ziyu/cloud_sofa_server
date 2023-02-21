@@ -72,12 +72,12 @@
             <artifactId>elasticsearch-java</artifactId>
             <version>8.4.3</version>
         </dependency>
-<!--        单独引入  解决华为云流水线你构建出错问题-->
-        <dependency>
-            <groupId>org.elasticsearch</groupId>
-            <artifactId>elasticsearch-x-content</artifactId>
-            <version>8.4.3</version>
-        </dependency>
+        <!--        单独引入  解决华为云流水线你构建出错问题-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.elasticsearch</groupId>-->
+        <!--            <artifactId>elasticsearch-x-content</artifactId>-->
+        <!--            <version>8.4.3</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
