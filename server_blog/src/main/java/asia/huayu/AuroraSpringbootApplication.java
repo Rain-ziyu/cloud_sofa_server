@@ -28,6 +28,7 @@ public class AuroraSpringbootApplication extends SpringBootServletInitializer im
 
     @Override
     public void run(String... args) throws Exception {
+        System.out.println("aaaaa");
 
     }
 }
