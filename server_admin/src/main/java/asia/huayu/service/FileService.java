@@ -32,6 +32,15 @@ public interface FileService {
     @PostMapping(value = "/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     Result createFile(@RequestPart("file") MultipartFile multipartFile, @RequestHeader("token") String token);
 
+    @PostMapping(value = "/file/path", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    Result createFile(@RequestPart("file") MultipartFile multipartFile, @RequestHeader("token") String token, @RequestPart String path);
+
     @GetMapping(value = "/pic")
     Response generatePicByKeyword(@RequestParam String keyword);
+
+    @GetMapping("/file/exist")
+    Result<Boolean> checkFileExist(@RequestParam String filePath, @RequestHeader("token") String token);
+
+    @GetMapping("/file")
+    Result getFileAccessUrl(@RequestParam String filePath, @RequestHeader("token") String token);
 }

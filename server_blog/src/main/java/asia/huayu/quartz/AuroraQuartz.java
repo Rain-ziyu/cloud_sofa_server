@@ -1,5 +1,6 @@
 package asia.huayu.quartz;
 
+import asia.huayu.config.RestConfig;
 import asia.huayu.constant.CommonConstant;
 import asia.huayu.constant.RedisConstant;
 import asia.huayu.entity.*;
@@ -21,7 +22,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -54,7 +54,7 @@ public class AuroraQuartz {
     private UserLoginInfoMapper userLoginInfoMapper;
 
     @Autowired
-    private RestTemplate restTemplate;
+    private RestConfig.RestService restService;
 
     @Autowired
     private ElasticsearchMapper elasticsearchMapper;
@@ -106,7 +106,7 @@ public class AuroraQuartz {
         ids.forEach(item -> {
             String url = websiteUrl + "/articles/" + item;
             HttpEntity<String> entity = new HttpEntity<>(url, headers);
-            restTemplate.postForObject("https://www.baidu.com", entity, String.class);
+            restService.restTemplate.postForObject("https://www.baidu.com", entity, String.class);
         });
     }
 

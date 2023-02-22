@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="asia.huayu.mapper.UserInfoMapper">
+
+    <resultMap id="BaseResultMap" type="asia.huayu.entity.UserInfo">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="email" column="email" jdbcType="INTEGER"/>
+        <result property="nickname" column="nickname" jdbcType="TIMESTAMP"/>
+        <result property="avatar" column="avatar" jdbcType="INTEGER"/>
+        <result property="intro" column="intro" jdbcType="VARCHAR"/>
+        <result property="website" column="website" jdbcType="VARCHAR"/>
+        <result property="isSubscribe" column="is_subscribe" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap id="DTOBaseResultMap" type="asia.huayu.model.dto.UserInfoDTO">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="email" column="email" jdbcType="INTEGER"/>
+        <result property="nickname" column="nickname" jdbcType="TIMESTAMP"/>
+        <result property="avatar" column="avatar" jdbcType="INTEGER"/>
+        <result property="intro" column="intro" jdbcType="VARCHAR"/>
+        <result property="website" column="website" jdbcType="VARCHAR"/>
+        <result property="isSubscribe" column="is_subscribe" jdbcType="VARCHAR"/>
+        <result property="ipAddress" column="ip_address" jdbcType="VARCHAR"/>
+        <result property="loginType" column="login_type" jdbcType="INTEGER"/>
+        <result property="lastLoginTime" column="login_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        user_info
+        .
+        id
+        ,user_info.email,user_info.nickname,
+        user_info.avatar,user_info.intro,user_info.website,
+        user_info.is_subscribe
+    </sql>
+    <select id="selectDTOById" resultMap="DTOBaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        ,last_login_info.login_type,last_login_info.ip_address,last_login_info.ip_source,last_login_info.login_time
+        from user_info
+        left join last_login_info
+        on last_login_info.user_id = user_info.id
+        where user_info.id = #{id}
+    </select>
+
+</mapper>

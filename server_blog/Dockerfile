@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk
+FROM swr.cn-east-3.myhuaweicloud.com/huayu/openjdk:17-jdk
 MAINTAINER ZiYu
 WORKDIR /
 #时区

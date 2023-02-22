@@ -1,59 +1,22 @@
 package asia.huayu.mapper;
 
 import asia.huayu.entity.User;
+import asia.huayu.model.dto.UserAdminDTO;
+import asia.huayu.model.vo.ConditionVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
-/**
- * @author User
- * @description 针对表【user(用户表)】的数据库操作Mapper
- * @createDate 2023-01-12 14:04:05
- * @Entity asia.huayu.entity.User
- */
-@Mapper
+import java.util.List;
+
+
+@Repository
 public interface UserMapper extends BaseMapper<User> {
-    /**
-     * 方法<code>createUser</code>作用为：
-     * 底层使用useGeneratedKeys="true" keyProperty="id"来实现id回写
-     *
-     * @param user
-     * @return int
-     * @throws
-     * @author RainZiYu
-     */
-    int createUser(User user);
 
-    /**
-     * 方法<code>selectUserByName</code>作用为：
-     * 根据用户名查询用户
-     *
-     * @param userName
-     * @return asia.huayu.entity.User
-     * @throws
-     * @author RainZiYu
-     */
-    User selectUserByName(String userName);
+    List<UserAdminDTO> listUsers(@Param("current") Long current, @Param("size") Long size, @Param("conditionVO") ConditionVO conditionVO);
 
-    /**
-     * 方法selectUserCountByName作用为：
-     * 判断当前用户名是否已经存在
-     *
-     * @param userName
-     * @return java.lang.Integer
-     * @throws
-     * @author RainZiYu
-     */
-    Integer selectUserCountByName(String userName);
+    Integer countUser(@Param("conditionVO") ConditionVO conditionVO);
 
-    Integer updateUserInfoByName(User user);
+    User getUserByUsername(String userName);
 
-    Integer deleteByUsername(String userName);
-
-    IPage<User> selectUserByPage(Page<User> userPage);
 }
-
-
-
-

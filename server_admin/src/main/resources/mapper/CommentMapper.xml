@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="asia.huayu.mapper.CommentMapper">
+    <select id="listComments" resultType="asia.huayu.model.dto.CommentDTO">
+        SELECT
+        u.nickname,
+        u.avatar,
+        u.website,
+        c.user_id,
+        c.id,
+        c.comment_content,
+        c.create_time
+        FROM
+        comment c
+        JOIN user_info u ON c.user_id = u.id
+        <where>
+            <if test="commentVO.topicId != null">
+                topic_id = #{commentVO.topicId}
+            </if>
+            AND type = #{commentVO.type}
+            AND c.is_review = 1
+            AND parenid IS NULL
+        </where>
+        ORDER BY
+        c.id DESC
+        LIMIT #{current},#{size}
+    </select>
+    <select id="listReplies" resultType="asia.huayu.model.dto.ReplyDTO">
+        SELECT
+        *
+        FROM
+        (
+        SELECT
+        c.user_id,
+        u.nickname,
+        u.avatar,
+        u.website,
+        c.reply_user_id,
+        r.nickname AS reply_nickname,
+        r.website AS reply_website,
+        c.id,
+        c.parenid,
+        c.comment_content,
+        c.create_time,
+        row_number () over ( PARTITION BY parenid ORDER BY create_time ASC ) row_num
+        FROM
+        comment c
+        JOIN user_info u ON c.user_id = u.id
+        JOIN user_info r ON c.reply_user_id = r.id
+        WHERE
+        c.is_review = 1
+        AND
+        parenid IN
+        (
+        <foreach collection="commentIds" item="commentId" separator=",">
+            #{commentId}
+        </foreach>
+        )
+        order by c.create_time desc
+        ) t
+    </select>
+    <select id="listTopSixComments" resultType="asia.huayu.model.dto.CommentDTO">
+        SELECT u.nickname,
+               u.avatar,
+               u.website,
+               c.user_id,
+               c.id,
+               c.comment_content,
+               c.create_time
+        FROM comment c
+                 JOIN user_info u ON c.user_id = u.id
+        where c.is_review = 1
+        ORDER BY c.id DESC LIMIT 0 , 6
+    </select>
+    <select id="countComments" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        from
+        comment c
+        LEFT JOIN user_info u ON c.user_id = u.id
+        <where>
+            <if test="conditionVO.type != null">
+                c.type = #{conditionVO.type}
+            </if>
+            <if test="conditionVO.isReview != null">
+                and c.is_review = #{conditionVO.isReview}
+            </if>
+            <if test="conditionVO.keywords != null">
+                and u.nickname like concat('%',#{conditionVO.keywords},'%')
+            </if>
+        </where>
+    </select>
+    <select id="listCommentsAdmin" resultType="asia.huayu.model.dto.CommentAdminDTO">
+        SELECT
+        c.id,
+        u.avatar,
+        u.nickname,
+        r.nickname AS reply_nickname,
+        a.article_title,
+        c.comment_content,
+        c.type,
+        c.create_time,
+        c.is_review
+        FROM
+        comment c
+        LEFT JOIN article a ON c.topic_id = a.id
+        LEFT JOIN user_info u ON c.user_id = u.id
+        LEFT JOIN user_info r ON c.reply_user_id = r.id
+        <where>
+            <if test="conditionVO.type != null">
+                c.type = #{conditionVO.type}
+            </if>
+            <if test="conditionVO.isReview != null">
+                and c.is_review = #{conditionVO.isReview}
+            </if>
+            <if test="conditionVO.keywords != null">
+                and u.nickname like concat('%',#{conditionVO.keywords},'%')
+            </if>
+        </where>
+        ORDER BY
+        id DESC
+        LIMIT #{current},#{size}
+    </select>
+    <select id="listCommentCountByTypeAndTopicIds" resultType="asia.huayu.model.dto.CommentCountDTO">
+        SELECT
+        topic_id as id,
+        COUNT( 1 ) AS commencount
+        FROM
+        comment
+        WHERE type = #{type}
+        AND
+        topic_id IN
+        <foreach open="(" collection="topicIds" item="topicId" separator="," close=")">
+            #{topicId}
+        </foreach>
+        GROUP BY
+        topic_id
+    </select>
+    <select id="listCommentCountByTypeAndTopicId" resultType="asia.huayu.model.dto.CommentCountDTO">
+        SELECT topic_id as id,
+               COUNT(1) AS commencount
+        FROM comment
+        WHERE type = #{type}
+          AND topic_id = #{topicId}
+        GROUP BY topic_id
+    </select>
+</mapper>

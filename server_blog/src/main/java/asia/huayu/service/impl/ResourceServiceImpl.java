@@ -9,6 +9,7 @@ import asia.huayu.mapper.RoleResourceMapper;
 import asia.huayu.model.dto.LabelOptionDTO;
 import asia.huayu.model.dto.ResourceDTO;
 import asia.huayu.model.vo.ConditionVO;
+import asia.huayu.model.vo.ResourceVO;
 import asia.huayu.service.ResourceService;
 import asia.huayu.util.BeanCopyUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -40,8 +41,7 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource> i
     private RoleResourceMapper roleResourceMapper;
 
 
-/*     @Autowired
-    private FilterInvocationSecurityMetadataSourceImpl filterInvocationSecurityMetadataSource; */
+
 
     @SuppressWarnings("all")
     @Transactional(rollbackFor = Exception.class)
@@ -82,12 +82,11 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource> i
         this.saveBatch(resources);
     }
 
-/*     @Override
+    @Override
     public void saveOrUpdateResource(ResourceVO resourceVO) {
         Resource resource = BeanCopyUtil.copyObject(resourceVO, Resource.class);
         this.saveOrUpdate(resource);
-        filterInvocationSecurityMetadataSource.clearDataSource();
-    } */
+    }
 
     @Override
     public void deleteResource(Integer resourceId) {

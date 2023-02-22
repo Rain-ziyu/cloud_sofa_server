@@ -1,55 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="asia.huayu.mapper.UserMapper">
-
-    <resultMap id="BaseResultMap" type="asia.huayu.entity.User">
-        <id property="id" column="id" jdbcType="CHAR"/>
-        <result property="username" column="username" jdbcType="VARCHAR"/>
-        <result property="password" column="password" jdbcType="VARCHAR"/>
-        <result property="nickName" column="nick_name" jdbcType="VARCHAR"/>
-        <result property="salt" column="salt" jdbcType="VARCHAR"/>
-        <result property="token" column="token" jdbcType="VARCHAR"/>
-        <result property="isDeleted" column="is_deleted" jdbcType="TINYINT"/>
-        <result property="gmtCreate" column="gmt_create" jdbcType="TIMESTAMP"/>
-        <result property="gmtModified" column="gmt_modified" jdbcType="TIMESTAMP"/>
+    <resultMap id="UserAdminMap" type="asia.huayu.model.dto.UserAdminDTO">
+        <id property="id" column="id"/>
+        <result property="avatar" column="avatar"/>
+        <result property="nickname" column="nickname"/>
+        <result property="loginType" column="login_type"/>
+        <result property="ipAddress" column="ip_address"/>
+        <result property="ipSource" column="ip_source"/>
+        <result property="createTime" column="create_time"/>
+        <result property="lastLoginTime" column="laslogin_time"/>
+        <result property="isDisable" column="is_disable"/>
+        <collection property="roles" ofType="asia.huayu.model.dto.UserRoleDTO">
+            <id property="id" column="role_id"/>
+            <result property="roleName" column="role_name"/>
+        </collection>
     </resultMap>
-
-    <sql id="Base_Column_List">
-        id
-        ,username,password,
-        nick_name,salt,token,
-        is_deleted,gmt_create,gmt_modified
-    </sql>
-    <insert id="createUser" useGeneratedKeys="true" keyProperty="id">
-        insert into user (username, password, nick_name, salt, token, is_deleted)
-        values (#{username}, #{password}, #{nickName}, #{salt}, #{token}, #{isDeleted})
-    </insert>
-    <update id="updateUserInfoByName">
-        update user
-        set nick_name=#{nickName},
-            token    = #{token}
-        where username = #{userName}
-    </update>
-    <delete id="deleteByUsername">
-        update user
-        set is_deleted = 1
-        where username = #{userName}
-    </delete>
-    <select id="selectUserByName" resultType="asia.huayu.entity.User">
-        select
-        <include refid="asia.huayu.mapper.UserMapper.Base_Column_List"></include>
-        from user where username=#{userName}
+    <select id="listUsers" resultMap="UserAdminMap">
+        SELECT
+        u.id,
+        avatar,
+        nickname,
+        login_type,
+        r.id as role_id,
+        role_name,
+        ip_address,
+        ip_source,
+        u.create_time,
+        laslogin_time,
+        u.is_disable
+        FROM
+        (
+        SELECT
+        user_info.id,
+        avatar,
+        nickname,
+        ip_address,
+        ip_source,
+        login_type,
+        login_time laslogin_time
+        FROM
+        user_info
+        right join last_login_info
+        on user_info.id = last_login_info.user_id
+        <where>
+            <if test="conditionVO.loginType != null">
+                user_login_info.login_type = #{conditionVO.loginType}
+            </if>
+            <if test="conditionVO.keywords != null">
+                and nickname like concat('%',#{conditionVO.keywords},'%')
+            </if>
+        </where>
+        LIMIT #{current},#{size}
+        ) ui
+        LEFT JOIN user u ON u.id = ui.id
+        LEFT JOIN user_role ur ON ui.id = ur.user_id
+        LEFT JOIN role r ON ur.role_id = r.id
     </select>
-    <select id="selectUserCountByName" resultType="integer">
-        select count(*)
-        from user
-        where username = #{username}
+    <select id="countUser" resultType="java.lang.Integer">
+        SELECT
+        count( 1 )
+        FROM
+        user u
+        LEFT JOIN user_info ui ON u.id = ui.id
+        <where>
+            <if test="conditionVO.keywords != null">
+                nickname like concat('%',#{conditionVO.keywords},'%')
+            </if>
+            <if test="conditionVO.loginType != null">
+                and register_type = #{conditionVO.loginType}
+            </if>
+        </where>
     </select>
-    <select id="selectUserByPage" resultMap="BaseResultMap">
-        select user.id, user.username, user.nick_name, salt, token, gmt_create, is_deleted
+    <select id="getUserByUsername" resultType="asia.huayu.entity.User">
+        select *
         from user
-        where is_deleted = 0
+        where username = #{userName}
     </select>
 </mapper>

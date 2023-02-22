@@ -1,201 +1,191 @@
 package asia.huayu.service.impl;
 
-import asia.huayu.common.entity.Result;
+import asia.huayu.auth.entity.UserRole;
+import asia.huayu.auth.mapper.UserRoleMapper;
 import asia.huayu.common.exception.ServiceProcessException;
+import asia.huayu.constant.CommonConstant;
+import asia.huayu.constant.RabbitMQConstant;
+import asia.huayu.constant.RedisConstant;
 import asia.huayu.entity.User;
-import asia.huayu.es.UserDao;
+import asia.huayu.entity.UserInfo;
+import asia.huayu.enums.LoginTypeEnum;
+import asia.huayu.enums.RoleEnum;
+import asia.huayu.exception.BizException;
+import asia.huayu.mapper.UserInfoMapper;
 import asia.huayu.mapper.UserMapper;
-import asia.huayu.service.FileService;
+import asia.huayu.model.dto.*;
+import asia.huayu.model.vo.ConditionVO;
+import asia.huayu.model.vo.QQLoginVO;
+import asia.huayu.model.vo.UserVO;
+import asia.huayu.service.AuroraInfoService;
+import asia.huayu.service.RedisService;
 import asia.huayu.service.UserService;
-import asia.huayu.util.SystemEnums;
-import cn.hutool.core.util.StrUtil;
-import co.elastic.clients.elasticsearch._types.query_dsl.Query;
-import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import feign.Response;
+import asia.huayu.strategy.context.SocialLoginStrategyContext;
+import asia.huayu.util.PageUtil;
+import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.elasticsearch.client.elc.NativeQuery;
-import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.SearchHit;
-import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.http.MediaType;
-import org.springframework.http.MediaTypeFactory;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
-import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
-/**
- * @author User
- * @description 针对表【user(用户表)】的数据库操作Service实现
- * @createDate 2023-01-12 14:04:05
- */
+import static asia.huayu.enums.UserAreaTypeEnum.getUserAreaType;
+import static asia.huayu.util.CommonUtil.checkEmail;
+import static asia.huayu.util.CommonUtil.getRandomCode;
+
+
 @Service
-public class UserServiceImpl extends ServiceImpl<UserMapper, User>
-        implements UserService {
-    @Resource
-    private FileService fileService;
-    @Resource
+public class UserServiceImpl implements UserService {
+
+    @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private UserInfoMapper userInfoMapper;
+
+    @Autowired
+    private UserRoleMapper userRoleMapper;
+
+    @Autowired
+    private RedisService redisService;
+
+    @Autowired
+    private AuroraInfoService auroraInfoService;
     @Autowired
     private PasswordEncoder passwordEncoder;
-    @Autowired
-    private UserDao userDao;
-    @Autowired
-    private ElasticsearchOperations elasticsearchRestTemplate;
 
-    /**
-     * 方法<code>createUser</code>作用为：
-     * 创建用户，自动加密密码
-     *
-     * @param user
-     * @return asia.huayu.entity.User
-     * @throws
-     * @author RainZiYu
-     */
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private SocialLoginStrategyContext socialLoginStrategyContext;
+
     @Override
-    @Transactional
-    public User createUser(User user, String token) {
-        // 判断用户名是否重复
-        Integer userCountByName = userMapper.selectUserCountByName(user.getUsername());
-        if (userCountByName > 0) {
-            throw new ServiceProcessException(SystemEnums.ACCOUNT_ALREADY_EXIST.VALUE);
+    public User getUserByUsername(String userName) {
+        return userMapper.getUserByUsername(userName);
+    }
+
+    ;
+
+    @Override
+    public void sendCode(String userEmail) {
+        if (!checkEmail(userEmail)) {
+            throw new ServiceProcessException("请输入正确邮箱");
         }
-        // 头像生成
-        if (user.getSalt() == null || user.getSalt().isBlank()) {
-            MultipartFile multipartFile;
-            try (Response response = fileService.generatePicByKeyword(user.getUsername().substring(0, 1))) {
-                // 获取response中的所有header
-                Map<String, Collection<String>> headers = response.headers();
-                String fileName = null;
-                Set<String> strings = headers.keySet();
-                Iterator<String> iterator = strings.iterator();
-                // 从中找出content-disposition来获取文件名
-                while (iterator.hasNext()) {
-                    String next = iterator.next();
-                    if ("content-disposition".equals(next)) {
-                        Collection<String> strings1 = headers.get(next);
-                        Iterator<String> iterator1 = strings1.iterator();
-                        String next1 = iterator1.next();
-                        fileName = next1.split("filename=")[1];
-                        if (StrUtil.isBlank(fileName)) {
-                            throw new ServiceProcessException(SystemEnums.FAILED_TO_GENERATE_DEFAULT_AVATAR.VALUE);
-                        }
-                        break;
-                    }
+        String code = getRandomCode();
+        Map<String, Object> map = new HashMap<>();
+        map.put("content", "您的验证码为 " + code + " 有效期15分钟，请不要告诉他人哦！");
+        EmailDTO emailDTO = EmailDTO.builder()
+                .email(userEmail)
+                .subject(CommonConstant.CAPTCHA)
+                .template("common.html")
+                .commentMap(map)
+                .build();
+        rabbitTemplate.convertAndSend(RabbitMQConstant.EMAIL_EXCHANGE, "*", new Message(JSON.toJSONBytes(emailDTO), new MessageProperties()));
+        redisService.set(RedisConstant.USER_CODE_KEY + userEmail, code, RedisConstant.CODE_EXPIRE_TIME);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<UserAreaDTO> listUserAreas(ConditionVO conditionVO) {
+        List<UserAreaDTO> userAreaDTOs = new ArrayList<>();
+        switch (Objects.requireNonNull(getUserAreaType(conditionVO.getType()))) {
+            case USER:
+                Object userArea = redisService.get(RedisConstant.USER_AREA);
+                if (Objects.nonNull(userArea)) {
+                    userAreaDTOs = JSON.parseObject(userArea.toString(), List.class);
                 }
-                // 根据文件名获取contenttype
-                Optional<MediaType> mediaType = MediaTypeFactory.getMediaType(fileName);
-                String contentType = mediaType.orElse(MediaType.APPLICATION_OCTET_STREAM).toString();
-                multipartFile = new MockMultipartFile(fileName, fileName, contentType, response.body().asInputStream());
-            } catch (IOException e) {
-                throw new ServiceProcessException("获取生成图片异常", e);
-            }
-            Result<Object> result = fileService.createFile(multipartFile, token);
-            if (result.isSuccess()) {
-                user.setSalt(result.getData().toString());
-            } else {
-                throw new ServiceProcessException("获取默认头像地址失败");
-            }
+                return userAreaDTOs;
+            case VISITOR:
+                Map<String, Object> visitorArea = redisService.hGetAll(RedisConstant.VISITOR_AREA);
+                if (Objects.nonNull(visitorArea)) {
+                    userAreaDTOs = visitorArea.entrySet().stream()
+                            .map(item -> UserAreaDTO.builder()
+                                    .name(item.getKey())
+                                    .value(Long.valueOf(item.getValue().toString()))
+                                    .build())
+                            .collect(Collectors.toList());
+                }
+                return userAreaDTOs;
+            default:
+                break;
         }
-        // 明文密码进行加密存入数据库
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setIsDeleted(0);
-        userMapper.createUser(user);
-        userDao.save(user);
-        return user;
-    }
-
-    /**
-     * 方法<code>selectUser</code>作用为：
-     * 根据用户id查询
-     *
-     * @param userId
-     * @return asia.huayu.entity.User
-     * @throws
-     * @author RainZiYu
-     */
-    @Override
-    public User selectUser(Integer userId) {
-        User user = userMapper.selectById(userId);
-        return user;
-    }
-
-    /**
-     * 方法<code>selectUser</code>作用为：
-     * 根据用户名查询
-     *
-     * @param userName
-     * @return asia.huayu.entity.User
-     * @throws
-     * @author RainZiYu
-     */
-    @Override
-    public User selectUser(String userName) {
-        User user = userMapper.selectUserByName(userName);
-        return user;
-    }
-
-    /**
-     * 方法updateUserInfoByUserName作用为：
-     * 修改用户信息通过用户名
-     *
-     * @param user
-     * @return asia.huayu.entity.User
-     * @throws
-     * @author RainZiYu
-     */
-    @Override
-    @Transactional
-    public User updateUserInfoByUserName(User user) {
-        userMapper.updateUserInfoByName(user);
-        user = userMapper.selectUserByName(user.getUsername());
-        return user;
+        return userAreaDTOs;
     }
 
     @Override
-    public Integer deleteUserByUserName(String userName) {
-        Integer count = userMapper.deleteByUsername(userName);
-        return count;
-    }
-
-    @Override
-    public IPage<User> selectUserListByPage(Page<User> userPage) {
-        IPage<User> page = userMapper.selectUserByPage(userPage);
-        return page;
-    }
-
-    @Override
-    public IPage<User> selectUserFuzzy(String nickName, int page, int pageSize) {
-        // 分页数据
-        PageRequest pageRequest = PageRequest.of(page, pageSize);
-        Query query = QueryBuilders.queryString((x) -> {
-            x.fields("userName").query(nickName).build();
-            return x;
-        });
-        NativeQuery nativeQuery = new NativeQueryBuilder().withQuery(query).withPageable(pageRequest).build();
-        SearchHits<User> search = elasticsearchRestTemplate.search(nativeQuery, User.class);
-        List<SearchHit<User>> searchHits = search.getSearchHits();
-        Page<User> userPage = new Page<>(page, pageSize);
-        List<User> userList = new ArrayList<>();
-        for (SearchHit<User> searchHit : searchHits) {
-            userList.add(searchHit.getContent());
+    @Transactional(rollbackFor = Exception.class)
+    public void register(UserVO userVO) {
+        if (!checkEmail(userVO.getUsername())) {
+            throw new BizException("邮箱格式不对!");
         }
-        userPage.setRecords(userList);
-        return userPage;
+        if (checkUser(userVO)) {
+            throw new BizException("邮箱已被注册！");
+        }
+        UserInfo userInfo = UserInfo.builder()
+                .email(userVO.getUsername())
+                .nickname(CommonConstant.DEFAULNICKNAME + IdWorker.getId())
+                .avatar(auroraInfoService.getWebsiteConfig().getUserAvatar())
+                .build();
+        userInfoMapper.insert(userInfo);
+        UserRole userRole = UserRole.builder()
+                .userId(String.valueOf(userInfo.getId()))
+                .roleId(String.valueOf(RoleEnum.USER.getRoleId()))
+                .build();
+        userRoleMapper.insert(userRole);
+        User user = User.builder()
+                .id(userInfo.getId())
+                .username(userVO.getUsername())
+                .password(passwordEncoder.encode(userVO.getPassword()))
+                .build();
+        userMapper.insert(user);
+    }
+
+    @Override
+    public void updatePassword(UserVO userVO) {
+        if (!checkUser(userVO)) {
+            throw new ServiceProcessException("邮箱尚未注册！");
+        }
+        userMapper.update(new User(), new LambdaUpdateWrapper<User>()
+                .set(User::getPassword, passwordEncoder.encode(userVO.getPassword()))
+                .eq(User::getUsername, userVO.getUsername()));
+    }
+
+
+    @Override
+    public PageResultDTO<UserAdminDTO> listUsers(ConditionVO conditionVO) {
+        Integer count = userMapper.countUser(conditionVO);
+        if (count == 0) {
+            return new PageResultDTO<>();
+        }
+        List<UserAdminDTO> UserAdminDTOs = userMapper.listUsers(PageUtil.getLimitCurrent(), PageUtil.getSize(), conditionVO);
+        return new PageResultDTO<>(UserAdminDTOs, count);
+    }
+
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public UserDetailsDTO qqLogin(QQLoginVO qqLoginVO) {
+        return socialLoginStrategyContext.executeLoginStrategy(JSON.toJSONString(qqLoginVO), LoginTypeEnum.QQ);
+    }
+
+    private Boolean checkUser(UserVO userVO) {
+        if (!userVO.getCode().equals(redisService.get(RedisConstant.USER_CODE_KEY + userVO.getUsername()))) {
+            throw new ServiceProcessException("验证码错误！");
+        }
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
+                .select(User::getUsername)
+                .eq(User::getUsername, userVO.getUsername()));
+        return Objects.nonNull(user);
     }
 
 }
-
-
-
-
