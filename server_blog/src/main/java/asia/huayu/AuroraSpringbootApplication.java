@@ -17,11 +17,13 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 public class AuroraSpringbootApplication extends SpringBootServletInitializer implements CommandLineRunner {
 
     public static void main(String[] args) {
+        System.out.println("aaaaa");
         SpringApplication.run(AuroraSpringbootApplication.class, args);
     }
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+
         return application.sources(AuroraSpringbootApplication.class);
     }
 
