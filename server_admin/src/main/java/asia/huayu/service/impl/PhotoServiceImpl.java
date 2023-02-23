@@ -4,11 +4,9 @@ package asia.huayu.service.impl;
 import asia.huayu.constant.CommonConstant;
 import asia.huayu.entity.Photo;
 import asia.huayu.entity.PhotoAlbum;
-import asia.huayu.exception.BizException;
 import asia.huayu.mapper.PhotoMapper;
 import asia.huayu.model.dto.PageResultDTO;
 import asia.huayu.model.dto.PhotoAdminDTO;
-import asia.huayu.model.dto.PhotoDTO;
 import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.model.vo.DeleteVO;
 import asia.huayu.model.vo.PhotoInfoVO;
@@ -28,8 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import static asia.huayu.enums.PhotoAlbumStatusEnum.PUBLIC;
 
 @Service
 public class PhotoServiceImpl extends ServiceImpl<PhotoMapper, Photo> implements PhotoService {
@@ -112,30 +108,5 @@ public class PhotoServiceImpl extends ServiceImpl<PhotoMapper, Photo> implements
         photoMapper.deleteBatchIds(photoIds);
     }
 
-    @Override
-    public PhotoDTO listPhotosByAlbumId(Integer albumId) {
-        PhotoAlbum photoAlbum = photoAlbumService.getOne(new LambdaQueryWrapper<PhotoAlbum>()
-                .eq(PhotoAlbum::getId, albumId)
-                .eq(PhotoAlbum::getIsDelete, CommonConstant.FALSE)
-                .eq(PhotoAlbum::getStatus, PUBLIC.getStatus()));
-        if (Objects.isNull(photoAlbum)) {
-            throw new BizException("相册不存在");
-        }
-        Page<Photo> page = new Page<>(PageUtil.getCurrent(), PageUtil.getSize());
-        List<String> photos = photoMapper.selectPage(page, new LambdaQueryWrapper<Photo>()
-                        .select(Photo::getPhotoSrc)
-                        .eq(Photo::getAlbumId, albumId)
-                        .eq(Photo::getIsDelete, CommonConstant.FALSE)
-                        .orderByDesc(Photo::getId))
-                .getRecords()
-                .stream()
-                .map(Photo::getPhotoSrc)
-                .collect(Collectors.toList());
-        return PhotoDTO.builder()
-                .photoAlbumCover(photoAlbum.getAlbumCover())
-                .photoAlbumName(photoAlbum.getAlbumName())
-                .photos(photos)
-                .build();
-    }
 
 }

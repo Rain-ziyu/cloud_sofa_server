@@ -23,6 +23,7 @@
         <module>server_pic</module>
         <module>server_admin</module>
         <module>server_blog</module>
+
     </modules>
     <properties>
         <java.version>17</java.version>

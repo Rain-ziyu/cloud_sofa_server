@@ -1,11 +1,11 @@
 package asia.huayu.aspect;
 
 import asia.huayu.annotation.OptLog;
+import asia.huayu.common.util.IpUtil;
 import asia.huayu.entity.OperationLog;
 import asia.huayu.entity.UserInfo;
 import asia.huayu.event.OperationLogEvent;
 import asia.huayu.service.UserInfoService;
-import asia.huayu.util.IpUtil;
 import asia.huayu.util.UserUtil;
 import com.alibaba.fastjson2.JSON;
 import io.swagger.annotations.Api;

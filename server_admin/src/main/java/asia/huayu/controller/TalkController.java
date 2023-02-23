@@ -5,7 +5,6 @@ import asia.huayu.common.entity.Result;
 import asia.huayu.enums.FilePathEnum;
 import asia.huayu.model.dto.PageResultDTO;
 import asia.huayu.model.dto.TalkAdminDTO;
-import asia.huayu.model.dto.TalkDTO;
 import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.model.vo.TalkVO;
 import asia.huayu.service.TalkService;
@@ -32,30 +31,19 @@ public class TalkController {
     @Autowired
     private UploadStrategyContext uploadStrategyContext;
 
-    @ApiOperation(value = "查看说说列表")
-    @GetMapping("/talks")
-    public Result<PageResultDTO<TalkDTO>> listTalks() {
-        return Result.OK(talkService.listTalks());
-    }
 
-    @ApiOperation(value = "根据id查看说说")
-    @ApiImplicitParam(name = "talkId", value = "说说id", required = true, dataType = "Integer")
-    @GetMapping("/talks/{talkId}")
-    public Result<TalkDTO> getTalkById(@PathVariable("talkId") Integer talkId) {
-        return Result.OK(talkService.getTalkById(talkId));
-    }
 
     @OptLog(optType = UPLOAD)
     @ApiOperation(value = "上传说说图片")
     @ApiImplicitParam(name = "file", value = "说说图片", required = true, dataType = "MultipartFile")
-    @PostMapping("/admin/talks/images")
+    @PostMapping("/talks/images")
     public Result<String> saveTalkImages(MultipartFile file) {
         return Result.OK(uploadStrategyContext.executeUploadStrategy(file, FilePathEnum.TALK.getPath()));
     }
 
     @OptLog(optType = SAVE_OR_UPDATE)
     @ApiOperation(value = "保存或修改说说")
-    @PostMapping("/admin/talks")
+    @PostMapping("/talks")
     public Result<?> saveOrUpdateTalk(@Valid @RequestBody TalkVO talkVO) {
         talkService.saveOrUpdateTalk(talkVO);
         return Result.OK();
@@ -63,21 +51,21 @@ public class TalkController {
 
     @OptLog(optType = DELETE)
     @ApiOperation(value = "删除说说")
-    @DeleteMapping("/admin/talks")
+    @DeleteMapping("/talks")
     public Result<?> deleteTalks(@RequestBody List<Integer> talkIds) {
         talkService.deleteTalks(talkIds);
         return Result.OK();
     }
 
     @ApiOperation(value = "查看后台说说")
-    @GetMapping("/admin/talks")
+    @GetMapping("/talks")
     public Result<PageResultDTO<TalkAdminDTO>> listBackTalks(ConditionVO conditionVO) {
         return Result.OK(talkService.listBackTalks(conditionVO));
     }
 
     @ApiOperation(value = "根据id查看后台说说")
     @ApiImplicitParam(name = "talkId", value = "说说id", required = true, dataType = "Integer")
-    @GetMapping("/admin/talks/{talkId}")
+    @GetMapping("/talks/{talkId}")
     public Result<TalkAdminDTO> getBackTalkById(@PathVariable("talkId") Integer talkId) {
         return Result.OK(talkService.getBackTalkById(talkId));
     }

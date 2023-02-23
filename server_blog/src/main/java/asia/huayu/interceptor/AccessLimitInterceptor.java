@@ -3,8 +3,8 @@ package asia.huayu.interceptor;
 
 import asia.huayu.annotation.AccessLimit;
 import asia.huayu.common.entity.Result;
+import asia.huayu.common.util.IpUtil;
 import asia.huayu.service.RedisService;
-import asia.huayu.util.IpUtil;
 import com.alibaba.fastjson2.JSON;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;

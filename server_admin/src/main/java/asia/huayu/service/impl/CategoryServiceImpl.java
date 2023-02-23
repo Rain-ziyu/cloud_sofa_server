@@ -6,7 +6,6 @@ import asia.huayu.exception.BizException;
 import asia.huayu.mapper.ArticleMapper;
 import asia.huayu.mapper.CategoryMapper;
 import asia.huayu.model.dto.CategoryAdminDTO;
-import asia.huayu.model.dto.CategoryDTO;
 import asia.huayu.model.dto.CategoryOptionDTO;
 import asia.huayu.model.dto.PageResultDTO;
 import asia.huayu.model.vo.CategoryVO;
@@ -33,10 +32,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     @Autowired
     private ArticleMapper articleMapper;
 
-    @Override
-    public List<CategoryDTO> listCategories() {
-        return categoryMapper.listCategories();
-    }
 
     @SneakyThrows
     @Override

@@ -1,7 +1,6 @@
 package asia.huayu.strategy.impl.upload;
 
 import asia.huayu.common.exception.ServiceProcessException;
-import asia.huayu.exception.BizException;
 import asia.huayu.strategy.UploadStrategy;
 import asia.huayu.util.FileUtil;
 import org.springframework.stereotype.Service;
@@ -36,7 +35,7 @@ public abstract class AbstractUploadStrategyImpl implements UploadStrategy {
             return getFileAccessUrl(path + fileName);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new BizException("文件上传失败");
+            throw new ServiceProcessException("文件上传失败");
         }
     }
 

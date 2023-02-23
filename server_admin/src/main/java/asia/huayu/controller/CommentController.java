@@ -27,14 +27,14 @@ public class CommentController {
 
 
     @ApiOperation(value = "查询后台评论")
-    @GetMapping("/admin/comments")
+    @GetMapping("/comments")
     public Result<PageResultDTO<CommentAdminDTO>> listCommentBackDTO(ConditionVO conditionVO) {
         return Result.OK(commentService.listCommentsAdmin(conditionVO));
     }
 
     @OptLog(optType = UPDATE)
     @ApiOperation(value = "审核评论")
-    @PutMapping("/admin/comments/review")
+    @PutMapping("/comments/review")
     public Result<?> updateCommentsReview(@Valid @RequestBody ReviewVO reviewVO) {
         commentService.updateCommentsReview(reviewVO);
         return Result.OK();
@@ -42,7 +42,7 @@ public class CommentController {
 
     @OptLog(optType = DELETE)
     @ApiOperation(value = "删除评论")
-    @DeleteMapping("/admin/comments")
+    @DeleteMapping("/comments")
     public Result<?> deleteComments(@RequestBody List<Integer> commentIdList) {
         commentService.removeByIds(commentIdList);
         return Result.OK();

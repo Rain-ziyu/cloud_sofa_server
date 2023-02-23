@@ -1,18 +1,16 @@
 package asia.huayu.service.impl;
 
+import asia.huayu.common.exception.ServiceProcessException;
 import asia.huayu.constant.CommonConstant;
 import asia.huayu.constant.RabbitMQConstant;
 import asia.huayu.entity.*;
 import asia.huayu.enums.CommentTypeEnum;
-import asia.huayu.exception.BizException;
 import asia.huayu.mapper.ArticleMapper;
 import asia.huayu.mapper.CommentMapper;
 import asia.huayu.mapper.TalkMapper;
 import asia.huayu.mapper.UserInfoMapper;
 import asia.huayu.model.dto.*;
 import asia.huayu.model.vo.CommentVO;
-import asia.huayu.model.vo.ConditionVO;
-import asia.huayu.model.vo.ReviewVO;
 import asia.huayu.service.AuroraInfoService;
 import asia.huayu.service.CommentService;
 import asia.huayu.service.UserService;
@@ -24,7 +22,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import lombok.SneakyThrows;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -127,42 +124,26 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         return commentMapper.listTopSixComments();
     }
 
-    @SneakyThrows
-    @Override
-    public PageResultDTO<CommentAdminDTO> listCommentsAdmin(ConditionVO conditionVO) {
-        CompletableFuture<Integer> asyncCount = CompletableFuture.supplyAsync(() -> commentMapper.countComments(conditionVO));
-        List<CommentAdminDTO> commentBackDTOList = commentMapper.listCommentsAdmin(PageUtil.getLimitCurrent(), PageUtil.getSize(), conditionVO);
-        return new PageResultDTO<>(commentBackDTOList, asyncCount.get());
-    }
 
-    @Override
-    public void updateCommentsReview(ReviewVO reviewVO) {
-        List<Comment> comments = reviewVO.getIds().stream().map(item -> Comment.builder()
-                        .id(item)
-                        .isReview(reviewVO.getIsReview())
-                        .build())
-                .collect(Collectors.toList());
-        this.updateBatchById(comments);
-    }
 
     public void checkCommentVO(CommentVO commentVO) {
         if (!types.contains(commentVO.getType())) {
-            throw new BizException("参数校验异常");
+            throw new ServiceProcessException("参数校验异常");
         }
         if (Objects.requireNonNull(getCommentEnum(commentVO.getType())) == ARTICLE || Objects.requireNonNull(getCommentEnum(commentVO.getType())) == TALK) {
             if (Objects.isNull(commentVO.getTopicId())) {
-                throw new BizException("参数校验异常");
+                throw new ServiceProcessException("参数校验异常");
             } else {
                 if (Objects.requireNonNull(getCommentEnum(commentVO.getType())) == ARTICLE) {
                     Article article = articleMapper.selectOne(new LambdaQueryWrapper<Article>().select(Article::getId, Article::getUserId).eq(Article::getId, commentVO.getTopicId()));
                     if (Objects.isNull(article)) {
-                        throw new BizException("参数校验异常");
+                        throw new ServiceProcessException("参数校验异常");
                     }
                 }
                 if (Objects.requireNonNull(getCommentEnum(commentVO.getType())) == TALK) {
                     Talk talk = talkMapper.selectOne(new LambdaQueryWrapper<Talk>().select(Talk::getId, Talk::getUserId).eq(Talk::getId, commentVO.getTopicId()));
                     if (Objects.isNull(talk)) {
-                        throw new BizException("参数校验异常");
+                        throw new ServiceProcessException("参数校验异常");
                     }
                 }
             }
@@ -171,31 +152,31 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                 || Objects.requireNonNull(getCommentEnum(commentVO.getType())) == ABOUT
                 || Objects.requireNonNull(getCommentEnum(commentVO.getType())) == MESSAGE) {
             if (Objects.nonNull(commentVO.getTopicId())) {
-                throw new BizException("参数校验异常");
+                throw new ServiceProcessException("参数校验异常");
             }
         }
         if (Objects.isNull(commentVO.getParentId())) {
             if (Objects.nonNull(commentVO.getReplyUserId())) {
-                throw new BizException("参数校验异常");
+                throw new ServiceProcessException("参数校验异常");
             }
         }
         if (Objects.nonNull(commentVO.getParentId())) {
             Comment parentComment = commentMapper.selectOne(new LambdaQueryWrapper<Comment>().select(Comment::getId, Comment::getParentId, Comment::getType).eq(Comment::getId, commentVO.getParentId()));
             if (Objects.isNull(parentComment)) {
-                throw new BizException("参数校验异常");
+                throw new ServiceProcessException("参数校验异常");
             }
             if (Objects.nonNull(parentComment.getParentId())) {
-                throw new BizException("参数校验异常");
+                throw new ServiceProcessException("参数校验异常");
             }
             if (!commentVO.getType().equals(parentComment.getType())) {
-                throw new BizException("参数校验异常");
+                throw new ServiceProcessException("参数校验异常");
             }
             if (Objects.isNull(commentVO.getReplyUserId())) {
-                throw new BizException("参数校验异常");
+                throw new ServiceProcessException("参数校验异常");
             } else {
                 UserInfo existUser = userInfoMapper.selectOne(new LambdaQueryWrapper<UserInfo>().select(UserInfo::getId).eq(UserInfo::getId, commentVO.getReplyUserId()));
                 if (Objects.isNull(existUser)) {
-                    throw new BizException("参数校验异常");
+                    throw new ServiceProcessException("参数校验异常");
                 }
             }
         }

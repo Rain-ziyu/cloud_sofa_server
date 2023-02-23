@@ -1,6 +1,5 @@
 package asia.huayu.controller;
 
-import asia.huayu.common.annotation.LoggerManager;
 import asia.huayu.common.controller.base.BaseController;
 import asia.huayu.common.entity.Result;
 import asia.huayu.common.exception.ServiceProcessException;
@@ -24,7 +23,6 @@ public class FileController extends BaseController {
     MinioService minioService;
 
 
-    @LoggerManager
     @PostMapping
     public Result uploadFile(@RequestPart("file") MultipartFile multipartFile) {
         return restProcessor(() -> {

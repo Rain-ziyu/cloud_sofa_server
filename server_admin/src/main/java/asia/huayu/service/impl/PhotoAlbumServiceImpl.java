@@ -25,8 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 
-import static asia.huayu.enums.PhotoAlbumStatusEnum.PUBLIC;
-
 @Service
 public class PhotoAlbumServiceImpl extends ServiceImpl<PhotoAlbumMapper, PhotoAlbum> implements PhotoAlbumService {
 
@@ -97,13 +95,5 @@ public class PhotoAlbumServiceImpl extends ServiceImpl<PhotoAlbumMapper, PhotoAl
         }
     }
 
-    @Override
-    public List<PhotoAlbumDTO> listPhotoAlbums() {
-        List<PhotoAlbum> photoAlbumList = photoAlbumMapper.selectList(new LambdaQueryWrapper<PhotoAlbum>()
-                .eq(PhotoAlbum::getStatus, PUBLIC.getStatus())
-                .eq(PhotoAlbum::getIsDelete, CommonConstant.FALSE)
-                .orderByDesc(PhotoAlbum::getId));
-        return BeanCopyUtil.copyList(photoAlbumList, PhotoAlbumDTO.class);
-    }
 
 }

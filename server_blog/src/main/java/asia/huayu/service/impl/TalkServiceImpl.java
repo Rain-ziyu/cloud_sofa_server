@@ -1,23 +1,16 @@
 package asia.huayu.service.impl;
 
+import asia.huayu.common.exception.ServiceProcessException;
 import asia.huayu.entity.Talk;
-import asia.huayu.entity.UserInfo;
 import asia.huayu.enums.CommentTypeEnum;
-import asia.huayu.exception.BizException;
 import asia.huayu.mapper.CommentMapper;
 import asia.huayu.mapper.TalkMapper;
 import asia.huayu.model.dto.CommentCountDTO;
 import asia.huayu.model.dto.PageResultDTO;
-import asia.huayu.model.dto.TalkAdminDTO;
 import asia.huayu.model.dto.TalkDTO;
-import asia.huayu.model.vo.ConditionVO;
-import asia.huayu.model.vo.TalkVO;
 import asia.huayu.service.TalkService;
-import asia.huayu.service.UserInfoService;
-import asia.huayu.util.BeanCopyUtil;
 import asia.huayu.util.CommonUtil;
 import asia.huayu.util.PageUtil;
-import asia.huayu.util.UserUtil;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -37,8 +30,7 @@ public class TalkServiceImpl extends ServiceImpl<TalkMapper, Talk> implements Ta
 
     @Autowired
     private TalkMapper talkMapper;
-    @Autowired
-    private UserInfoService userInfoService;
+
     @Autowired
     private CommentMapper commentMapper;
 
@@ -69,7 +61,7 @@ public class TalkServiceImpl extends ServiceImpl<TalkMapper, Talk> implements Ta
     public TalkDTO getTalkById(Integer talkId) {
         TalkDTO talkDTO = talkMapper.getTalkById(talkId);
         if (Objects.isNull(talkDTO)) {
-            throw new BizException("说说不存在");
+            throw new ServiceProcessException("说说不存在");
         }
         if (Objects.nonNull(talkDTO.getImages())) {
             talkDTO.setImgs(CommonUtil.castList(JSON.parseObject(talkDTO.getImages(), List.class), String.class));
@@ -81,44 +73,6 @@ public class TalkServiceImpl extends ServiceImpl<TalkMapper, Talk> implements Ta
         return talkDTO;
     }
 
-    @Override
-    public void saveOrUpdateTalk(TalkVO talkVO) {
-        Talk talk = BeanCopyUtil.copyObject(talkVO, Talk.class);
-        String name = UserUtil.getAuthentication().getName();
-        UserInfo userInfoByName = userInfoService.getUserInfoByName(name);
-        talk.setUserId(userInfoByName.getId());
-        this.saveOrUpdate(talk);
-    }
-
-    @Override
-    public void deleteTalks(List<Integer> talkIds) {
-        talkMapper.deleteBatchIds(talkIds);
-    }
-
-    @Override
-    public PageResultDTO<TalkAdminDTO> listBackTalks(ConditionVO conditionVO) {
-        Long count = talkMapper.selectCount(new LambdaQueryWrapper<Talk>()
-                .eq(Objects.nonNull(conditionVO.getStatus()), Talk::getStatus, conditionVO.getStatus()));
-        if (count == 0) {
-            return new PageResultDTO<>();
-        }
-        List<TalkAdminDTO> talkDTOs = talkMapper.listTalksAdmin(PageUtil.getLimitCurrent(), PageUtil.getSize(), conditionVO);
-        talkDTOs.forEach(item -> {
-            if (Objects.nonNull(item.getImages())) {
-                item.setImgs(CommonUtil.castList(JSON.parseObject(item.getImages(), List.class), String.class));
-            }
-        });
-        return new PageResultDTO<>(talkDTOs, count);
-    }
-
-    @Override
-    public TalkAdminDTO getBackTalkById(Integer talkId) {
-        TalkAdminDTO talkBackDTO = talkMapper.getTalkByIdAdmin(talkId);
-        if (Objects.nonNull(talkBackDTO.getImages())) {
-            talkBackDTO.setImgs(CommonUtil.castList(JSON.parseObject(talkBackDTO.getImages(), List.class), String.class));
-        }
-        return talkBackDTO;
-    }
 
 }
 

@@ -6,10 +6,8 @@ import asia.huayu.security.entity.TokenDTO;
 import asia.huayu.security.security.TokenManager;
 import asia.huayu.security.util.SystemValue;
 import asia.huayu.service.TokenService;
-import asia.huayu.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,28 +32,7 @@ public class LoginController extends BaseController {
     TokenManager tokenManager;
     @Autowired
     RedisTemplate redisTemplate;
-    @Autowired
-    @Qualifier("userServiceImpl")
-    private UserService userService;
 
-    /**
-     * 方法registerUser作用为：
-     * 注册新用户
-     *
-     * @param user
-     * @return asia.huayu.common.entity.Result
-     * @throws
-     * @author RainZiYu
-     */
-/*     @PostMapping("/register")
-    public Result registerUser(@RequestBody @Valid User user) {
-        return restProcessor(() -> {
-            // 生成系统内部token用于初始化用户
-            String systemToken = tokenService.getSystemToken();
-            // User createUser = userService.createUser(user, systemToken);
-            return Result.OK(SystemEnums.ACCOUNT_CREATED_SUCCESSFULLY.name(), createUser);
-        });
-    } */
 
     @PostMapping("/refreshToken")
     public Result refreshToken(@RequestBody @NotBlank(message = "refreshToken不能为空") String refreshToken) {

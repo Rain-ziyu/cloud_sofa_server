@@ -10,18 +10,16 @@ import asia.huayu.entity.User;
 import asia.huayu.entity.UserInfo;
 import asia.huayu.enums.LoginTypeEnum;
 import asia.huayu.enums.RoleEnum;
-import asia.huayu.exception.BizException;
 import asia.huayu.mapper.UserInfoMapper;
 import asia.huayu.mapper.UserMapper;
-import asia.huayu.model.dto.*;
-import asia.huayu.model.vo.ConditionVO;
+import asia.huayu.model.dto.EmailDTO;
+import asia.huayu.model.dto.UserDetailsDTO;
 import asia.huayu.model.vo.QQLoginVO;
 import asia.huayu.model.vo.UserVO;
 import asia.huayu.service.AuroraInfoService;
 import asia.huayu.service.RedisService;
 import asia.huayu.service.UserService;
 import asia.huayu.strategy.context.SocialLoginStrategyContext;
-import asia.huayu.util.PageUtil;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -34,10 +32,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
-import static asia.huayu.enums.UserAreaTypeEnum.getUserAreaType;
 import static asia.huayu.util.CommonUtil.checkEmail;
 import static asia.huayu.util.CommonUtil.getRandomCode;
 
@@ -94,42 +92,16 @@ public class UserServiceImpl implements UserService {
         redisService.set(RedisConstant.USER_CODE_KEY + userEmail, code, RedisConstant.CODE_EXPIRE_TIME);
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<UserAreaDTO> listUserAreas(ConditionVO conditionVO) {
-        List<UserAreaDTO> userAreaDTOs = new ArrayList<>();
-        switch (Objects.requireNonNull(getUserAreaType(conditionVO.getType()))) {
-            case USER:
-                Object userArea = redisService.get(RedisConstant.USER_AREA);
-                if (Objects.nonNull(userArea)) {
-                    userAreaDTOs = JSON.parseObject(userArea.toString(), List.class);
-                }
-                return userAreaDTOs;
-            case VISITOR:
-                Map<String, Object> visitorArea = redisService.hGetAll(RedisConstant.VISITOR_AREA);
-                if (Objects.nonNull(visitorArea)) {
-                    userAreaDTOs = visitorArea.entrySet().stream()
-                            .map(item -> UserAreaDTO.builder()
-                                    .name(item.getKey())
-                                    .value(Long.valueOf(item.getValue().toString()))
-                                    .build())
-                            .collect(Collectors.toList());
-                }
-                return userAreaDTOs;
-            default:
-                break;
-        }
-        return userAreaDTOs;
-    }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void register(UserVO userVO) {
         if (!checkEmail(userVO.getUsername())) {
-            throw new BizException("邮箱格式不对!");
+            throw new ServiceProcessException("邮箱格式不对!");
         }
         if (checkUser(userVO)) {
-            throw new BizException("邮箱已被注册！");
+            throw new ServiceProcessException("邮箱已被注册！");
         }
         UserInfo userInfo = UserInfo.builder()
                 .email(userVO.getUsername())
@@ -158,18 +130,6 @@ public class UserServiceImpl implements UserService {
         userMapper.update(new User(), new LambdaUpdateWrapper<User>()
                 .set(User::getPassword, passwordEncoder.encode(userVO.getPassword()))
                 .eq(User::getUsername, userVO.getUsername()));
-    }
-
-
-
-    @Override
-    public PageResultDTO<UserAdminDTO> listUsers(ConditionVO conditionVO) {
-        Integer count = userMapper.countUser(conditionVO);
-        if (count == 0) {
-            return new PageResultDTO<>();
-        }
-        List<UserAdminDTO> UserAdminDTOs = userMapper.listUsers(PageUtil.getLimitCurrent(), PageUtil.getSize(), conditionVO);
-        return new PageResultDTO<>(UserAdminDTOs, count);
     }
 
 

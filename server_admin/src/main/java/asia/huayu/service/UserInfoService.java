@@ -2,21 +2,14 @@ package asia.huayu.service;
 
 import asia.huayu.entity.UserInfo;
 import asia.huayu.model.dto.PageResultDTO;
-import asia.huayu.model.dto.UserInfoDTO;
 import asia.huayu.model.dto.UserOnlineDTO;
-import asia.huayu.model.vo.*;
+import asia.huayu.model.vo.ConditionVO;
+import asia.huayu.model.vo.UserDisableVO;
+import asia.huayu.model.vo.UserRoleVO;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.springframework.web.multipart.MultipartFile;
 
 public interface UserInfoService extends IService<UserInfo> {
 
-    void updateUserInfo(UserInfoVO userInfoVO);
-
-    String updateUserAvatar(MultipartFile file);
-
-    void saveUserEmail(EmailVO emailVO);
-
-    void updateUserSubscribe(SubscribeVO subscribeVO);
 
     void updateUserRole(UserRoleVO userRoleVO);
 
@@ -26,9 +19,8 @@ public interface UserInfoService extends IService<UserInfo> {
 
     void removeOnlineUser(Integer userInfoId);
 
-    UserInfoDTO getUserInfoById(Integer id);
 
     UserInfo getUserInfoByName(String username);
 
-    UserInfoDTO getUserInfo();
+
 }

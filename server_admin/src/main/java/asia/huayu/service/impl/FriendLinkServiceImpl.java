@@ -3,7 +3,6 @@ package asia.huayu.service.impl;
 import asia.huayu.entity.FriendLink;
 import asia.huayu.mapper.FriendLinkMapper;
 import asia.huayu.model.dto.FriendLinkAdminDTO;
-import asia.huayu.model.dto.FriendLinkDTO;
 import asia.huayu.model.dto.PageResultDTO;
 import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.model.vo.FriendLinkVO;
@@ -24,12 +23,6 @@ public class FriendLinkServiceImpl extends ServiceImpl<FriendLinkMapper, FriendL
 
     @Autowired
     private FriendLinkMapper friendLinkMapper;
-
-    @Override
-    public List<FriendLinkDTO> listFriendLinks() {
-        List<FriendLink> friendLinks = friendLinkMapper.selectList(null);
-        return BeanCopyUtil.copyList(friendLinks, FriendLinkDTO.class);
-    }
 
     @Override
     public PageResultDTO<FriendLinkAdminDTO> listFriendLinksAdmin(ConditionVO conditionVO) {

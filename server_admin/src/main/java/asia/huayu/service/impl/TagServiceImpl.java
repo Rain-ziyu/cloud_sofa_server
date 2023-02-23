@@ -8,7 +8,6 @@ import asia.huayu.mapper.ArticleTagMapper;
 import asia.huayu.mapper.TagMapper;
 import asia.huayu.model.dto.PageResultDTO;
 import asia.huayu.model.dto.TagAdminDTO;
-import asia.huayu.model.dto.TagDTO;
 import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.model.vo.TagVO;
 import asia.huayu.service.TagService;
@@ -33,15 +32,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
     @Autowired
     private ArticleTagMapper articleTagMapper;
 
-    @Override
-    public List<TagDTO> listTags() {
-        return tagMapper.listTags();
-    }
 
-    @Override
-    public List<TagDTO> listTopTenTags() {
-        return tagMapper.listTopTenTags();
-    }
 
     @SneakyThrows
     @Override

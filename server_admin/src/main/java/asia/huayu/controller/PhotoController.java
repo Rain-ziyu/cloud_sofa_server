@@ -5,7 +5,6 @@ import asia.huayu.common.entity.Result;
 import asia.huayu.enums.FilePathEnum;
 import asia.huayu.model.dto.PageResultDTO;
 import asia.huayu.model.dto.PhotoAdminDTO;
-import asia.huayu.model.dto.PhotoDTO;
 import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.model.vo.DeleteVO;
 import asia.huayu.model.vo.PhotoInfoVO;
@@ -37,20 +36,20 @@ public class PhotoController {
     @OptLog(optType = UPLOAD)
     @ApiOperation(value = "上传照片")
     @ApiImplicitParam(name = "file", value = "照片", required = true, dataType = "MultipartFile")
-    @PostMapping("/admin/photos/upload")
+    @PostMapping("/photos/upload")
     public Result<String> savePhotoAlbumCover(MultipartFile file) {
         return Result.OK(uploadStrategyContext.executeUploadStrategy(file, FilePathEnum.PHOTO.getPath()));
     }
 
     @ApiOperation(value = "根据相册id获取照片列表")
-    @GetMapping("/admin/photos")
+    @GetMapping("/photos")
     public Result<PageResultDTO<PhotoAdminDTO>> listPhotos(ConditionVO conditionVO) {
         return Result.OK(photoService.listPhotos(conditionVO));
     }
 
     @OptLog(optType = UPDATE)
     @ApiOperation(value = "更新照片信息")
-    @PutMapping("/admin/photos")
+    @PutMapping("/photos")
     public Result<?> updatePhoto(@Valid @RequestBody PhotoInfoVO photoInfoVO) {
         photoService.updatePhoto(photoInfoVO);
         return Result.OK();
@@ -58,7 +57,7 @@ public class PhotoController {
 
     @OptLog(optType = SAVE)
     @ApiOperation(value = "保存照片")
-    @PostMapping("/admin/photos")
+    @PostMapping("/photos")
     public Result<?> savePhotos(@Valid @RequestBody PhotoVO photoVO) {
         photoService.savePhotos(photoVO);
         return Result.OK();
@@ -66,7 +65,7 @@ public class PhotoController {
 
     @OptLog(optType = UPDATE)
     @ApiOperation(value = "移动照片相册")
-    @PutMapping("/admin/photos/album")
+    @PutMapping("/photos/album")
     public Result<?> updatePhotosAlbum(@Valid @RequestBody PhotoVO photoVO) {
         photoService.updatePhotosAlbum(photoVO);
         return Result.OK();
@@ -74,7 +73,7 @@ public class PhotoController {
 
     @OptLog(optType = UPDATE)
     @ApiOperation(value = "更新照片删除状态")
-    @PutMapping("/admin/photos/delete")
+    @PutMapping("/photos/delete")
     public Result<?> updatePhotoDelete(@Valid @RequestBody DeleteVO deleteVO) {
         photoService.updatePhotoDelete(deleteVO);
         return Result.OK();
@@ -82,16 +81,10 @@ public class PhotoController {
 
     @OptLog(optType = DELETE)
     @ApiOperation(value = "删除照片")
-    @DeleteMapping("/admin/photos")
+    @DeleteMapping("/photos")
     public Result<?> deletePhotos(@RequestBody List<Integer> photoIds) {
         photoService.deletePhotos(photoIds);
         return Result.OK();
-    }
-
-    @ApiOperation(value = "根据相册id查看照片列表")
-    @GetMapping("/albums/{albumId}/photos")
-    public Result<PhotoDTO> listPhotosByAlbumId(@PathVariable("albumId") Integer albumId) {
-        return Result.OK(photoService.listPhotosByAlbumId(albumId));
     }
 
 }

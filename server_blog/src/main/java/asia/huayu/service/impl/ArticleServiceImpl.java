@@ -4,18 +4,16 @@ import asia.huayu.common.exception.ServiceProcessException;
 import asia.huayu.constant.RabbitMQConstant;
 import asia.huayu.constant.RedisConstant;
 import asia.huayu.entity.*;
-import asia.huayu.enums.FileExtEnum;
-import asia.huayu.enums.FilePathEnum;
-import asia.huayu.exception.BizException;
 import asia.huayu.mapper.ArticleMapper;
 import asia.huayu.mapper.ArticleTagMapper;
 import asia.huayu.mapper.CategoryMapper;
 import asia.huayu.mapper.TagMapper;
 import asia.huayu.model.dto.*;
-import asia.huayu.model.vo.*;
+import asia.huayu.model.vo.ArticlePasswordVO;
+import asia.huayu.model.vo.ArticleVO;
+import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.service.*;
 import asia.huayu.strategy.context.SearchStrategyContext;
-import asia.huayu.strategy.context.UploadStrategyContext;
 import asia.huayu.util.BeanCopyUtil;
 import asia.huayu.util.PageUtil;
 import asia.huayu.util.UserUtil;
@@ -31,9 +29,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -68,8 +68,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    @Autowired
-    private UploadStrategyContext uploadStrategyContext;
+
 
     @Autowired
     private SearchStrategyContext searchStrategyContext;
@@ -226,20 +225,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return new PageResultDTO<>(archiveDTOs, asyncCount.get());
     }
 
-    @SneakyThrows
-    @Override
-    public PageResultDTO<ArticleAdminDTO> listArticlesAdmin(ConditionVO conditionVO) {
-        CompletableFuture<Integer> asyncCount = CompletableFuture.supplyAsync(() -> articleMapper.countArticleAdmins(conditionVO));
-        List<ArticleAdminDTO> articleAdminDTOs = articleMapper.listArticlesAdmin(PageUtil.getLimitCurrent(), PageUtil.getSize(), conditionVO);
-        Map<Object, Double> viewsCountMap = redisService.zAllScore(RedisConstant.ARTICLE_VIEWS_COUNT);
-        articleAdminDTOs.forEach(item -> {
-            Double viewsCount = viewsCountMap.get(item.getId());
-            if (Objects.nonNull(viewsCount)) {
-                item.setViewsCount(viewsCount.intValue());
-            }
-        });
-        return new PageResultDTO<>(articleAdminDTOs, asyncCount.get());
-    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -259,68 +244,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         }
     }
 
-    @Override
-    public void updateArticleTopAndFeatured(ArticleTopFeaturedVO articleTopFeaturedVO) {
-        Article article = Article.builder()
-                .id(articleTopFeaturedVO.getId())
-                .isTop(articleTopFeaturedVO.getIsTop())
-                .isFeatured(articleTopFeaturedVO.getIsFeatured())
-                .build();
-        articleMapper.updateById(article);
-    }
-
-    @Override
-    public void updateArticleDelete(DeleteVO deleteVO) {
-        List<Article> articles = deleteVO.getIds().stream()
-                .map(id -> Article.builder()
-                        .id(id)
-                        .isDelete(deleteVO.getIsDelete())
-                        .build())
-                .collect(Collectors.toList());
-        this.updateBatchById(articles);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void deleteArticles(List<Integer> articleIds) {
-        articleTagMapper.delete(new LambdaQueryWrapper<ArticleTag>()
-                .in(ArticleTag::getArticleId, articleIds));
-        articleMapper.deleteBatchIds(articleIds);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public ArticleAdminViewDTO getArticleByIdAdmin(Integer articleId) {
-        Article article = articleMapper.selectById(articleId);
-        Category category = categoryMapper.selectById(article.getCategoryId());
-        String categoryName = null;
-        if (Objects.nonNull(category)) {
-            categoryName = category.getCategoryName();
-        }
-        List<String> tagNames = tagMapper.listTagNamesByArticleId(articleId);
-        ArticleAdminViewDTO articleAdminViewDTO = BeanCopyUtil.copyObject(article, ArticleAdminViewDTO.class);
-        articleAdminViewDTO.setCategoryName(categoryName);
-        articleAdminViewDTO.setTagNames(tagNames);
-        return articleAdminViewDTO;
-    }
-
-    @Override
-    public List<String> exportArticles(List<Integer> articleIds) {
-        List<Article> articles = articleMapper.selectList(new LambdaQueryWrapper<Article>()
-                .select(Article::getArticleTitle, Article::getArticleContent)
-                .in(Article::getId, articleIds));
-        List<String> urls = new ArrayList<>();
-        for (Article article : articles) {
-            try (ByteArrayInputStream inputStream = new ByteArrayInputStream(article.getArticleContent().getBytes())) {
-                String url = uploadStrategyContext.executeUploadStrategy(article.getArticleTitle() + FileExtEnum.MD.getExtName(), inputStream, FilePathEnum.MD.getPath());
-                urls.add(url);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new BizException("导出文章失败");
-            }
-        }
-        return urls;
-    }
 
     @Override
     public List<ArticleSearchDTO> listArticlesBySearch(ConditionVO condition) {

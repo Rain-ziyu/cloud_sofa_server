@@ -1,5 +1,6 @@
 package asia.huayu.quartz;
 
+import asia.huayu.common.util.IpUtil;
 import asia.huayu.config.RestConfig;
 import asia.huayu.constant.CommonConstant;
 import asia.huayu.constant.RedisConstant;
@@ -11,7 +12,6 @@ import asia.huayu.model.dto.ArticleSearchDTO;
 import asia.huayu.model.dto.UserAreaDTO;
 import asia.huayu.service.*;
 import asia.huayu.util.BeanCopyUtil;
-import asia.huayu.util.IpUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;

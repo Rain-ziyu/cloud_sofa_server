@@ -26,14 +26,14 @@ public class ExceptionLogController {
     private ExceptionLogService exceptionLogService;
 
     @ApiOperation("获取异常日志")
-    @GetMapping("/admin/exception/logs")
+    @GetMapping("/exception/logs")
     public Result<PageResultDTO<ExceptionLogDTO>> listExceptionLogs(ConditionVO conditionVO) {
         return Result.OK(exceptionLogService.listExceptionLogs(conditionVO));
     }
 
     @OptLog(optType = DELETE)
     @ApiOperation(value = "删除异常日志")
-    @DeleteMapping("/admin/exception/logs")
+    @DeleteMapping("/exception/logs")
     public Result<?> deleteExceptionLogs(@RequestBody List<Integer> exceptionLogIds) {
         exceptionLogService.removeByIds(exceptionLogIds);
         return Result.OK();

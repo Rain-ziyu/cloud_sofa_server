@@ -1,7 +1,6 @@
 package asia.huayu.config;
 
 
-import asia.huayu.interceptor.AccessLimitInterceptor;
 import asia.huayu.interceptor.PaginationInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -19,8 +18,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
     private PaginationInterceptor paginationInterceptor;
 
-    @Autowired
-    private AccessLimitInterceptor accessLimitInterceptor;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -35,7 +32,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(paginationInterceptor);
-        registry.addInterceptor(accessLimitInterceptor);
     }
 
 }

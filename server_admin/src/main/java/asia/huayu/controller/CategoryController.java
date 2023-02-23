@@ -28,20 +28,20 @@ public class CategoryController {
 
 
     @ApiOperation(value = "查看后台分类列表")
-    @GetMapping("/admin/categories")
+    @GetMapping("/categories")
     public Result<PageResultDTO<CategoryAdminDTO>> listCategoriesAdmin(ConditionVO conditionVO) {
         return Result.OK(categoryService.listCategoriesAdmin(conditionVO));
     }
 
     @ApiOperation(value = "搜索文章分类")
-    @GetMapping("/admin/categories/search")
+    @GetMapping("/categories/search")
     public Result<List<CategoryOptionDTO>> listCategoriesAdminBySearch(ConditionVO conditionVO) {
         return Result.OK(categoryService.listCategoriesBySearch(conditionVO));
     }
 
     @OptLog(optType = DELETE)
     @ApiOperation(value = "删除分类")
-    @DeleteMapping("/admin/categories")
+    @DeleteMapping("/categories")
     public Result<?> deleteCategories(@RequestBody List<Integer> categoryIds) {
         categoryService.deleteCategories(categoryIds);
         return Result.OK();
@@ -49,7 +49,7 @@ public class CategoryController {
 
     @OptLog(optType = SAVE_OR_UPDATE)
     @ApiOperation(value = "添加或修改分类")
-    @PostMapping("/admin/categories")
+    @PostMapping("/categories")
     public Result<?> saveOrUpdateCategory(@Valid @RequestBody CategoryVO categoryVO) {
         categoryService.saveOrUpdateCategory(categoryVO);
         return Result.OK();

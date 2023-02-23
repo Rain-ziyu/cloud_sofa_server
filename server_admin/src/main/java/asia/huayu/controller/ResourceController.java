@@ -26,14 +26,14 @@ public class ResourceController {
     private ResourceService resourceService;
 
     @ApiOperation(value = "查看资源列表")
-    @GetMapping("/admin/resources")
+    @GetMapping("/resources")
     public Result<List<ResourceDTO>> listResources(ConditionVO conditionVO) {
         return Result.OK(resourceService.listResources(conditionVO));
     }
 
     @OptLog(optType = DELETE)
     @ApiOperation(value = "删除资源")
-    @DeleteMapping("/admin/resources/{resourceId}")
+    @DeleteMapping("/resources/{resourceId}")
     public Result<?> deleteResource(@PathVariable("resourceId") Integer resourceId) {
         resourceService.deleteResource(resourceId);
         return Result.OK();
@@ -41,14 +41,14 @@ public class ResourceController {
 
     @OptLog(optType = SAVE_OR_UPDATE)
     @ApiOperation(value = "新增或修改资源")
-    @PostMapping("/admin/resources")
+    @PostMapping("/resources")
     public Result<?> saveOrUpdateResource(@RequestBody @Valid ResourceVO resourceVO) {
         resourceService.saveOrUpdateResource(resourceVO);
         return Result.OK("更新资源成功");
     }
 
     @ApiOperation(value = "查看角色资源选项")
-    @GetMapping("/admin/role/resources")
+    @GetMapping("/role/resources")
     public Result<List<LabelOptionDTO>> listResourceOption() {
         return Result.OK(resourceService.listResourceOption());
     }

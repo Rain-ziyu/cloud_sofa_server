@@ -26,14 +26,14 @@ public class OperationLogController {
     private OperationLogService operationLogService;
 
     @ApiOperation(value = "查看操作日志")
-    @GetMapping("/admin/operation/logs")
+    @GetMapping("/operation/logs")
     public Result<PageResultDTO<OperationLogDTO>> listOperationLogs(ConditionVO conditionVO) {
         return Result.OK(operationLogService.listOperationLogs(conditionVO));
     }
 
     @OptLog(optType = DELETE)
     @ApiOperation(value = "删除操作日志")
-    @DeleteMapping("/admin/operation/logs")
+    @DeleteMapping("/operation/logs")
     public Result<?> deleteOperationLogs(@RequestBody List<Integer> operationLogIds) {
         operationLogService.removeByIds(operationLogIds);
         return Result.OK();

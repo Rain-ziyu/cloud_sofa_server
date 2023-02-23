@@ -7,6 +7,6 @@ public interface SocialLoginConstant {
     String ACCESS_TOKEN = "access_token";
 
     String OAUTH_CONSUMER_KEY = "oauth_consumer_key";
-    Integer QQ_LOGIN_TYPE = 1;
+
 
 }

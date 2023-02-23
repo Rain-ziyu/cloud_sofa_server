@@ -1,9 +1,9 @@
 package asia.huayu.strategy.impl.login;
 
+import asia.huayu.common.exception.ServiceProcessException;
 import asia.huayu.config.properties.QQConfigProperties;
 import asia.huayu.constant.SocialLoginConstant;
 import asia.huayu.enums.LoginTypeEnum;
-import asia.huayu.exception.BizException;
 import asia.huayu.model.dto.QQTokenDTO;
 import asia.huayu.model.dto.QQUserInfoDTO;
 import asia.huayu.model.dto.SocialTokenDTO;
@@ -61,11 +61,11 @@ public class QQLoginStrategyImpl extends AbstractSocialLoginStrategyImpl {
             String result = restTemplate.getForObject(qqConfigProperties.getCheckTokenUrl(), String.class, qqData);
             QQTokenDTO qqTokenDTO = JSON.parseObject(CommonUtil.getBracketsContent(Objects.requireNonNull(result)), QQTokenDTO.class);
             if (!qqLoginVO.getOpenId().equals(qqTokenDTO.getOpenid())) {
-                throw new BizException(QQ_LOGIN_ERROR);
+                throw new ServiceProcessException(QQ_LOGIN_ERROR.getDesc());
             }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new BizException(QQ_LOGIN_ERROR);
+            throw new ServiceProcessException(QQ_LOGIN_ERROR.getDesc());
         }
     }
 

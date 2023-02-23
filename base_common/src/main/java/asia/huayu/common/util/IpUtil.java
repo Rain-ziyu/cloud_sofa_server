@@ -1,6 +1,5 @@
-package asia.huayu.util;
+package asia.huayu.common.util;
 
-import asia.huayu.constant.CommonConstant;
 import eu.bitwalker.useragentutils.UserAgent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -82,7 +81,7 @@ public class IpUtil {
 
     public static String getIpProvince(String ipSource) {
         if (StringUtils.isBlank(ipSource)) {
-            return CommonConstant.UNKNOWN;
+            return "未知";
         }
         String[] strings = ipSource.split("\\|");
         if (strings.length > 1 && strings[1].endsWith("省")) {

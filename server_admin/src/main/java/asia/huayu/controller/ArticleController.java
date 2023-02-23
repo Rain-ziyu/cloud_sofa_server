@@ -41,14 +41,14 @@ public class ArticleController extends BaseController {
 
 
     @ApiOperation("获取后台文章")
-    @GetMapping("/admin/articles")
+    @GetMapping("/articles")
     public Result<PageResultDTO<ArticleAdminDTO>> listArticlesAdmin(ConditionVO conditionVO) {
         return Result.OK(articleService.listArticlesAdmin(conditionVO));
     }
 
     @OptLog(optType = SAVE_OR_UPDATE)
     @ApiOperation("保存和修改文章")
-    @PostMapping("/admin/articles")
+    @PostMapping("/articles")
     public Result<?> saveOrUpdateArticle(@Valid @RequestBody ArticleVO articleVO) {
         articleService.saveOrUpdateArticle(articleVO);
         return Result.OK("保存成功");
@@ -56,14 +56,14 @@ public class ArticleController extends BaseController {
 
     @OptLog(optType = UPDATE)
     @ApiOperation("修改文章是否置顶和推荐")
-    @PutMapping("/admin/articles/topAndFeatured")
+    @PutMapping("/articles/topAndFeatured")
     public Result<?> updateArticleTopAndFeatured(@Valid @RequestBody ArticleTopFeaturedVO articleTopFeaturedVO) {
         articleService.updateArticleTopAndFeatured(articleTopFeaturedVO);
         return Result.OK();
     }
 
     @ApiOperation("删除或者恢复文章")
-    @PutMapping("/admin/articles")
+    @PutMapping("/articles")
     public Result<?> updateArticleDelete(@Valid @RequestBody DeleteVO deleteVO) {
         articleService.updateArticleDelete(deleteVO);
         return Result.OK();
@@ -71,7 +71,7 @@ public class ArticleController extends BaseController {
 
     @OptLog(optType = DELETE)
     @ApiOperation(value = "物理删除文章")
-    @DeleteMapping("/admin/articles/delete")
+    @DeleteMapping("/articles/delete")
     public Result<?> deleteArticles(@RequestBody List<Integer> articleIds) {
         articleService.deleteArticles(articleIds);
         return Result.OK();
@@ -80,21 +80,21 @@ public class ArticleController extends BaseController {
     @OptLog(optType = UPLOAD)
     @ApiOperation("上传文章图片")
     @ApiImplicitParam(name = "file", value = "文章图片", required = true, dataType = "MultipartFile")
-    @PostMapping("/admin/articles/images")
+    @PostMapping("/articles/images")
     public Result<String> saveArticleImages(MultipartFile file) {
         return Result.OK(uploadStrategyContext.executeUploadStrategy(file, FilePathEnum.ARTICLE.getPath()));
     }
 
     @ApiOperation("根据id查看后台文章")
     @ApiImplicitParam(name = "articleId", value = "文章id", required = true, dataType = "Integer")
-    @GetMapping("/admin/articles/{articleId}")
+    @GetMapping("/articles/{articleId}")
     public Result<ArticleAdminViewDTO> getArticleBackById(@PathVariable("articleId") Integer articleId) {
         return Result.OK(articleService.getArticleByIdAdmin(articleId));
     }
 
     @OptLog(optType = UPLOAD)
     @ApiOperation(value = "导入文章")
-    @PostMapping("/admin/articles/import")
+    @PostMapping("/articles/import")
     public Result<?> importArticles(MultipartFile file, @RequestParam(required = false) String type) {
         articleImportStrategyContext.importArticles(file, type);
         return Result.OK();
@@ -103,7 +103,7 @@ public class ArticleController extends BaseController {
     @OptLog(optType = EXPORT)
     @ApiOperation(value = "导出文章")
     @ApiImplicitParam(name = "articleIdList", value = "文章id", required = true, dataType = "List<Integer>")
-    @PostMapping("/admin/articles/export")
+    @PostMapping("/articles/export")
     public Result<List<String>> exportArticles(@RequestBody List<Integer> articleIds) {
         return Result.OK(articleService.exportArticles(articleIds));
     }

@@ -47,21 +47,21 @@ public class AuroraInfoController {
     }
 
     @ApiOperation(value = "获取系统后台信息")
-    @GetMapping("/admin")
+    @GetMapping("")
     public Result<AuroraAdminInfoDTO> getBlogBackInfo() {
         return Result.OK(auroraInfoService.getAuroraAdminInfo());
     }
 
     @OptLog(optType = UPDATE)
     @ApiOperation(value = "更新网站配置")
-    @PutMapping("/admin/website/config")
+    @PutMapping("/website/config")
     public Result<?> updateWebsiteConfig(@Valid @RequestBody WebsiteConfigVO websiteConfigVO) {
         auroraInfoService.updateWebsiteConfig(websiteConfigVO);
         return Result.OK();
     }
 
     @ApiOperation(value = "获取网站配置")
-    @GetMapping("/admin/website/config")
+    @GetMapping("/website/config")
     public Result<WebsiteConfigDTO> getWebsiteConfig() {
         return Result.OK(auroraInfoService.getWebsiteConfig());
     }
@@ -74,7 +74,7 @@ public class AuroraInfoController {
 
     @OptLog(optType = UPDATE)
     @ApiOperation(value = "修改关于我信息")
-    @PutMapping("/admin/about")
+    @PutMapping("/about")
     public Result<?> updateAbout(@Valid @RequestBody AboutVO aboutVO) {
         auroraInfoService.updateAbout(aboutVO);
         return Result.OK();
@@ -83,7 +83,7 @@ public class AuroraInfoController {
     @OptLog(optType = UPLOAD)
     @ApiOperation(value = "上传博客配置图片")
     @ApiImplicitParam(name = "file", value = "图片", required = true, dataType = "MultipartFile")
-    @PostMapping("/admin/config/images")
+    @PostMapping("/config/images")
     public Result<String> savePhotoAlbumCover(MultipartFile file) {
         return Result.OK(uploadStrategyContext.executeUploadStrategy(file, FilePathEnum.CONFIG.getPath()));
     }

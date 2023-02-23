@@ -1,9 +1,9 @@
 package asia.huayu.aspect;
 
+import asia.huayu.common.util.IpUtil;
 import asia.huayu.entity.ExceptionLog;
 import asia.huayu.event.ExceptionLogEvent;
 import asia.huayu.util.ExceptionUtil;
-import asia.huayu.util.IpUtil;
 import com.alibaba.fastjson2.JSON;
 import io.swagger.annotations.ApiOperation;
 import org.aspectj.lang.JoinPoint;

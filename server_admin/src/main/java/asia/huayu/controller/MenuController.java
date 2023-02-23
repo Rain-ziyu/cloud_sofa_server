@@ -27,14 +27,14 @@ public class MenuController {
     private MenuService menuService;
 
     @ApiOperation(value = "查看菜单列表")
-    @GetMapping("/admin/menus")
+    @GetMapping("/menus")
     public Result<List<MenuDTO>> listMenus(ConditionVO conditionVO) {
         return Result.OK(menuService.listMenus(conditionVO));
     }
 
     @OptLog(optType = SAVE_OR_UPDATE)
     @ApiOperation(value = "新增或修改菜单")
-    @PostMapping("/admin/menus")
+    @PostMapping("/menus")
     public Result<?> saveOrUpdateMenu(@Valid @RequestBody MenuVO menuVO) {
         menuService.saveOrUpdateMenu(menuVO);
         return Result.OK();
@@ -42,7 +42,7 @@ public class MenuController {
 
     @OptLog(optType = UPDATE)
     @ApiOperation(value = "修改目录是否隐藏")
-    @PutMapping("/admin/menus/isHidden")
+    @PutMapping("/menus/isHidden")
     public Result<?> updateMenuIsHidden(@RequestBody IsHiddenVO isHiddenVO) {
         menuService.updateMenuIsHidden(isHiddenVO);
         return Result.OK();
@@ -50,20 +50,20 @@ public class MenuController {
 
     @OptLog(optType = DELETE)
     @ApiOperation(value = "删除菜单")
-    @DeleteMapping("/admin/menus/{menuId}")
+    @DeleteMapping("/menus/{menuId}")
     public Result<?> deleteMenu(@PathVariable("menuId") Integer menuId) {
         menuService.deleteMenu(menuId);
         return Result.OK();
     }
 
     @ApiOperation(value = "查看所有菜单选项")
-    @GetMapping("/admin/role/menus")
+    @GetMapping("/role/menus")
     public Result<List<LabelOptionDTO>> listMenuOptions() {
         return Result.OK(menuService.listMenuOptions());
     }
 
     @ApiOperation(value = "查看当前用户菜单")
-    @GetMapping("/admin/user/menus")
+    @GetMapping("/user/menus")
     public Result<List<UserMenuDTO>> listUserMenus() {
         return Result.OK(menuService.listUserMenus());
     }

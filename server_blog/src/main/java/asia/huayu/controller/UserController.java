@@ -4,11 +4,7 @@ package asia.huayu.controller;
 import asia.huayu.annotation.OptLog;
 import asia.huayu.common.entity.Result;
 import asia.huayu.constant.ReturnMessageConstant;
-import asia.huayu.model.dto.PageResultDTO;
-import asia.huayu.model.dto.UserAdminDTO;
-import asia.huayu.model.dto.UserAreaDTO;
 import asia.huayu.model.dto.UserDetailsDTO;
-import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.model.vo.QQLoginVO;
 import asia.huayu.model.vo.UserVO;
 import asia.huayu.service.UserService;
@@ -19,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 import static asia.huayu.constant.OptTypeConstant.UPDATE;
 
@@ -38,17 +33,7 @@ public class UserController {
         return Result.OK(ReturnMessageConstant.SEND_VERIFY_SUCCESS);
     }
 
-    @ApiOperation(value = "获取用户区域分布")
-    @GetMapping("/admin/users/area")
-    public Result<List<UserAreaDTO>> listUserAreas(ConditionVO conditionVO) {
-        return Result.OK(userService.listUserAreas(conditionVO));
-    }
 
-    @ApiOperation(value = "查询后台用户列表")
-    @GetMapping("/admin/users")
-    public Result<PageResultDTO<UserAdminDTO>> listUsers(ConditionVO conditionVO) {
-        return Result.OK(userService.listUsers(conditionVO));
-    }
 
     @ApiOperation(value = "用户注册")
     @PostMapping("/users/register")

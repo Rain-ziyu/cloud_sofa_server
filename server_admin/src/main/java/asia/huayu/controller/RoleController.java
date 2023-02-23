@@ -27,14 +27,14 @@ public class RoleController {
     private BlogRoleService blogRoleService;
 
     @ApiOperation(value = "查询用户角色选项")
-    @GetMapping("/admin/users/role")
+    @GetMapping("/users/role")
     public Result<List<UserRoleDTO>> listUserRoles() {
         return Result.OK(blogRoleService.listUserRoles());
     }
 
 
     @ApiOperation(value = "查询角色列表")
-    @GetMapping("/admin/roles")
+    @GetMapping("/roles")
     public Result<PageResultDTO<RoleDTO>> listRoles(ConditionVO conditionVO) {
 
         return Result.OK(blogRoleService.listRoles(conditionVO));
@@ -42,7 +42,7 @@ public class RoleController {
 
     @OptLog(optType = SAVE_OR_UPDATE)
     @ApiOperation(value = "保存或更新角色")
-    @PostMapping("/admin/role")
+    @PostMapping("/role")
     public Result<?> saveOrUpdateRole(@RequestBody @Valid RoleVO roleVO) {
         blogRoleService.saveOrUpdateRole(roleVO);
         return Result.OK();
@@ -50,7 +50,7 @@ public class RoleController {
 
     @OptLog(optType = DELETE)
     @ApiOperation(value = "删除角色")
-    @DeleteMapping("/admin/roles")
+    @DeleteMapping("/roles")
     public Result<?> deleteRoles(@RequestBody List<Integer> roleIdList) {
         blogRoleService.deleteRoles(roleIdList);
         return Result.OK();

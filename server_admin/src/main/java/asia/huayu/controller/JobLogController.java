@@ -26,14 +26,14 @@ public class JobLogController {
     private JobLogService jobLogService;
 
     @ApiOperation("获取定时任务的日志列表")
-    @GetMapping("/admin/jobLogs")
+    @GetMapping("/jobLogs")
     public Result<PageResultDTO<JobLogDTO>> listJobLogs(JobLogSearchVO jobLogSearchVO) {
         return Result.OK(jobLogService.listJobLogs(jobLogSearchVO));
     }
 
     @OptLog(optType = DELETE)
     @ApiOperation("删除定时任务的日志")
-    @DeleteMapping("/admin/jobLogs")
+    @DeleteMapping("/jobLogs")
     public Result<?> deleteJobLogs(@RequestBody List<Integer> ids) {
         jobLogService.deleteJobLogs(ids);
         return Result.OK();
@@ -41,14 +41,14 @@ public class JobLogController {
 
     @OptLog(optType = DELETE)
     @ApiOperation("清除定时任务的日志")
-    @DeleteMapping("/admin/jobLogs/clean")
+    @DeleteMapping("/jobLogs/clean")
     public Result<?> cleanJobLogs() {
         jobLogService.cleanJobLogs();
         return Result.OK();
     }
 
     @ApiOperation("获取定时任务日志的所有组名")
-    @GetMapping("/admin/jobLogs/jobGroups")
+    @GetMapping("/jobLogs/jobGroups")
     public Result<?> listJobLogGroups() {
         return Result.OK(jobLogService.listJobLogGroups());
     }

@@ -4,9 +4,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 @Configuration
-// 设置那些包需要JPA映射支持
+// 设置哪些包需要JPA映射支持
 @EnableElasticsearchRepositories(
-        basePackages = "asia.huayu.es"
+        basePackages = "asia.huayu"
 )
 public class ElasticsearchTemplateProducer {
 }
