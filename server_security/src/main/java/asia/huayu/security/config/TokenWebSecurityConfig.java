@@ -6,6 +6,7 @@ import asia.huayu.security.security.DefaultPasswordEncoder;
 import asia.huayu.security.security.TokenLogoutHandler;
 import asia.huayu.security.security.TokenManager;
 import asia.huayu.security.security.UnauthEntryPoint;
+import asia.huayu.security.service.UserLoginInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -30,14 +31,16 @@ public class TokenWebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final RedisTemplate redisTemplate;
     private final DefaultPasswordEncoder defaultPasswordEncoder;
     private final UserDetailsService userDetailsService;
+    private final UserLoginInfoService userLoginInfoService;
 
-    @Autowired
+    @Autowired(required = false)
     public TokenWebSecurityConfig(UserDetailsService userDetailsService, DefaultPasswordEncoder defaultPasswordEncoder,
-                                  TokenManager tokenManager, RedisTemplate redisTemplate) {
+                                  TokenManager tokenManager, RedisTemplate redisTemplate, UserLoginInfoService userLoginInfoService) {
         this.userDetailsService = userDetailsService;
         this.defaultPasswordEncoder = defaultPasswordEncoder;
         this.tokenManager = tokenManager;
         this.redisTemplate = redisTemplate;
+        this.userLoginInfoService = userLoginInfoService;
     }
 
     /**
@@ -59,7 +62,7 @@ public class TokenWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and().logout().logoutUrl("/logout")// 退出路径
                 .addLogoutHandler(new TokenLogoutHandler(tokenManager, redisTemplate)).and()
-                .addFilter(new TokenLoginFilter(tokenManager, redisTemplate, authenticationManager()))
+                .addFilter(new TokenLoginFilter(tokenManager, redisTemplate, authenticationManager(), userLoginInfoService))
                 .addFilter(new TokenAuthFilter(authenticationManager(), tokenManager, redisTemplate)).httpBasic();
     }
 

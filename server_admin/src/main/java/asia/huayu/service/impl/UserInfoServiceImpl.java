@@ -7,14 +7,15 @@ import asia.huayu.entity.UserInfo;
 import asia.huayu.mapper.UserInfoMapper;
 import asia.huayu.mapper.UserMapper;
 import asia.huayu.model.dto.PageResultDTO;
-import asia.huayu.model.dto.UserDetailsDTO;
 import asia.huayu.model.dto.UserOnlineDTO;
 import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.model.vo.UserDisableVO;
 import asia.huayu.model.vo.UserRoleVO;
+import asia.huayu.security.entity.OnlineUser;
+import asia.huayu.security.util.SystemValue;
 import asia.huayu.service.RedisService;
 import asia.huayu.service.UserInfoService;
-import asia.huayu.util.BeanCopyUtil;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
@@ -74,23 +75,27 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
     @Override
     public PageResultDTO<UserOnlineDTO> listOnlineUsers(ConditionVO conditionVO) {
-        Map<String, Object> userMaps = redisService.hGetAll("login_user");
+        Map<String, Object> userMaps = redisService.hGetAll(SystemValue.LOGIN_USER);
         Collection<Object> values = userMaps.values();
-        ArrayList<UserDetailsDTO> userDetailsDTOs = new ArrayList<>();
+        ArrayList<OnlineUser> onlineUsers = new ArrayList<>();
         for (Object value : values) {
-            userDetailsDTOs.add((UserDetailsDTO) value);
+            OnlineUser onlineUser = (OnlineUser) value;
+            // 如果当前时间小于过期时间
+            if (DateUtil.compare(DateUtil.offsetMillisecond(onlineUser.getLoginTime(), Math.toIntExact(SystemValue.TOKEN_EXPIRATION_TIME)), new Date()) > 0) {
+                onlineUsers.add(onlineUser);
+            }
         }
-        List<UserOnlineDTO> userOnlineDTOs = BeanCopyUtil.copyList(userDetailsDTOs, UserOnlineDTO.class);
-        // TODO:使用es进行查询
-        List<UserOnlineDTO> onlineUsers = userOnlineDTOs.stream()
-                .filter(item -> StringUtils.isBlank(conditionVO.getKeywords()) || item.getNickname().contains(conditionVO.getKeywords()))
+
+        // TODO:将用户信息存从redis中取出
+        List<UserOnlineDTO> onlineUserList = onlineUsers.stream()
+                .filter(item -> StringUtils.isBlank(conditionVO.getKeywords()) || item.get().contains(conditionVO.getKeywords()))
                 .sorted(Comparator.comparing(UserOnlineDTO::getLastLoginTime).reversed())
                 .collect(Collectors.toList());
         // 进行分页
         int fromIndex = getLimitCurrent().intValue();
         int size = getSize().intValue();
         int toIndex = onlineUsers.size() - fromIndex > size ? fromIndex + size : onlineUsers.size();
-        List<UserOnlineDTO> userOnlineList = onlineUsers.subList(fromIndex, toIndex);
+        List<UserOnlineDTO> userOnlineList = onlineUserList.subList(fromIndex, toIndex);
         return new PageResultDTO<>(userOnlineList, onlineUsers.size());
     }
 

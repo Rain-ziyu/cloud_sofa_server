@@ -17,7 +17,7 @@ import asia.huayu.model.dto.UserDetailsDTO;
 import asia.huayu.security.entity.SecurityUser;
 import asia.huayu.security.security.TokenManager;
 import asia.huayu.service.RedisService;
-import asia.huayu.service.UserLoginInfoService;
+import asia.huayu.service.impl.UserLoginInfoServiceImpl;
 import asia.huayu.strategy.SocialLoginStrategy;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -46,9 +46,9 @@ public abstract class AbstractSocialLoginStrategyImpl implements SocialLoginStra
 
     @Autowired
     private TokenManager tokenManager;
-
+    // 直接注入实现类 不然看不到save方法
     @Autowired
-    private UserLoginInfoService userLoginInfoService;
+    private UserLoginInfoServiceImpl userLoginInfoService;
     @Autowired
     private UserDetailsService userDetailsService;
 

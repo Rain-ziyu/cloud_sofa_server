@@ -3,11 +3,14 @@ package asia.huayu.security.filter;
 
 import asia.huayu.common.entity.Result;
 import asia.huayu.common.exception.ServiceProcessException;
+import asia.huayu.common.util.IpUtil;
 import asia.huayu.common.util.ResponseUtil;
+import asia.huayu.security.entity.OnlineUser;
 import asia.huayu.security.entity.SecurityUser;
 import asia.huayu.security.entity.SecurityUserInfo;
 import asia.huayu.security.entity.TokenDTO;
 import asia.huayu.security.security.TokenManager;
+import asia.huayu.security.service.UserLoginInfoService;
 import asia.huayu.security.util.SystemEnums;
 import asia.huayu.security.util.SystemValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,11 +35,13 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
     private final TokenManager tokenManager;
     private final RedisTemplate redisTemplate;
     private final AuthenticationManager authenticationManager;
+    private final UserLoginInfoService userLoginInfoService;
 
-    public TokenLoginFilter(TokenManager tokenManager, RedisTemplate redisTemplate, AuthenticationManager authenticationManager) {
+    public TokenLoginFilter(TokenManager tokenManager, RedisTemplate redisTemplate, AuthenticationManager authenticationManager, UserLoginInfoService userLoginInfoService) {
         this.authenticationManager = authenticationManager;
         this.tokenManager = tokenManager;
         this.redisTemplate = redisTemplate;
+        this.userLoginInfoService = userLoginInfoService;
         this.setPostOnly(false);
         this.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/login", "POST"));
     }
@@ -71,6 +76,18 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
         String refreshToken = tokenManager.createRefreshToken(user.getUsername());
         tokenDTO.setToken(token);
         tokenDTO.setRefreshToken(refreshToken);
+        // 将登陆用户写到redis的set中
+        OnlineUser onlineUser = new OnlineUser();
+        onlineUser.setUserId(Integer.parseInt(user.getSecurityUserInfo().getId()));
+        onlineUser.setLoginTime(new Date());
+        onlineUser.setLoginType(1);
+        String ipAddress = IpUtil.getIpAddress(request);
+        onlineUser.setIpAddress(ipAddress);
+        onlineUser.setIpSource(IpUtil.getIpSource(ipAddress));
+        onlineUser.setBrowser(IpUtil.getUserAgent(request).getBrowser().getName());
+        onlineUser.setOs(IpUtil.getUserAgent(request).getOperatingSystem().getName());
+        userLoginInfoService.addLoginInfo(onlineUser);
+        redisTemplate.opsForHash().put(SystemValue.LOGIN_USER, user.getUsername(), onlineUser);
         ResponseUtil.out(response, Result.OK(SystemEnums.LOGIN_SUCCESS.VALUE, tokenDTO));
     }
 

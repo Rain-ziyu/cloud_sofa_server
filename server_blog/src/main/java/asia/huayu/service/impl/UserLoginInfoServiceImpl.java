@@ -2,7 +2,9 @@ package asia.huayu.service.impl;
 
 import asia.huayu.entity.UserLoginInfo;
 import asia.huayu.mapper.UserLoginInfoMapper;
-import asia.huayu.service.UserLoginInfoService;
+import asia.huayu.security.entity.OnlineUser;
+import asia.huayu.security.service.UserLoginInfoService;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +15,13 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UserLoginInfoServiceImpl extends ServiceImpl<UserLoginInfoMapper, UserLoginInfo>
-        implements UserLoginInfoService {
+        implements UserLoginInfoService, IService<UserLoginInfo> {
 
+    @Override
+    public void addLoginInfo(OnlineUser onlineUser) {
+// TODO: 记录用户登录信息到数据库
+
+    }
 }
 
 
