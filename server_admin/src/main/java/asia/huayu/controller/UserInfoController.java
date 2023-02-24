@@ -3,6 +3,7 @@ package asia.huayu.controller;
 import asia.huayu.annotation.OptLog;
 import asia.huayu.common.entity.Result;
 import asia.huayu.model.dto.PageResultDTO;
+import asia.huayu.model.dto.UserInfoDTO;
 import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.model.vo.UserDisableVO;
 import asia.huayu.model.vo.UserRoleVO;
@@ -56,4 +57,9 @@ public class UserInfoController {
         return Result.OK();
     }
 
+    @Operation(summary = "根据token获取用户信息")
+    @GetMapping("/users/info")
+    public Result<UserInfoDTO> getUserInfo() {
+        return Result.OK(userInfoService.getUserInfo());
+    }
 }

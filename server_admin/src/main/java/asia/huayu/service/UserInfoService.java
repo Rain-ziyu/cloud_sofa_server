@@ -2,6 +2,7 @@ package asia.huayu.service;
 
 import asia.huayu.entity.UserInfo;
 import asia.huayu.model.dto.PageResultDTO;
+import asia.huayu.model.dto.UserInfoDTO;
 import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.model.vo.UserDisableVO;
 import asia.huayu.model.vo.UserRoleVO;
@@ -23,4 +24,5 @@ public interface UserInfoService extends IService<UserInfo> {
     UserInfo getUserInfoByName(String username);
 
 
+    UserInfoDTO getUserInfo();
 }

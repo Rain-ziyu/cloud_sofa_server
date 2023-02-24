@@ -6,6 +6,8 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,7 +31,6 @@ public class test {
      * 如果是中文名，只显示最后两个字
      *
      * @param name
-     * @param outputPath
      * @param outputName
      * @throws IOException
      */
@@ -153,7 +154,12 @@ public class test {
                         "38,157,128", "201,138,131", "220,162,151", "137,157,192", "175,215,237", "92,167,186",
                         "255,66,93", "147,224,255", "247,68,97", "185,227,217"};
         int len = beautifulColors.length;
-        Random random = new Random();
+        Random random = null;
+        try {
+            random = SecureRandom.getInstanceStrong();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
         String[] color = beautifulColors[random.nextInt(len)].split(",");
         return new Color(Integer.parseInt(color[0]), Integer.parseInt(color[1]),
                 Integer.parseInt(color[2]));

@@ -21,4 +21,9 @@
         login_type,ip_address,ip_source,
         browser,os
     </sql>
+    <select id="selectLastLoginInfo" resultType="asia.huayu.entity.UserLoginInfo">
+        select
+        <include refid="Base_Column_List"></include>
+        from last_login_info where user_id = #{id}
+    </select>
 </mapper>

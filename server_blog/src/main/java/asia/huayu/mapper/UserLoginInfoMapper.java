@@ -13,6 +13,7 @@ import org.apache.ibatis.annotations.Mapper;
  */
 public interface UserLoginInfoMapper extends BaseMapper<UserLoginInfo> {
 
+    UserLoginInfo selectLastLoginInfo(Integer id);
 }
 
 

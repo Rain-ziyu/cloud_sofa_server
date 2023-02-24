@@ -17,7 +17,6 @@ public class UserLoginInfoServiceImpl
 
     @Override
     public void addLoginInfo(OnlineUser onlineUser) {
-        // TODO: 记录用户登录信息到数据库
         log.info("通过调用file模块的登录，不记录进数据库");
     }
 }

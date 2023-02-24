@@ -1,13 +1,14 @@
 package asia.huayu.service.impl;
 
-import asia.huayu.auth.service.UserRoleService;
 import asia.huayu.common.exception.ServiceProcessException;
 import asia.huayu.common.util.RequestUtil;
 import asia.huayu.constant.RedisConstant;
 import asia.huayu.entity.User;
 import asia.huayu.entity.UserInfo;
+import asia.huayu.entity.UserLoginInfo;
 import asia.huayu.enums.FilePathEnum;
 import asia.huayu.mapper.UserInfoMapper;
+import asia.huayu.mapper.UserLoginInfoMapper;
 import asia.huayu.mapper.UserMapper;
 import asia.huayu.model.dto.UserInfoDTO;
 import asia.huayu.model.vo.EmailVO;
@@ -15,9 +16,10 @@ import asia.huayu.model.vo.SubscribeVO;
 import asia.huayu.model.vo.UserInfoVO;
 import asia.huayu.service.RedisService;
 import asia.huayu.service.UserInfoService;
+import asia.huayu.service.UserService;
 import asia.huayu.strategy.context.UploadStrategyContext;
-import asia.huayu.util.BeanCopyUtil;
 import asia.huayu.util.UserUtil;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
@@ -44,12 +46,13 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     private RedisService redisService;
 
     @Autowired
-    private UserRoleService userRoleService;
+    private UserService userService;
 
     @Autowired
     private UploadStrategyContext uploadStrategyContext;
 
-
+    @Autowired
+    private UserLoginInfoMapper userLoginInfoMapper;
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateUserInfo(UserInfoVO userInfoVO) {
@@ -113,8 +116,22 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Override
     public UserInfoDTO getUserInfoById(Integer id) {
         UserInfo userInfo = userInfoMapper.selectById(id);
-        // TODO: 查询对应的ip地址等信息
-        return BeanCopyUtil.copyObject(userInfo, UserInfoDTO.class);
+        User user = userMapper.selectById(userInfo.getId());
+        UserLoginInfo userLoginInfo = userLoginInfoMapper.selectLastLoginInfo(id);
+        UserInfoDTO userInfoDTO = new UserInfoDTO();
+        userInfoDTO.setId(userInfo.getId());
+        userInfoDTO.setEmail(userInfo.getEmail());
+        userInfoDTO.setLoginType(userLoginInfo.getLoginType());
+        userInfoDTO.setUsername(user.getUsername());
+        userInfoDTO.setNickname(userInfo.getNickname());
+        userInfoDTO.setAvatar(userInfo.getAvatar());
+        userInfoDTO.setIntro(userInfo.getIntro());
+        userInfoDTO.setWebsite(userInfo.getWebsite());
+        userInfoDTO.setIsSubscribe(userInfo.getIsSubscribe());
+        userInfoDTO.setIpAddress(userLoginInfo.getIpAddress());
+        userInfoDTO.setIpSource(userLoginInfo.getIpSource());
+        userInfoDTO.setLastLoginTime(DateUtil.toLocalDateTime(userLoginInfo.getLoginTime()));
+        return userInfoDTO;
     }
 
     @Override

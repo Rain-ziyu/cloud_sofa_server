@@ -41,7 +41,7 @@ public class FileUtil {
         if (StringUtils.isBlank(fileName)) {
             return "";
         }
-        return fileName.substring(fileName.lastIndexOf("."));
+        return fileName.substring(fileName.lastIndexOf('.'));
     }
 
     public static File multipartFileToFile(MultipartFile multipartFile) {

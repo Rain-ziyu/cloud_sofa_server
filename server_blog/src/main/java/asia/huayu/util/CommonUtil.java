@@ -1,5 +1,9 @@
 package asia.huayu.util;
 
+import asia.huayu.common.exception.ServiceProcessException;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,16 +21,21 @@ public class CommonUtil {
     }
 
     public static String getBracketsContent(String str) {
-        return str.substring(str.indexOf("(") + 1, str.indexOf(")"));
+        return str.substring(str.indexOf('(') + 1, str.indexOf(')'));
     }
 
     public static String getRandomCode() {
         StringBuilder str = new StringBuilder();
-        Random random = new Random();
-        for (int i = 0; i < 6; i++) {
-            str.append(random.nextInt(10));
+        Random random = null;
+        try {
+            random = SecureRandom.getInstanceStrong();
+            for (int i = 0; i < 6; i++) {
+                str.append(random.nextInt(10));
+            }
+            return str.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new ServiceProcessException(e);
         }
-        return str.toString();
     }
 
     public static <T> List<T> castList(Object obj, Class<T> clazz) {

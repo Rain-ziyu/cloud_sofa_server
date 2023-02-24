@@ -2,11 +2,13 @@ package asia.huayu.service.impl;
 
 import asia.huayu.auth.entity.UserRole;
 import asia.huayu.auth.service.UserRoleService;
+import asia.huayu.common.util.RequestUtil;
 import asia.huayu.entity.User;
 import asia.huayu.entity.UserInfo;
 import asia.huayu.mapper.UserInfoMapper;
 import asia.huayu.mapper.UserMapper;
 import asia.huayu.model.dto.PageResultDTO;
+import asia.huayu.model.dto.UserInfoDTO;
 import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.model.vo.UserDisableVO;
 import asia.huayu.model.vo.UserRoleVO;
@@ -14,6 +16,7 @@ import asia.huayu.security.entity.OnlineUser;
 import asia.huayu.security.util.SystemValue;
 import asia.huayu.service.RedisService;
 import asia.huayu.service.UserInfoService;
+import asia.huayu.util.UserUtil;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -22,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -110,6 +114,17 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     public UserInfo getUserInfoByName(String username) {
         User user = userMapper.getUserByUsername(username);
         UserInfo userInfo = userInfoMapper.selectById(user.getId());
+        return userInfo;
+    }
+
+    @Override
+    public UserInfoDTO getUserInfo() {
+        User userByUsername = userMapper.getUserByUsername(UserUtil.getAuthentication().getName());
+        UserInfoDTO userInfo = userInfoMapper.selectDTOById(userByUsername.getId());
+        HttpServletRequest request = RequestUtil.getRequest();
+
+        userInfo.setToken(request.getParameter("token"));
+        userInfo.setRefreshToken(request.getParameter("refreshToken"));
         return userInfo;
     }
 
