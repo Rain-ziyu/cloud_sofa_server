@@ -1,7 +1,6 @@
 package asia.huayu.model.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,17 +12,17 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ApiModel(description = "用户信息对象")
+@Schema(description = "用户信息对象")
 public class UserInfoVO {
 
     @NotBlank(message = "昵称不能为空")
-    @ApiModelProperty(name = "nickname", value = "昵称", dataType = "String")
+    @Schema(description = "nickname", title = "昵称", type = "String")
     private String nickname;
 
-    @ApiModelProperty(name = "intro", value = "介绍", dataType = "String")
+    @Schema(description = "intro", title = "介绍", type = "String")
     private String intro;
 
-    @ApiModelProperty(name = "website", value = "个人网站", dataType = "String")
+    @Schema(description = "website", title = "个人网站", type = "String")
     private String website;
 
 }

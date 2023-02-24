@@ -7,8 +7,8 @@ import asia.huayu.model.dto.PageResultDTO;
 import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.model.vo.FriendLinkVO;
 import asia.huayu.service.FriendLinkService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +18,7 @@ import java.util.List;
 import static asia.huayu.constant.OptTypeConstant.DELETE;
 import static asia.huayu.constant.OptTypeConstant.SAVE_OR_UPDATE;
 
-@Api(tags = "友链模块")
+@Tag(name = "友链模块")
 @RestController
 public class FriendLinkController {
 
@@ -26,14 +26,14 @@ public class FriendLinkController {
     private FriendLinkService friendLinkService;
 
 
-    @ApiOperation(value = "查看后台友链列表")
+    @Operation(summary = "查看后台友链列表")
     @GetMapping("/links")
     public Result<PageResultDTO<FriendLinkAdminDTO>> listFriendLinkDTO(ConditionVO conditionVO) {
         return Result.OK(friendLinkService.listFriendLinksAdmin(conditionVO));
     }
 
     @OptLog(optType = SAVE_OR_UPDATE)
-    @ApiOperation(value = "保存或修改友链")
+    @Operation(summary = "保存或修改友链")
     @PostMapping("/links")
     public Result<?> saveOrUpdateFriendLink(@Valid @RequestBody FriendLinkVO friendLinkVO) {
         friendLinkService.saveOrUpdateFriendLink(friendLinkVO);
@@ -41,7 +41,7 @@ public class FriendLinkController {
     }
 
     @OptLog(optType = DELETE)
-    @ApiOperation(value = "删除友链")
+    @Operation(summary = "删除友链")
     @DeleteMapping("/links")
     public Result<?> deleteFriendLink(@RequestBody List<Integer> linkIdList) {
         friendLinkService.removeByIds(linkIdList);

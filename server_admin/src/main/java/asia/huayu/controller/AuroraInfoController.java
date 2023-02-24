@@ -11,9 +11,9 @@ import asia.huayu.model.vo.AboutVO;
 import asia.huayu.model.vo.WebsiteConfigVO;
 import asia.huayu.service.AuroraInfoService;
 import asia.huayu.strategy.context.UploadStrategyContext;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +23,7 @@ import javax.validation.Valid;
 import static asia.huayu.constant.OptTypeConstant.UPDATE;
 import static asia.huayu.constant.OptTypeConstant.UPLOAD;
 
-@Api(tags = "aurora信息")
+@Tag(name = "aurora信息")
 @RestController
 public class AuroraInfoController {
 
@@ -33,47 +33,47 @@ public class AuroraInfoController {
     @Autowired
     private UploadStrategyContext uploadStrategyContext;
 
-    @ApiOperation(value = "上报访客信息")
+    @Operation(summary = "上报访客信息")
     @PostMapping("/report")
     public Result<?> report() {
         auroraInfoService.report();
         return Result.OK();
     }
 
-    @ApiOperation(value = "获取系统信息")
+    @Operation(summary = "获取系统信息")
     @GetMapping("/")
     public Result<AuroraHomeInfoDTO> getBlogHomeInfo() {
         return Result.OK(auroraInfoService.getAuroraHomeInfo());
     }
 
-    @ApiOperation(value = "获取系统后台信息")
+    @Operation(summary = "获取系统后台信息")
     @GetMapping("")
     public Result<AuroraAdminInfoDTO> getBlogBackInfo() {
         return Result.OK(auroraInfoService.getAuroraAdminInfo());
     }
 
     @OptLog(optType = UPDATE)
-    @ApiOperation(value = "更新网站配置")
+    @Operation(summary = "更新网站配置")
     @PutMapping("/website/config")
     public Result<?> updateWebsiteConfig(@Valid @RequestBody WebsiteConfigVO websiteConfigVO) {
         auroraInfoService.updateWebsiteConfig(websiteConfigVO);
         return Result.OK();
     }
 
-    @ApiOperation(value = "获取网站配置")
+    @Operation(summary = "获取网站配置")
     @GetMapping("/website/config")
     public Result<WebsiteConfigDTO> getWebsiteConfig() {
         return Result.OK(auroraInfoService.getWebsiteConfig());
     }
 
-    @ApiOperation(value = "查看关于我信息")
+    @Operation(summary = "查看关于我信息")
     @GetMapping("/about")
     public Result<AboutDTO> getAbout() {
         return Result.OK(auroraInfoService.getAbout());
     }
 
     @OptLog(optType = UPDATE)
-    @ApiOperation(value = "修改关于我信息")
+    @Operation(summary = "修改关于我信息")
     @PutMapping("/about")
     public Result<?> updateAbout(@Valid @RequestBody AboutVO aboutVO) {
         auroraInfoService.updateAbout(aboutVO);
@@ -81,8 +81,8 @@ public class AuroraInfoController {
     }
 
     @OptLog(optType = UPLOAD)
-    @ApiOperation(value = "上传博客配置图片")
-    @ApiImplicitParam(name = "file", value = "图片", required = true, dataType = "MultipartFile")
+    @Operation(summary = "上传博客配置图片")
+    @Parameter(name = "file", description = "图片", required = true)
     @PostMapping("/config/images")
     public Result<String> savePhotoAlbumCover(MultipartFile file) {
         return Result.OK(uploadStrategyContext.executeUploadStrategy(file, FilePathEnum.CONFIG.getPath()));

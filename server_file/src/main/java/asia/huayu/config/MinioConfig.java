@@ -1,7 +1,7 @@
 package asia.huayu.config;
 
 import io.minio.MinioClient;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -19,21 +19,21 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "minio")
 @EnableConfigurationProperties(MinioConfig.class)
 public class MinioConfig {
-    @ApiModelProperty("域名地址")
+    @Schema(description = "域名地址")
     private String serverUrl;
-    @ApiModelProperty("端口号")
+    @Schema(description = "端口号")
     private int port;
-    @ApiModelProperty("用户名")
+    @Schema(description = "用户名")
     private String accessKey;
-    @ApiModelProperty("密码")
+    @Schema(description = "密码")
     private String secretKey;
-    @ApiModelProperty("默认true，只允许https")
+    @Schema(description = "默认true，只允许https")
     private Boolean secure;
-    @ApiModelProperty("存储桶")
+    @Schema(description = "存储桶")
     private String bucketName;
-    @ApiModelProperty("配置目录")
+    @Schema(description = "配置目录")
     private String configDir;
-    @ApiModelProperty("域名【拼接】")
+    @Schema(description = "域名【拼接】")
     private String domainName;
 
     /**

@@ -7,7 +7,6 @@ import asia.huayu.entity.UserInfo;
 import asia.huayu.mapper.UserInfoMapper;
 import asia.huayu.mapper.UserMapper;
 import asia.huayu.model.dto.PageResultDTO;
-import asia.huayu.model.dto.UserOnlineDTO;
 import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.model.vo.UserDisableVO;
 import asia.huayu.model.vo.UserRoleVO;
@@ -74,28 +73,28 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     }
 
     @Override
-    public PageResultDTO<UserOnlineDTO> listOnlineUsers(ConditionVO conditionVO) {
+    public PageResultDTO<OnlineUser> listOnlineUsers(ConditionVO conditionVO) {
         Map<String, Object> userMaps = redisService.hGetAll(SystemValue.LOGIN_USER);
         Collection<Object> values = userMaps.values();
         ArrayList<OnlineUser> onlineUsers = new ArrayList<>();
         for (Object value : values) {
             OnlineUser onlineUser = (OnlineUser) value;
             // 如果当前时间小于过期时间
-            if (DateUtil.compare(DateUtil.offsetMillisecond(onlineUser.getLoginTime(), Math.toIntExact(SystemValue.TOKEN_EXPIRATION_TIME)), new Date()) > 0) {
+            if (DateUtil.compare(onlineUser.getLoginTime(), new Date()) > 0) {
                 onlineUsers.add(onlineUser);
             }
         }
 
         // TODO:将用户信息存从redis中取出
-        List<UserOnlineDTO> onlineUserList = onlineUsers.stream()
-                .filter(item -> StringUtils.isBlank(conditionVO.getKeywords()) || item.get().contains(conditionVO.getKeywords()))
-                .sorted(Comparator.comparing(UserOnlineDTO::getLastLoginTime).reversed())
+        List<OnlineUser> onlineUserList = onlineUsers.stream()
+                .filter(item -> StringUtils.isBlank(conditionVO.getKeywords()) || item.getName().contains(conditionVO.getKeywords()))
+                .sorted(Comparator.comparing(OnlineUser::getLoginTime).reversed())
                 .collect(Collectors.toList());
         // 进行分页
         int fromIndex = getLimitCurrent().intValue();
         int size = getSize().intValue();
         int toIndex = onlineUsers.size() - fromIndex > size ? fromIndex + size : onlineUsers.size();
-        List<UserOnlineDTO> userOnlineList = onlineUserList.subList(fromIndex, toIndex);
+        List<OnlineUser> userOnlineList = onlineUserList.subList(fromIndex, toIndex);
         return new PageResultDTO<>(userOnlineList, onlineUsers.size());
     }
 
@@ -103,6 +102,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     public void removeOnlineUser(Integer userId) {
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getId, userId));
         redisService.del(user.getUsername());
+        // 删除redis中登录用户信息
+        redisService.hDel(SystemValue.LOGIN_USER, user.getUsername());
     }
 
 

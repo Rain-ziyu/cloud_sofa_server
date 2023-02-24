@@ -6,6 +6,7 @@ import asia.huayu.security.entity.TokenDTO;
 import asia.huayu.security.security.TokenManager;
 import asia.huayu.security.util.SystemValue;
 import asia.huayu.service.TokenService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -25,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @CrossOrigin
 @Slf4j
+@Tag(name = "refreshToken刷新")
 public class LoginController extends BaseController {
     @Autowired
     TokenService tokenService;

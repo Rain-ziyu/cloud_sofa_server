@@ -9,8 +9,8 @@ import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.model.vo.IsHiddenVO;
 import asia.huayu.model.vo.MenuVO;
 import asia.huayu.service.MenuService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,21 +19,21 @@ import java.util.List;
 
 import static asia.huayu.constant.OptTypeConstant.*;
 
-@Api(tags = "菜单模块")
+@Tag(name = "菜单模块")
 @RestController
 public class MenuController {
 
     @Autowired
     private MenuService menuService;
 
-    @ApiOperation(value = "查看菜单列表")
+    @Operation(summary = "查看菜单列表")
     @GetMapping("/menus")
     public Result<List<MenuDTO>> listMenus(ConditionVO conditionVO) {
         return Result.OK(menuService.listMenus(conditionVO));
     }
 
     @OptLog(optType = SAVE_OR_UPDATE)
-    @ApiOperation(value = "新增或修改菜单")
+    @Operation(summary = "新增或修改菜单")
     @PostMapping("/menus")
     public Result<?> saveOrUpdateMenu(@Valid @RequestBody MenuVO menuVO) {
         menuService.saveOrUpdateMenu(menuVO);
@@ -41,7 +41,7 @@ public class MenuController {
     }
 
     @OptLog(optType = UPDATE)
-    @ApiOperation(value = "修改目录是否隐藏")
+    @Operation(summary = "修改目录是否隐藏")
     @PutMapping("/menus/isHidden")
     public Result<?> updateMenuIsHidden(@RequestBody IsHiddenVO isHiddenVO) {
         menuService.updateMenuIsHidden(isHiddenVO);
@@ -49,20 +49,20 @@ public class MenuController {
     }
 
     @OptLog(optType = DELETE)
-    @ApiOperation(value = "删除菜单")
+    @Operation(summary = "删除菜单")
     @DeleteMapping("/menus/{menuId}")
     public Result<?> deleteMenu(@PathVariable("menuId") Integer menuId) {
         menuService.deleteMenu(menuId);
         return Result.OK();
     }
 
-    @ApiOperation(value = "查看所有菜单选项")
+    @Operation(summary = "查看所有菜单选项")
     @GetMapping("/role/menus")
     public Result<List<LabelOptionDTO>> listMenuOptions() {
         return Result.OK(menuService.listMenuOptions());
     }
 
-    @ApiOperation(value = "查看当前用户菜单")
+    @Operation(summary = "查看当前用户菜单")
     @GetMapping("/user/menus")
     public Result<List<UserMenuDTO>> listUserMenus() {
         return Result.OK(menuService.listUserMenus());

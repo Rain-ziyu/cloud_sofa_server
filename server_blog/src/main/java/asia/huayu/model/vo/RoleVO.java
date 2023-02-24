@@ -1,7 +1,6 @@
 package asia.huayu.model.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,20 +13,20 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ApiModel(description = "角色")
+@Schema(description = "角色")
 public class RoleVO {
 
-    @ApiModelProperty(name = "id", value = "角色id", dataType = "Integer")
+    @Schema(name = "id", title = "角色id", type = "Integer")
     private Integer id;
 
     @NotBlank(message = "角色名不能为空")
-    @ApiModelProperty(name = "roleName", value = "角色名", required = true, dataType = "String")
+    @Schema(name = "roleName", title = "角色名", required = true, type = "String")
     private String roleName;
 
-    @ApiModelProperty(name = "resourceIdList", value = "资源列表", required = true, dataType = "List<Integer>")
+    @Schema(name = "resourceIdList", title = "资源列表", required = true, type = "List<Integer>")
     private List<Integer> resourceIds;
 
-    @ApiModelProperty(name = "menuIdList", value = "菜单列表", required = true, dataType = "List<Integer>")
+    @Schema(name = "menuIdList", title = "菜单列表", required = true, type = "List<Integer>")
     private List<Integer> menuIds;
 
 }

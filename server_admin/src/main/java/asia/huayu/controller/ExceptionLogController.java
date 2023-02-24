@@ -6,8 +6,8 @@ import asia.huayu.model.dto.ExceptionLogDTO;
 import asia.huayu.model.dto.PageResultDTO;
 import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.service.ExceptionLogService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,21 +18,21 @@ import java.util.List;
 
 import static asia.huayu.constant.OptTypeConstant.DELETE;
 
-@Api(tags = "异常日志模块")
+@Tag(name = "异常日志模块")
 @RestController
 public class ExceptionLogController {
 
     @Autowired
     private ExceptionLogService exceptionLogService;
 
-    @ApiOperation("获取异常日志")
+    @Operation(summary = "获取异常日志")
     @GetMapping("/exception/logs")
     public Result<PageResultDTO<ExceptionLogDTO>> listExceptionLogs(ConditionVO conditionVO) {
         return Result.OK(exceptionLogService.listExceptionLogs(conditionVO));
     }
 
     @OptLog(optType = DELETE)
-    @ApiOperation(value = "删除异常日志")
+    @Operation(summary = "删除异常日志")
     @DeleteMapping("/exception/logs")
     public Result<?> deleteExceptionLogs(@RequestBody List<Integer> exceptionLogIds) {
         exceptionLogService.removeByIds(exceptionLogIds);

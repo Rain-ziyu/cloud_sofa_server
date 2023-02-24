@@ -1,7 +1,6 @@
 package asia.huayu.model.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,24 +13,24 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ApiModel(description = "说说对象")
+@Schema(description = "说说对象")
 public class TalkVO {
 
-    @ApiModelProperty(name = "id", value = "说说id", dataType = "Integer")
+    @Schema(name = "id", title = "说说id", type = "Integer")
     private Integer id;
 
-    @ApiModelProperty(name = "content", value = "说说内容", dataType = "String")
+    @Schema(name = "content", title = "说说内容", type = "String")
     @NotBlank(message = "说说内容不能为空")
     private String content;
 
-    @ApiModelProperty(name = "images", value = "说说图片", dataType = "String")
+    @Schema(name = "images", title = "说说图片", type = "String")
     private String images;
 
-    @ApiModelProperty(name = "isTop", value = "置顶状态", dataType = "Integer")
+    @Schema(name = "isTop", title = "置顶状态", type = "Integer")
     @NotNull(message = "置顶状态不能为空")
     private Integer isTop;
 
-    @ApiModelProperty(name = "status", value = "说说状态", dataType = "Integer")
+    @Schema(name = "status", title = "说说状态", type = "Integer")
     @NotNull(message = "说说状态不能为空")
     private Integer status;
 

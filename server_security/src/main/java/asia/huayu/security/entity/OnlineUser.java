@@ -39,5 +39,5 @@ public class OnlineUser {
      * 用户登录的操作系统
      */
     private String os;
-
+    private String name;
 }

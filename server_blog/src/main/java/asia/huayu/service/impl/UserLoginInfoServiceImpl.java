@@ -6,6 +6,7 @@ import asia.huayu.security.entity.OnlineUser;
 import asia.huayu.security.service.UserLoginInfoService;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,11 +17,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserLoginInfoServiceImpl extends ServiceImpl<UserLoginInfoMapper, UserLoginInfo>
         implements UserLoginInfoService, IService<UserLoginInfo> {
+    @Autowired
+    private UserLoginInfoMapper userLoginInfoMapper;
 
     @Override
     public void addLoginInfo(OnlineUser onlineUser) {
-// TODO: 记录用户登录信息到数据库
-
+        // TODO: 记录用户登录信息到数据库
+        UserLoginInfo userLoginInfo = new UserLoginInfo();
+        userLoginInfo.setUserId(onlineUser.getUserId());
+        userLoginInfo.setLoginTime(onlineUser.getLoginTime());
+        userLoginInfo.setLoginType(onlineUser.getLoginType());
+        userLoginInfo.setIpAddress(onlineUser.getIpAddress());
+        userLoginInfo.setIpSource(onlineUser.getIpSource());
+        userLoginInfo.setBrowser(onlineUser.getBrowser());
+        userLoginInfo.setOs(onlineUser.getOs());
+        userLoginInfoMapper.insert(userLoginInfo);
     }
 }
 

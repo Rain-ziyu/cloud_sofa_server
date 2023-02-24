@@ -3,6 +3,7 @@ package asia.huayu.security.security;
 
 import asia.huayu.common.entity.Result;
 import asia.huayu.common.util.ResponseUtil;
+import asia.huayu.security.util.SystemValue;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -31,6 +32,8 @@ public class TokenLogoutHandler implements LogoutHandler {
             // 从token获取用户名
             String username = tokenManager.getUserInfoFromToken(token);
             redisTemplate.delete(username);
+            // 从登录用户中移除 在线用户信息
+            redisTemplate.opsForHash().delete(SystemValue.LOGIN_USER, username);
         }
         ResponseUtil.out(response, Result.OK("注销成功"));
     }

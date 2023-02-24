@@ -8,6 +8,7 @@ import asia.huayu.util.SystemValue;
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.CircleCaptcha;
 import cn.hutool.core.util.IdUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -21,6 +22,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RestController
 @RequestMapping("/captcha")
+@Tag(name = "数字图形验证码模块")
 public class GraphicVerificationCodeController extends BaseController {
     @Autowired
     RedisTemplate redisTemplate;

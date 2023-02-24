@@ -7,9 +7,9 @@ import asia.huayu.model.vo.EmailVO;
 import asia.huayu.model.vo.SubscribeVO;
 import asia.huayu.model.vo.UserInfoVO;
 import asia.huayu.service.UserInfoService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,7 +18,7 @@ import javax.validation.Valid;
 
 import static asia.huayu.constant.OptTypeConstant.UPDATE;
 
-@Api(tags = "用户信息模块")
+@Tag(name = "用户信息模块")
 @RestController
 public class UserInfoController {
 
@@ -26,7 +26,7 @@ public class UserInfoController {
     private UserInfoService userInfoService;
 
     @OptLog(optType = UPDATE)
-    @ApiOperation("更新用户信息")
+    @Operation(summary = "更新用户信息")
     @PutMapping("/users/info")
     public Result<?> updateUserInfo(@Valid @RequestBody UserInfoVO userInfoVO) {
         userInfoService.updateUserInfo(userInfoVO);
@@ -34,15 +34,15 @@ public class UserInfoController {
     }
 
     @OptLog(optType = UPDATE)
-    @ApiOperation("更新用户头像")
-    @ApiImplicitParam(name = "file", value = "用户头像", required = true, dataType = "MultipartFile")
+    @Operation(summary = "更新用户头像")
+    @Parameter(name = "file", description = "用户头像", required = true)
     @PostMapping("/users/avatar")
     public Result<String> updateUserAvatar(MultipartFile file) {
         return Result.OK("更新用户头像成功", userInfoService.updateUserAvatar(file));
     }
 
     @OptLog(optType = UPDATE)
-    @ApiOperation("绑定用户邮箱")
+    @Operation(summary = "绑定用户邮箱")
     @PutMapping("/users/email")
     public Result<?> saveUserEmail(@Valid @RequestBody EmailVO emailVO) {
         userInfoService.saveUserEmail(emailVO);
@@ -50,7 +50,7 @@ public class UserInfoController {
     }
 
     @OptLog(optType = UPDATE)
-    @ApiOperation("修改用户的订阅状态")
+    @Operation(summary = "修改用户的订阅状态")
     @PutMapping("/users/subscribe")
     public Result<?> updateUserSubscribe(@RequestBody SubscribeVO subscribeVO) {
         userInfoService.updateUserSubscribe(subscribeVO);
@@ -58,13 +58,13 @@ public class UserInfoController {
     }
 
 
-    @ApiOperation("根据id获取用户信息")
+    @Operation(summary = "根据id获取用户信息")
     @GetMapping("/users/info/{userInfoId}")
     public Result<UserInfoDTO> getUserInfoById(@PathVariable("userInfoId") Integer userInfoId) {
         return Result.OK(userInfoService.getUserInfoById(userInfoId));
     }
 
-    @ApiOperation("根据token获取用户信息")
+    @Operation(summary = "根据token获取用户信息")
     @GetMapping("/users/info")
     public Result<UserInfoDTO> getUserInfo() {
         return Result.OK(userInfoService.getUserInfo());

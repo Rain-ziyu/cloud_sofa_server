@@ -86,6 +86,7 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
         onlineUser.setIpSource(IpUtil.getIpSource(ipAddress));
         onlineUser.setBrowser(IpUtil.getUserAgent(request).getBrowser().getName());
         onlineUser.setOs(IpUtil.getUserAgent(request).getOperatingSystem().getName());
+        onlineUser.setName(user.getUsername());
         userLoginInfoService.addLoginInfo(onlineUser);
         redisTemplate.opsForHash().put(SystemValue.LOGIN_USER, user.getUsername(), onlineUser);
         ResponseUtil.out(response, Result.OK(SystemEnums.LOGIN_SUCCESS.VALUE, tokenDTO));

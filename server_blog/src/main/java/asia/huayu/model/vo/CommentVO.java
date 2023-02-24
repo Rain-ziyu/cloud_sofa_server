@@ -1,7 +1,6 @@
 package asia.huayu.model.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,23 +13,23 @@ import javax.validation.constraints.NotNull;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ApiModel(description = "评论")
+@Schema(description = "评论")
 public class CommentVO {
 
-    @ApiModelProperty(name = "replyUserId", value = "回复用户id", dataType = "Integer")
+    @Schema(name = "replyUserId", title = "回复用户id", type = "Integer")
     private Integer replyUserId;
 
-    @ApiModelProperty(name = "topicId", value = "主题id", dataType = "Integer")
+    @Schema(name = "topicId", title = "主题id", type = "Integer")
     private Integer topicId;
 
     @NotBlank(message = "评论内容不能为空")
-    @ApiModelProperty(name = "commentContent", value = "评论内容", required = true, dataType = "String")
+    @Schema(name = "commentContent", title = "评论内容", required = true, type = "String")
     private String commentContent;
 
-    @ApiModelProperty(name = "parentId", value = "评论父id", dataType = "Integer")
+    @Schema(name = "parentId", title = "评论父id", type = "Integer")
     private Integer parentId;
 
     @NotNull(message = "评论类型不能为空")
-    @ApiModelProperty(name = "type", value = "评论类型", dataType = "Integer")
+    @Schema(name = "type", title = "评论类型", type = "Integer")
     private Integer type;
 }

@@ -1,7 +1,6 @@
 package asia.huayu.model.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,24 +12,24 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ApiModel(description = "相册")
+@Schema(description = "相册")
 public class PhotoAlbumVO {
 
-    @ApiModelProperty(name = "id", value = "相册id", required = true, dataType = "Integer")
+    @Schema(description = "id", title = "相册id", required = true, type = "Integer")
     private Integer id;
 
     @NotBlank(message = "相册名不能为空")
-    @ApiModelProperty(name = "albumName", value = "相册名", required = true, dataType = "String")
+    @Schema(description = "albumName", title = "相册名", required = true, type = "String")
     private String albumName;
 
-    @ApiModelProperty(name = "albumDesc", value = "相册描述", dataType = "String")
+    @Schema(description = "albumDesc", title = "相册描述", type = "String")
     private String albumDesc;
 
     @NotBlank(message = "相册封面不能为空")
-    @ApiModelProperty(name = "albumCover", value = "相册封面", required = true, dataType = "String")
+    @Schema(description = "albumCover", title = "相册封面", required = true, type = "String")
     private String albumCover;
 
-    @ApiModelProperty(name = "status", value = "状态值", required = true, dataType = "Integer")
+    @Schema(description = "status", title = "状态值", required = true, type = "Integer")
     private Integer status;
 
 }

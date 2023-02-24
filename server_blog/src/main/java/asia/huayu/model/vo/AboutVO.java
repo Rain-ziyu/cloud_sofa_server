@@ -1,17 +1,17 @@
 package asia.huayu.model.vo;
 
-import io.swagger.annotations.ApiModelProperty;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class AboutVO {
 
-    @ApiModelProperty(name = "About内容", value = "content", required = true, dataType = "String")
+    @Schema(name = "About内容", title = "content", required = true, type = "String")
     private String content;
 }

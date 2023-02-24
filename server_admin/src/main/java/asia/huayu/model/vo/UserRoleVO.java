@@ -1,7 +1,6 @@
 package asia.huayu.model.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,16 +13,16 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ApiModel(description = "用户权限")
+@Schema(description = "用户权限")
 public class UserRoleVO {
 
     @NotNull(message = "id不能为空")
-    @ApiModelProperty(name = "userId", value = "用户id", dataType = "Integer")
+    @Schema(description = "userId", title = "用户id", type = "Integer")
     private Integer userId;
 
 
     @NotNull(message = "用户角色不能为空")
-    @ApiModelProperty(name = "roleList", value = "角色id集合", dataType = "List<Integer>")
+    @Schema(description = "roleList", title = "角色id集合", type = "List<Integer>")
     private List<Integer> roleIds;
 
 }

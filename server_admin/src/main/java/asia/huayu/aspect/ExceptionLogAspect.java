@@ -5,7 +5,7 @@ import asia.huayu.entity.ExceptionLog;
 import asia.huayu.event.ExceptionLogEvent;
 import asia.huayu.util.ExceptionUtil;
 import com.alibaba.fastjson2.JSON;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
@@ -44,7 +44,7 @@ public class ExceptionLogAspect {
         ExceptionLog exceptionLog = new ExceptionLog();
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
-        ApiOperation apiOperation = method.getAnnotation(ApiOperation.class);
+        Operation apiOperation = method.getAnnotation(Operation.class);
         exceptionLog.setOptUri(Objects.requireNonNull(request).getRequestURI());
         String className = joinPoint.getTarget().getClass().getName();
         String methodName = method.getName();
@@ -59,7 +59,7 @@ public class ExceptionLogAspect {
             }
         }
         if (Objects.nonNull(apiOperation)) {
-            exceptionLog.setOptDesc(apiOperation.value());
+            exceptionLog.setOptDesc(apiOperation.description());
         } else {
             exceptionLog.setOptDesc("");
         }
