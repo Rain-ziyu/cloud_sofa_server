@@ -69,7 +69,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private RabbitTemplate rabbitTemplate;
 
 
-
     @Autowired
     private SearchStrategyContext searchStrategyContext;
 

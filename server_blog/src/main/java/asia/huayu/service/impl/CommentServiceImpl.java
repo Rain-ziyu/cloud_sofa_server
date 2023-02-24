@@ -125,7 +125,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     }
 
 
-
     public void checkCommentVO(CommentVO commentVO) {
         if (!types.contains(commentVO.getType())) {
             throw new ServiceProcessException("参数校验异常");

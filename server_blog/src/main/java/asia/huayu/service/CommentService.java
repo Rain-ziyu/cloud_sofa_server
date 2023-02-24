@@ -20,5 +20,4 @@ public interface CommentService extends IService<Comment> {
     List<CommentDTO> listTopSixComments();
 
 
-
 }

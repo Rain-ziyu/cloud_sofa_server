@@ -12,7 +12,6 @@ import java.util.List;
 public interface TagService extends IService<Tag> {
 
 
-
     PageResultDTO<TagAdminDTO> listTagsAdmin(ConditionVO conditionVO);
 
     List<TagAdminDTO> listTagsAdminBySearch(ConditionVO conditionVO);

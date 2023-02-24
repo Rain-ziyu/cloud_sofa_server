@@ -34,6 +34,7 @@ public class OperationLogAspect {
     private ApplicationContext applicationContext;
     @Autowired
     private UserInfoService userInfoService;
+
     @Pointcut("@annotation(asia.huayu.annotation.OptLog)")
     public void operationLogPointCut() {
     }

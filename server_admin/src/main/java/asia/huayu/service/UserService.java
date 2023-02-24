@@ -12,6 +12,7 @@ public interface UserService {
 
 
     List<UserAreaDTO> listUserAreas(ConditionVO conditionVO);
+
     User getUserByUsername(String userName);
 
     PageResultDTO<UserAdminDTO> listUsers(ConditionVO condition);

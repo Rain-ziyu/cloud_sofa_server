@@ -35,6 +35,7 @@ public class UserServiceImpl implements UserService {
     public User getUserByUsername(String userName) {
         return userMapper.getUserByUsername(userName);
     }
+
     @Override
     @SuppressWarnings("unchecked")
     public List<UserAreaDTO> listUserAreas(ConditionVO conditionVO) {

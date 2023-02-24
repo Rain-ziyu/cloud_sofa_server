@@ -46,7 +46,6 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     private UserRoleService userRoleService;
 
 
-
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateUserRole(UserRoleVO userRoleVO) {
@@ -85,7 +84,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             }
         }
 
-        // TODO:将用户信息存从redis中取出
+        // 将用户信息存从redis中取出
         List<OnlineUser> onlineUserList = onlineUsers.stream()
                 .filter(item -> StringUtils.isBlank(conditionVO.getKeywords()) || item.getName().contains(conditionVO.getKeywords()))
                 .sorted(Comparator.comparing(OnlineUser::getLoginTime).reversed())

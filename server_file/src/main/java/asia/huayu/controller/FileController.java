@@ -21,7 +21,8 @@ import java.io.IOException;
 public class FileController extends BaseController {
     @Autowired
     MinioService minioService;
-
+    @Autowired
+    MinioConfig minioConfig;
 
     @PostMapping
     public Result uploadFile(@RequestPart("file") MultipartFile multipartFile) {
@@ -39,9 +40,6 @@ public class FileController extends BaseController {
             }
         });
     }
-
-    @Autowired
-    MinioConfig minioConfig;
 
     @PostMapping("/path")
     public Result uploadFileByPath(@RequestPart("file") MultipartFile multipartFile, @RequestPart String path) {

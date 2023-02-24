@@ -1,5 +1,7 @@
 package asia.huayu.service.impl;
 
+import asia.huayu.common.util.IpUtil;
+import asia.huayu.common.util.RequestUtil;
 import asia.huayu.constant.CommonConstant;
 import asia.huayu.constant.RedisConstant;
 import asia.huayu.entity.About;
@@ -14,17 +16,26 @@ import asia.huayu.service.AuroraInfoService;
 import asia.huayu.service.RedisService;
 import asia.huayu.service.UniqueViewService;
 import asia.huayu.util.BeanCopyUtil;
+import cn.hutool.core.codec.Base64;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import eu.bitwalker.useragentutils.Browser;
+import eu.bitwalker.useragentutils.OperatingSystem;
+import eu.bitwalker.useragentutils.UserAgent;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+
+import static asia.huayu.constant.CommonConstant.UNKNOWN;
+import static asia.huayu.constant.RedisConstant.*;
 
 @Service
 public class AuroraInfoServiceImpl implements AuroraInfoService {
@@ -62,8 +73,26 @@ public class AuroraInfoServiceImpl implements AuroraInfoService {
 
     @Override
     public void report() {
-// TODO: 使用request 判断是否是统一用户访问 不是计数+1
-        redisService.incr(RedisConstant.BLOG_VIEWS_COUNT, 1);
+        // 使用request 判断是否是统一用户访问 不是计数+1
+        HttpServletRequest request = RequestUtil.getRequest();
+        String ipAddress = IpUtil.getIpAddress(request);
+        UserAgent userAgent = IpUtil.getUserAgent(request);
+        Browser browser = userAgent.getBrowser();
+        OperatingSystem operatingSystem = userAgent.getOperatingSystem();
+        String uuid = ipAddress + browser.getName() + operatingSystem.getName();
+        // Base64格式化用户登录信息存储至redis
+        String base64Code = Base64.encode(uuid.getBytes());
+        if (!redisService.sIsMember(UNIQUE_VISITOR, base64Code)) {
+            String ipSource = IpUtil.getIpSource(ipAddress);
+            if (StringUtils.isNotBlank(ipSource)) {
+                String ipProvince = IpUtil.getIpProvince(ipSource);
+                redisService.hIncr(VISITOR_AREA, ipProvince, 1L);
+            } else {
+                redisService.hIncr(VISITOR_AREA, UNKNOWN, 1L);
+            }
+            redisService.incr(BLOG_VIEWS_COUNT, 1);
+            redisService.sAdd(UNIQUE_VISITOR, base64Code);
+        }
     }
 
     @SneakyThrows
@@ -75,7 +104,7 @@ public class AuroraInfoServiceImpl implements AuroraInfoService {
         CompletableFuture<Long> asyncTalkCount = CompletableFuture.supplyAsync(() -> talkMapper.selectCount(null));
         CompletableFuture<WebsiteConfigDTO> asyncWebsiteConfig = CompletableFuture.supplyAsync(this::getWebsiteConfig);
         CompletableFuture<Long> asyncViewCount = CompletableFuture.supplyAsync(() -> {
-            Object count = redisService.get(RedisConstant.BLOG_VIEWS_COUNT);
+            Object count = redisService.get(BLOG_VIEWS_COUNT);
             return Long.parseLong(Optional.ofNullable(count).orElse(0).toString());
         });
         return AuroraHomeInfoDTO.builder()
@@ -89,7 +118,7 @@ public class AuroraInfoServiceImpl implements AuroraInfoService {
 
     @Override
     public AuroraAdminInfoDTO getAuroraAdminInfo() {
-        Object count = redisService.get(RedisConstant.BLOG_VIEWS_COUNT);
+        Object count = redisService.get(BLOG_VIEWS_COUNT);
         Integer viewsCount = Integer.parseInt(Optional.ofNullable(count).orElse(0).toString());
         Integer messageCount = Math.toIntExact(commentMapper.selectCount(new LambdaQueryWrapper<Comment>().eq(Comment::getType, 2)));
         Integer userCount = Math.toIntExact(userInfoMapper.selectCount(null));

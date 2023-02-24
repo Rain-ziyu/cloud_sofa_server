@@ -11,7 +11,6 @@ public interface AuroraInfoService {
     AuroraHomeInfoDTO getAuroraHomeInfo();
 
 
-
     WebsiteConfigDTO getWebsiteConfig();
 
 
