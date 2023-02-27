@@ -58,15 +58,12 @@ public class TokenWebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         String[] permitAllUris = permitAllUri.split(",");
         http
-                .authorizeRequests()
-                // 走 Spring Security 过滤器链的放行 虽然会放行该请求 但是仍然会走security的过滤器链
-                .antMatchers(permitAllUris).permitAll()
-                .anyRequest().authenticated()
-                .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(new UnauthEntryPoint())// 没有权限访问
                 .and().csrf().disable()
                 .authorizeRequests()
+                // 走 Spring Security 过滤器链的放行 虽然会放行该请求 但是仍然会走security的过滤器链
+                .antMatchers(permitAllUris).permitAll()
                 .anyRequest().authenticated()
                 .and().logout().logoutUrl("/logout")// 退出路径
                 .addLogoutHandler(new TokenLogoutHandler(tokenManager, redisTemplate)).and()
