@@ -19,7 +19,7 @@
             </if>
             AND type = #{commentVO.type}
             AND c.is_review = 1
-            AND parenid IS NULL
+            AND parent_id IS NULL
         </where>
         ORDER BY
         c.id DESC
