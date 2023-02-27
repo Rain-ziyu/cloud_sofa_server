@@ -6,8 +6,6 @@ import asia.huayu.model.dto.*;
 import asia.huayu.model.vo.ArticlePasswordVO;
 import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.service.ArticleService;
-import asia.huayu.strategy.context.ArticleImportStrategyContext;
-import asia.huayu.strategy.context.UploadStrategyContext;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +22,6 @@ public class ArticleController extends BaseController {
     @Autowired
     private ArticleService articleService;
 
-    @Autowired
-    private UploadStrategyContext uploadStrategyContext;
-
-    @Autowired
-    private ArticleImportStrategyContext articleImportStrategyContext;
 
     @Operation(summary = "获取置顶和推荐文章")
     @GetMapping("/articles/topAndFeatured")

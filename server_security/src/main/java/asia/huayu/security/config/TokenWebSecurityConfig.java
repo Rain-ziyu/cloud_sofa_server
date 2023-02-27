@@ -8,6 +8,7 @@ import asia.huayu.security.security.TokenManager;
 import asia.huayu.security.security.UnauthEntryPoint;
 import asia.huayu.security.service.UserLoginInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -32,6 +33,9 @@ public class TokenWebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final DefaultPasswordEncoder defaultPasswordEncoder;
     private final UserDetailsService userDetailsService;
     private final UserLoginInfoService userLoginInfoService;
+    // 如果没有配置则默认为空字符串
+    @Value("${security.permitAllUri:}")
+    private String permitAllUri;
 
     @Autowired(required = false)
     public TokenWebSecurityConfig(UserDetailsService userDetailsService, DefaultPasswordEncoder defaultPasswordEncoder,
@@ -52,8 +56,12 @@ public class TokenWebSecurityConfig extends WebSecurityConfigurerAdapter {
     // 设置退出的地址和token，redis操作地址
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        String[] permitAllUris = permitAllUri.split(",");
         http
                 .authorizeRequests()
+                // 走 Spring Security 过滤器链的放行 虽然会放行该请求 但是仍然会走security的过滤器链
+                .antMatchers(permitAllUris).permitAll()
+                .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(new UnauthEntryPoint())// 没有权限访问
@@ -72,13 +80,12 @@ public class TokenWebSecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetailsService).passwordEncoder(defaultPasswordEncoder);
     }
 
-    // 不进行认证的路径，可以直接访问
+    // 不进行认证的路径，可以直接访问  不走 Spring Security 过滤器链
     @Override
     public void configure(WebSecurity web) {
         // 注意swagger占有很多path 需要逐个开放     不能全部不拦截 login接口将会消失 导致没有请求接口
         web.ignoring().antMatchers("/api/**", "/v3/api-docs", "/webjars/**", "/doc.html", "/swagger-ui/**",
-                "/swagger-resources/**", "/v2/**", "/v3/**"
-                , "/user/**")
+                "/swagger-resources/**", "/v2/**", "/v3/**")
         ;
 
     }

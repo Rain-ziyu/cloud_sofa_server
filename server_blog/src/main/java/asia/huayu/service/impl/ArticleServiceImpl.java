@@ -219,7 +219,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 return -1;
             } else if (o1Year < o2Year) {
                 return 1;
-            } else return Integer.compare(o2Month, o1Month);
+            } else {
+                return Integer.compare(o2Month, o1Month);
+            }
         });
         return new PageResultDTO<>(archiveDTOs, asyncCount.get());
     }

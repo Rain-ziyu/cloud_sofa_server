@@ -20,6 +20,7 @@ import asia.huayu.service.AuroraInfoService;
 import asia.huayu.service.RedisService;
 import asia.huayu.service.UserService;
 import asia.huayu.strategy.context.SocialLoginStrategyContext;
+import asia.huayu.util.UserUtil;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -28,6 +29,7 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -126,9 +128,12 @@ public class UserServiceImpl implements UserService {
         if (!checkUser(userVO)) {
             throw new ServiceProcessException("邮箱尚未注册！");
         }
+        // 从header中获取用户名
+        Authentication authentication = UserUtil.getAuthentication();
+        String name = authentication.getName();
         userMapper.update(new User(), new LambdaUpdateWrapper<User>()
                 .set(User::getPassword, passwordEncoder.encode(userVO.getPassword()))
-                .eq(User::getUsername, userVO.getUsername()));
+                .eq(User::getUsername, name));
     }
 
 
