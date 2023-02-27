@@ -45,7 +45,8 @@ public class TokenAuthFilter extends BasicAuthenticationFilter {
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         // 从header获取token
         String token = request.getHeader(SystemEnums.AUTH_NAME.VALUE);
-        if (token != null) {
+        // 解决客户端提交了空的token引发的token无法获取用户信息的问题
+        if (token != null && !token.isBlank()) {
             // 从token获取用户名
             String username = tokenManager.getUserInfoFromToken(token);
             // 从redis获取对应权限列表
@@ -55,6 +56,7 @@ public class TokenAuthFilter extends BasicAuthenticationFilter {
                 SimpleGrantedAuthority auth = new SimpleGrantedAuthority(permissionValue);
                 authority.add(auth);
             }
+            // 这里也可以不仅放username 也可以查询数据库来存放完整的用户信息
             return new UsernamePasswordAuthenticationToken(username, token, authority);
         }
         return null;
