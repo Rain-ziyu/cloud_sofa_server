@@ -68,7 +68,9 @@ public class FileController extends BaseController {
     public Result getFileAccessUrl(String filePath) {
         return restProcessor(() -> {
             try {
-                return Result.OK(minioService.getPreviewFileUrl(filePath));
+
+                // return Result.OK(minioService.getPreviewFileUrl(filePath));  该方式获取的预览地址有时间限制 最长为7天
+                return Result.OK(minioService.getUrl(filePath));
             } catch (Exception e) {
                 throw new ServiceProcessException("获取minio预览地址异常", e);
             }
