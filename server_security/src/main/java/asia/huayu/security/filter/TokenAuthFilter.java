@@ -6,6 +6,7 @@ import asia.huayu.security.util.SystemEnums;
 import asia.huayu.security.util.SystemValue;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -48,8 +49,13 @@ public class TokenAuthFilter extends BasicAuthenticationFilter {
         String token = request.getHeader(SystemEnums.AUTH_NAME.VALUE);
         // 解决客户端提交了空的token引发的token无法获取用户信息的问题  如果用户没有传递或者传递的是空字符串 那么不需要设置这次请求的SecurityContextHolder.getContext().setAuthentication
         if (token != null && !token.isBlank() && !SystemValue.NULL_STRING.equals(token)) {
-            // 从token获取用户名
-            String username = tokenManager.getUserInfoFromToken(token);
+            // 从token获取用户名  如果请求时对方携带了token但是经由tokenManager无法获取对应的用户名则抛出AuthenticationServiceException异常 交由UnauthEntryPoint进行处理
+            String username = null;
+            try {
+                username = tokenManager.getUserInfoFromToken(token);
+            } catch (Exception e) {
+                throw new AuthenticationServiceException("token无法解析", e);
+            }
             // 从redis获取对应权限列表
             List<String> permissionValueList = (List<String>) redisTemplate.opsForValue().get(username);
             Collection<GrantedAuthority> authority = new ArrayList<>();
