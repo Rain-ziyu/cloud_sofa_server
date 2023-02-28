@@ -4,6 +4,7 @@ import asia.huayu.exception.BizException;
 import asia.huayu.model.vo.ArticleVO;
 import asia.huayu.service.ArticleService;
 import asia.huayu.strategy.ArticleImportStrategy;
+import asia.huayu.util.SystemValue;
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,7 @@ public class NormalArticleImportStrategyImpl implements ArticleImportStrategy {
             throw new BizException("导入文章失败");
         }
         ArticleVO articleVO = ArticleVO.builder()
+                .articleCover(SystemValue.DEFAULT_ARTICLE_COVER)
                 .articleTitle(articleTitle)
                 .articleContent(articleContent.toString())
                 .status(DRAFT.getStatus())
