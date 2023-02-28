@@ -9,7 +9,7 @@ import asia.huayu.service.UserInfoService;
 import asia.huayu.util.UserUtil;
 import com.alibaba.fastjson2.JSON;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.models.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -50,7 +50,7 @@ public class OperationLogAspect {
         Tag tag = (Tag) signature.getDeclaringType().getAnnotation(Tag.class);
         Operation apiOperation = method.getAnnotation(Operation.class);
         OptLog optLog = method.getAnnotation(OptLog.class);
-        operationLog.setOptModule(tag.getName());
+        operationLog.setOptModule(tag.name());
         operationLog.setOptType(optLog.optType());
         operationLog.setOptDesc(apiOperation.description());
         String className = joinPoint.getTarget().getClass().getName();
