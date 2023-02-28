@@ -53,9 +53,9 @@ public abstract class AbstractQuartzJob implements org.quartz.Job {
         jobLog.setJobMessage(jobLog.getJobName() + " 总共耗时：" + runMs + "毫秒");
         if (e != null) {
             jobLog.setStatus(CommonConstant.ZERO);
-            if (ExceptionUtil.getTrace(e).length() > 6000) {
-                jobLog.setExceptionInfo(ExceptionUtil.getTrace(e).substring(0, 6000));
-            }
+            // 修复异常信息过长 将数据库字段修改为longtext
+            jobLog.setExceptionInfo(ExceptionUtil.getTrace(e));
+
         } else {
             jobLog.setStatus(CommonConstant.ONE);
         }
