@@ -39,10 +39,10 @@
         r.nickname AS reply_nickname,
         r.website AS reply_website,
         c.id,
-        c.parenid,
+        c.parent_id,
         c.comment_content,
         c.create_time,
-        row_number () over ( PARTITION BY parenid ORDER BY create_time ASC ) row_num
+        row_number () over ( PARTITION BY parent_id ORDER BY create_time ASC ) row_num
         FROM
         comment c
         JOIN user_info u ON c.user_id = u.id
@@ -50,7 +50,7 @@
         WHERE
         c.is_review = 1
         AND
-        parenid IN
+        parent_id IN
         (
         <foreach collection="commentIds" item="commentId" separator=",">
             #{commentId}

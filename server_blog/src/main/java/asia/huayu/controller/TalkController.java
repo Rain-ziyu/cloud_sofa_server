@@ -4,7 +4,6 @@ import asia.huayu.common.entity.Result;
 import asia.huayu.model.dto.PageResultDTO;
 import asia.huayu.model.dto.TalkDTO;
 import asia.huayu.service.TalkService;
-import asia.huayu.strategy.context.UploadStrategyContext;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,8 +19,6 @@ public class TalkController {
     @Autowired
     private TalkService talkService;
 
-    @Autowired
-    private UploadStrategyContext uploadStrategyContext;
 
     @Operation(summary = "查看说说列表")
     @GetMapping("/talks")
