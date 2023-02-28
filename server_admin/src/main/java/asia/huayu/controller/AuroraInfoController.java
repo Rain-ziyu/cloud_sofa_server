@@ -5,7 +5,6 @@ import asia.huayu.common.entity.Result;
 import asia.huayu.enums.FilePathEnum;
 import asia.huayu.model.dto.AboutDTO;
 import asia.huayu.model.dto.AuroraAdminInfoDTO;
-import asia.huayu.model.dto.AuroraHomeInfoDTO;
 import asia.huayu.model.dto.WebsiteConfigDTO;
 import asia.huayu.model.vo.AboutVO;
 import asia.huayu.model.vo.WebsiteConfigVO;
@@ -40,14 +39,8 @@ public class AuroraInfoController {
         return Result.OK();
     }
 
-    @Operation(summary = "获取系统信息")
-    @GetMapping("/")
-    public Result<AuroraHomeInfoDTO> getBlogHomeInfo() {
-        return Result.OK(auroraInfoService.getAuroraHomeInfo());
-    }
-
     @Operation(summary = "获取系统后台信息")
-    @GetMapping("")
+    @GetMapping("/")
     public Result<AuroraAdminInfoDTO> getBlogBackInfo() {
         return Result.OK(auroraInfoService.getAuroraAdminInfo());
     }
