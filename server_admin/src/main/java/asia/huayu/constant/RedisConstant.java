@@ -2,9 +2,7 @@ package asia.huayu.constant;
 
 public interface RedisConstant {
 
-    long CODE_EXPIRE_TIME = 15 * 60;
 
-    String USER_CODE_KEY = "code:";
 
     String BLOG_VIEWS_COUNT = "blog_views_count";
 
@@ -20,7 +18,6 @@ public interface RedisConstant {
 
     String UNIQUE_VISITOR = "unique_visitor";
 
-    String LOGIN_USER = "login_user";
 
     String ARTICLE_ACCESS = "article_access:";
 

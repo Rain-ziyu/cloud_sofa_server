@@ -13,6 +13,7 @@ import asia.huayu.security.security.TokenManager;
 import asia.huayu.security.service.UserLoginInfoService;
 import asia.huayu.security.util.SystemEnums;
 import asia.huayu.security.util.SystemValue;
+import cn.hutool.core.date.DateUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -79,7 +80,8 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
         // 将登陆用户写到redis的set中
         OnlineUser onlineUser = new OnlineUser();
         onlineUser.setUserId(Integer.parseInt(user.getSecurityUserInfo().getId()));
-        onlineUser.setLoginTime(new Date());
+        // 存储登陆时间为当前时间+时间偏移 方便获取的时候比较
+        onlineUser.setExpireTime(DateUtil.offsetMillisecond(new Date(), Math.toIntExact(SystemValue.TOKEN_EXPIRATION_TIME)));
         onlineUser.setLoginType(1);
         String ipAddress = IpUtil.getIpAddress(request);
         onlineUser.setIpAddress(ipAddress);

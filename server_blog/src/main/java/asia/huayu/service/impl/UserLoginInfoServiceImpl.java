@@ -24,7 +24,7 @@ public class UserLoginInfoServiceImpl extends ServiceImpl<UserLoginInfoMapper, U
     public void addLoginInfo(OnlineUser onlineUser) {
         UserLoginInfo userLoginInfo = new UserLoginInfo();
         userLoginInfo.setUserId(onlineUser.getUserId());
-        userLoginInfo.setLoginTime(onlineUser.getLoginTime());
+        userLoginInfo.setLoginTime(onlineUser.getExpireTime());
         userLoginInfo.setLoginType(onlineUser.getLoginType());
         userLoginInfo.setIpAddress(onlineUser.getIpAddress());
         userLoginInfo.setIpSource(onlineUser.getIpSource());

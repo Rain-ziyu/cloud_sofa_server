@@ -26,7 +26,7 @@ public class UserLoginInfoServiceImpl extends ServiceImpl<UserLoginInfoMapper, U
         //  记录用户登录信息到数据库
         UserLoginInfo userLoginInfo = new UserLoginInfo();
         userLoginInfo.setUserId(onlineUser.getUserId());
-        userLoginInfo.setLoginTime(onlineUser.getLoginTime());
+        userLoginInfo.setLoginTime(onlineUser.getExpireTime());
         userLoginInfo.setLoginType(onlineUser.getLoginType());
         userLoginInfo.setIpAddress(onlineUser.getIpAddress());
         userLoginInfo.setIpSource(onlineUser.getIpSource());

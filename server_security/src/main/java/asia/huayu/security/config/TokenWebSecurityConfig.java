@@ -34,7 +34,7 @@ public class TokenWebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsService userDetailsService;
     private final UserLoginInfoService userLoginInfoService;
     // 如果没有配置则默认为空字符串
-    @Value("${security.permitAllUri:/}")
+    @Value("${security.permitAllUri:/wwl}")
     private String permitAllUri;
 
     @Autowired(required = false)

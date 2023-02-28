@@ -18,7 +18,7 @@ public class OnlineUser {
     /**
      * 登陆时间
      */
-    private Date loginTime;
+    private Date expireTime;
     /**
      * 登陆类型  即：网页登陆 单点登录
      */

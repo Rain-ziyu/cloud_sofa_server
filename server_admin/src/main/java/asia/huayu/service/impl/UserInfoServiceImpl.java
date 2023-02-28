@@ -77,21 +77,22 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
     @Override
     public PageResultDTO<OnlineUser> listOnlineUsers(ConditionVO conditionVO) {
+        // 将用户信息存从redis中取出
         Map<String, Object> userMaps = redisService.hGetAll(SystemValue.LOGIN_USER);
         Collection<Object> values = userMaps.values();
         ArrayList<OnlineUser> onlineUsers = new ArrayList<>();
         for (Object value : values) {
             OnlineUser onlineUser = (OnlineUser) value;
             // 如果当前时间小于过期时间
-            if (DateUtil.compare(onlineUser.getLoginTime(), new Date()) > 0) {
+            if (DateUtil.compare(onlineUser.getExpireTime(), new Date()) > 0) {
                 onlineUsers.add(onlineUser);
             }
         }
 
-        // 将用户信息存从redis中取出
+
         List<OnlineUser> onlineUserList = onlineUsers.stream()
                 .filter(item -> StringUtils.isBlank(conditionVO.getKeywords()) || item.getName().contains(conditionVO.getKeywords()))
-                .sorted(Comparator.comparing(OnlineUser::getLoginTime).reversed())
+                .sorted(Comparator.comparing(OnlineUser::getExpireTime).reversed())
                 .collect(Collectors.toList());
         // 进行分页
         int fromIndex = getLimitCurrent().intValue();
@@ -122,9 +123,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         User userByUsername = userMapper.getUserByUsername(UserUtil.getAuthentication().getName());
         UserInfoDTO userInfo = userInfoMapper.selectDTOById(userByUsername.getId());
         HttpServletRequest request = RequestUtil.getRequest();
-
-        userInfo.setToken(request.getParameter("token"));
-        userInfo.setRefreshToken(request.getParameter("refreshToken"));
+        // 不同步返回用户的token和refreshToken
+        // userInfo.setToken(request.getParameter("token"));
+        // userInfo.setRefreshToken(request.getParameter("refreshToken"));
         return userInfo;
     }
 
