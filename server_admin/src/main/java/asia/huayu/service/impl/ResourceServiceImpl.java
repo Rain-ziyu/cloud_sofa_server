@@ -1,9 +1,9 @@
 package asia.huayu.service.impl;
 
+import asia.huayu.common.exception.ServiceProcessException;
 import asia.huayu.constant.CommonConstant;
 import asia.huayu.entity.Resource;
 import asia.huayu.entity.RoleResource;
-import asia.huayu.exception.BizException;
 import asia.huayu.mapper.ResourceMapper;
 import asia.huayu.mapper.RoleResourceMapper;
 import asia.huayu.model.dto.LabelOptionDTO;
@@ -91,7 +91,7 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource> i
         Long count = roleResourceMapper.selectCount(new LambdaQueryWrapper<RoleResource>()
                 .eq(RoleResource::getResourceId, resourceId));
         if (count > 0) {
-            throw new BizException("该资源下存在角色");
+            throw new ServiceProcessException("该资源下存在角色");
         }
         List<Integer> resourceIds = resourceMapper.selectList(new LambdaQueryWrapper<Resource>()
                         .select(Resource::getId).

@@ -4,9 +4,9 @@ import asia.huayu.auth.entity.Permission;
 import asia.huayu.auth.entity.RolePermission;
 import asia.huayu.auth.mapper.PermissionMapper;
 import asia.huayu.auth.mapper.RolePermissionMapper;
+import asia.huayu.common.exception.ServiceProcessException;
 import asia.huayu.constant.CommonConstant;
 import asia.huayu.entity.User;
-import asia.huayu.exception.BizException;
 import asia.huayu.mapper.MenuMapper;
 import asia.huayu.mapper.UserMapper;
 import asia.huayu.model.dto.LabelOptionDTO;
@@ -93,7 +93,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Permission> impleme
         Long count = rolePermissionMapper.selectCount(new LambdaQueryWrapper<RolePermission>()
                 .eq(RolePermission::getPermissionId, menuId));
         if (count > 0) {
-            throw new BizException("菜单下有角色关联");
+            throw new ServiceProcessException("菜单下有角色关联");
         }
         List<Integer> menuIds = permissionMapper.selectList(new LambdaQueryWrapper<Permission>()
                         .select(Permission::getId)

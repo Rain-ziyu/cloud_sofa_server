@@ -1,9 +1,9 @@
 package asia.huayu.service.impl;
 
+import asia.huayu.common.exception.ServiceProcessException;
 import asia.huayu.constant.CommonConstant;
 import asia.huayu.entity.Photo;
 import asia.huayu.entity.PhotoAlbum;
-import asia.huayu.exception.BizException;
 import asia.huayu.mapper.PhotoAlbumMapper;
 import asia.huayu.mapper.PhotoMapper;
 import asia.huayu.model.dto.PageResultDTO;
@@ -41,7 +41,7 @@ public class PhotoAlbumServiceImpl extends ServiceImpl<PhotoAlbumMapper, PhotoAl
                 .select(PhotoAlbum::getId)
                 .eq(PhotoAlbum::getAlbumName, photoAlbumVO.getAlbumName()));
         if (Objects.nonNull(album) && !album.getId().equals(photoAlbumVO.getId())) {
-            throw new BizException("相册名已存在");
+            throw new ServiceProcessException("相册名已存在");
         }
         PhotoAlbum photoAlbum = BeanCopyUtil.copyObject(photoAlbumVO, PhotoAlbum.class);
         this.saveOrUpdate(photoAlbum);

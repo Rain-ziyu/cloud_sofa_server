@@ -5,13 +5,10 @@ import asia.huayu.config.RestConfig;
 import asia.huayu.constant.CommonConstant;
 import asia.huayu.constant.RedisConstant;
 import asia.huayu.entity.*;
-import asia.huayu.mapper.ElasticsearchMapper;
 import asia.huayu.mapper.UniqueViewMapper;
 import asia.huayu.mapper.UserLoginInfoMapper;
-import asia.huayu.model.dto.ArticleSearchDTO;
 import asia.huayu.model.dto.UserAreaDTO;
 import asia.huayu.service.*;
-import asia.huayu.util.BeanCopyUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -55,9 +52,6 @@ public class AuroraQuartz {
 
     @Autowired
     private RestConfig.RestService restService;
-
-    @Autowired
-    private ElasticsearchMapper elasticsearchMapper;
 
 
     @Value("${website.url}")
@@ -126,13 +120,5 @@ public class AuroraQuartz {
         }
         roleResourceService.saveBatch(roleResources);
     }
-    // 现已弃用
 
-    public void importDataIntoES() {
-        elasticsearchMapper.deleteAll();
-        List<Article> articles = articleService.list();
-        for (Article article : articles) {
-            elasticsearchMapper.save(BeanCopyUtil.copyObject(article, ArticleSearchDTO.class));
-        }
-    }
 }

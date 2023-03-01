@@ -1,8 +1,8 @@
 package asia.huayu.service.impl;
 
+import asia.huayu.common.exception.ServiceProcessException;
 import asia.huayu.entity.Article;
 import asia.huayu.entity.Category;
-import asia.huayu.exception.BizException;
 import asia.huayu.mapper.ArticleMapper;
 import asia.huayu.mapper.CategoryMapper;
 import asia.huayu.model.dto.CategoryAdminDTO;
@@ -60,7 +60,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         Long count = articleMapper.selectCount(new LambdaQueryWrapper<Article>()
                 .in(Article::getCategoryId, categoryIds));
         if (count > 0) {
-            throw new BizException("删除失败，该分类下存在文章");
+            throw new ServiceProcessException("删除失败，该分类下存在文章");
         }
         categoryMapper.deleteBatchIds(categoryIds);
     }
@@ -71,7 +71,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
                 .select(Category::getId)
                 .eq(Category::getCategoryName, categoryVO.getCategoryName()));
         if (Objects.nonNull(existCategory) && !existCategory.getId().equals(categoryVO.getId())) {
-            throw new BizException("分类名已存在");
+            throw new ServiceProcessException("分类名已存在");
         }
         Category category = Category.builder()
                 .id(categoryVO.getId())

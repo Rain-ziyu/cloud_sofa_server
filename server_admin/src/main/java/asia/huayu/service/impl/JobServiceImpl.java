@@ -50,6 +50,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         }
     }
 
+    @Override
     @SneakyThrows
     @Transactional(rollbackFor = Exception.class)
     public void saveJob(JobVO jobVO) {

@@ -1,9 +1,9 @@
 package asia.huayu.service.impl;
 
 
+import asia.huayu.common.exception.ServiceProcessException;
 import asia.huayu.entity.ArticleTag;
 import asia.huayu.entity.Tag;
-import asia.huayu.exception.BizException;
 import asia.huayu.mapper.ArticleTagMapper;
 import asia.huayu.mapper.TagMapper;
 import asia.huayu.model.dto.PageResultDTO;
@@ -60,7 +60,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
                 .select(Tag::getId)
                 .eq(Tag::getTagName, tagVO.getTagName()));
         if (Objects.nonNull(existTag) && !existTag.getId().equals(tagVO.getId())) {
-            throw new BizException("标签名已存在");
+            throw new ServiceProcessException("标签名已存在");
         }
         Tag tag = BeanCopyUtil.copyObject(tagVO, Tag.class);
         this.saveOrUpdate(tag);
@@ -71,7 +71,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
         Long count = articleTagMapper.selectCount(new LambdaQueryWrapper<ArticleTag>()
                 .in(ArticleTag::getTagId, tagIds));
         if (count > 0) {
-            throw new BizException("删除失败，该标签下存在文章");
+            throw new ServiceProcessException("删除失败，该标签下存在文章");
         }
         tagMapper.deleteBatchIds(tagIds);
     }

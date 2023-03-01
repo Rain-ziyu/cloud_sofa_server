@@ -14,6 +14,10 @@ import org.springframework.stereotype.Component;
 
 import static asia.huayu.constant.RabbitMQConstant.MAXWELL_QUEUE;
 
+/**
+ * @author User
+ * MAXWELL将数据库的更新等消息读取到RabbitMQ中由我们消费
+ */
 @Component
 @RabbitListener(queues = MAXWELL_QUEUE)
 public class MaxWellConsumer {

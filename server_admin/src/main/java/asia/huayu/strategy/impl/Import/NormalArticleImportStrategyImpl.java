@@ -1,6 +1,6 @@
 package asia.huayu.strategy.impl.Import;
 
-import asia.huayu.exception.BizException;
+import asia.huayu.common.exception.ServiceProcessException;
 import asia.huayu.model.vo.ArticleVO;
 import asia.huayu.service.ArticleService;
 import asia.huayu.strategy.ArticleImportStrategy;
@@ -35,7 +35,7 @@ public class NormalArticleImportStrategyImpl implements ArticleImportStrategy {
             }
         } catch (IOException e) {
             log.error(StrUtil.format("导入文章失败, 堆栈:{}", ExceptionUtil.stacktraceToString(e)));
-            throw new BizException("导入文章失败");
+            throw new ServiceProcessException("导入文章失败");
         }
         ArticleVO articleVO = ArticleVO.builder()
                 .articleCover(SystemValue.DEFAULT_ARTICLE_COVER)
