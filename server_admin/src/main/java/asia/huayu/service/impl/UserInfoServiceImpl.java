@@ -55,11 +55,11 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     public void updateUserRole(UserRoleVO userRoleVO) {
         // 每次传递进来是该用户所有的用户角色 每修改一次删除原有权限再新增
         userRoleService.remove(new LambdaQueryWrapper<UserRole>()
-                .eq(UserRole::getUserId, userRoleVO.getUserId()));
+                .eq(UserRole::getUserId, userRoleVO.getId()));
         List<UserRole> userRoleList = userRoleVO.getRoleIds().stream()
                 .map(roleId -> UserRole.builder()
                         .roleId(String.valueOf(roleId))
-                        .userId(String.valueOf(userRoleVO.getUserId()))
+                        .userId(String.valueOf(userRoleVO.getId()))
                         .build())
                 .collect(Collectors.toList());
         userRoleService.saveBatch(userRoleList);

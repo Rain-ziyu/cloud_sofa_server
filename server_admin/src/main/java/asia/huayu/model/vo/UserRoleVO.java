@@ -18,7 +18,7 @@ public class UserRoleVO {
 
     @NotNull(message = "id不能为空")
     @Schema(description = "userId", title = "用户id", type = "Integer")
-    private Integer userId;
+    private Integer id;
 
 
     @NotNull(message = "用户角色不能为空")
