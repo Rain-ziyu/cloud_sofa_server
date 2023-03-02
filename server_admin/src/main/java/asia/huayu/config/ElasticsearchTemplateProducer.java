@@ -6,7 +6,8 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 @Configuration
 // 设置哪些包需要JPA映射支持
 @EnableElasticsearchRepositories(
-        basePackages = "asia.huayu"
+        basePackages = "asia.huayu.mapper"
 )
 public class ElasticsearchTemplateProducer {
+
 }

@@ -1,0 +1,19 @@
+version: '3.7'
+
+services:
+  maxwell:
+    hostname: maxwell
+    image: zendesk/maxwell
+    command: "bin/maxwell  --user='root' --password='24681379'  --host='huayu.asia'  --producer=rabbitmq --rabbitmq_user='guest' --rabbitmq_pass='guest' --rabbitmq_host='prod.huayu.asia' --rabbitmq_port='5672' --rabbitmq_exchange='maxwell_exchange'  --rabbitmq_exchange_type='fanout' --rabbitmq_exchange_durable='true' --filter='exclude: *.*, include: cloud_sofa_server.article.article_title = *, include: cloud_sofa_server.article.article_content = *, include: cloud_sofa_server.article.is_delete = *, include: cloud_sofa_server.article.status = *'"
+    labels:
+      "type": "1"
+    networks:
+      - ali
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+networks:
+  ali:
+    # external: true
+    name: huayu

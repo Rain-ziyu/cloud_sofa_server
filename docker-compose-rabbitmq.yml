@@ -1,0 +1,21 @@
+version: '3.7'
+
+services:
+  rabbitmq:
+    hostname: rabbitmq
+    image: rabbitmq:management
+    ports:
+      - 15672:15672
+      - 5672:5672
+    labels:
+      "type": "1"
+    networks:
+      - ali
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+networks:
+  ali:
+    external: true
+    name: huayu
