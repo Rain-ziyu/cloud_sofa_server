@@ -59,7 +59,8 @@ public class ExceptionLogAspect {
             }
         }
         if (Objects.nonNull(apiOperation)) {
-            exceptionLog.setOptDesc(apiOperation.description());
+            // 修改使用swagger 3.0的Operation
+            exceptionLog.setOptDesc(apiOperation.summary());
         } else {
             exceptionLog.setOptDesc("");
         }

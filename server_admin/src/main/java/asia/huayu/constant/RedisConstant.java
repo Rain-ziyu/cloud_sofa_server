@@ -15,10 +15,9 @@ public interface RedisConstant {
     String VISITOR_AREA = "visitor_area";
 
     String ABOUT = "about";
-
+    // 访问者的唯一标识  根据登陆者的ip等进行计算
     String UNIQUE_VISITOR = "unique_visitor";
 
 
-    String ARTICLE_ACCESS = "article_access:";
 
 }

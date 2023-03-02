@@ -19,8 +19,6 @@ public class UserRoleVO {
     @NotNull(message = "id不能为空")
     @Schema(description = "userId", title = "用户id", type = "Integer")
     private Integer id;
-
-
     @NotNull(message = "用户角色不能为空")
     @Schema(description = "roleList", title = "角色id集合", type = "List<Integer>")
     private List<Integer> roleIds;
