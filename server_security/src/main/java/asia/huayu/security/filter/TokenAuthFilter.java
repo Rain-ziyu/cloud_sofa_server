@@ -6,7 +6,6 @@ import asia.huayu.security.util.SystemEnums;
 import asia.huayu.security.util.SystemValue;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -41,6 +40,7 @@ public class TokenAuthFilter extends BasicAuthenticationFilter {
         if (authRequest != null) {
             SecurityContextHolder.getContext().setAuthentication(authRequest);
         }
+
         chain.doFilter(request, response);
     }
 
@@ -54,7 +54,10 @@ public class TokenAuthFilter extends BasicAuthenticationFilter {
             try {
                 username = tokenManager.getUserInfoFromToken(token);
             } catch (Exception e) {
-                throw new AuthenticationServiceException("token无法解析", e);
+                // 即使用户携带的token有异常我们也不管了直接返回null   security会有自己的机制可能会在缓存中读到正确的用户token
+                // throw new AuthenticationServiceException("token无法解析", e);
+                logger.info("一个用户的token无法解析");
+                return null;
             }
             // 从redis获取对应权限列表
             List<String> permissionValueList = (List<String>) redisTemplate.opsForValue().get(username);
