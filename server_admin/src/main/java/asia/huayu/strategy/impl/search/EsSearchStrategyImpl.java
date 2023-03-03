@@ -5,11 +5,13 @@ import asia.huayu.strategy.SearchStrategy;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import lombok.extern.log4j.Log4j2;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.client.elc.QueryBuilders;
-import org.springframework.data.elasticsearch.client.erhlc.NativeSearchQueryBuilder;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ import static asia.huayu.enums.ArticleStatusEnum.PUBLIC;
 public class EsSearchStrategyImpl implements SearchStrategy {
 
     @Autowired
-    private ElasticsearchOperations elasticsearchOperations;
+    private ElasticsearchRestTemplate elasticsearchRestTemplate;
 
     @Override
     public List<ArticleSearchDTO> searchArticle(String keywords) {
@@ -35,6 +37,7 @@ public class EsSearchStrategyImpl implements SearchStrategy {
     }
 
     private NativeSearchQueryBuilder buildQuery(String keywords) {
+
         NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder();
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         boolQueryBuilder.must(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("articleTitle", keywords))

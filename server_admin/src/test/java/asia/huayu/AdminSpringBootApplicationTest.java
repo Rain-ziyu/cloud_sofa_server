@@ -17,6 +17,10 @@ public class AdminSpringBootApplicationTest {
 
     @Test
     void saveData() {
-        elasticsearchMapper.save(new ArticleSearchDTO());
+        ArticleSearchDTO articleSearchDTO = new ArticleSearchDTO();
+        articleSearchDTO.setId(10);
+        articleSearchDTO.setArticleContent("aaa");
+        articleSearchDTO.setArticleTitle("wwl");
+        elasticsearchMapper.save(articleSearchDTO);
     }
 }
