@@ -31,7 +31,13 @@ public class TokenLogoutHandler implements LogoutHandler {
             // 移除
             tokenManager.removeToken(token);
             // 从token获取用户名
-            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            String username = null;
+            try {
+                username = SecurityContextHolder.getContext().getAuthentication().getName();
+            } catch (Exception e) {
+                ResponseUtil.out(response, Result.OK("注销的token不存在"));
+            }
+
             redisTemplate.delete(username);
             // 从登录用户中移除 在线用户信息
             redisTemplate.opsForHash().delete(SystemValue.LOGIN_USER, username);
