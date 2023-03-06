@@ -59,7 +59,7 @@ public class ExceptionLogAspect {
             }
         }
         if (Objects.nonNull(apiOperation)) {
-            exceptionLog.setOptDesc(apiOperation.description());
+            exceptionLog.setOptDesc(apiOperation.summary());
         } else {
             exceptionLog.setOptDesc("");
         }

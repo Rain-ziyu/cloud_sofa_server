@@ -52,7 +52,7 @@ public class OperationLogAspect {
         OptLog optLog = method.getAnnotation(OptLog.class);
         operationLog.setOptModule(api.name());
         operationLog.setOptType(optLog.optType());
-        operationLog.setOptDesc(apiOperation.description());
+        operationLog.setOptDesc(apiOperation.summary());
         String className = joinPoint.getTarget().getClass().getName();
         String methodName = method.getName();
         methodName = className + "." + methodName;
