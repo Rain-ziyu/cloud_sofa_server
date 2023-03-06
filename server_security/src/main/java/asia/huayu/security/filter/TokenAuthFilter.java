@@ -60,7 +60,7 @@ public class TokenAuthFilter extends BasicAuthenticationFilter {
                 return null;
             }
             // 从redis获取对应权限列表
-            List<String> permissionValueList = (List<String>) redisTemplate.opsForValue().get(username);
+            List<String> permissionValueList = (List<String>) redisTemplate.opsForValue().get(SystemValue.ONLINE_USER_AUTH + username);
             Collection<GrantedAuthority> authority = new ArrayList<>();
             for (String permissionValue : permissionValueList) {
                 SimpleGrantedAuthority auth = new SimpleGrantedAuthority(permissionValue);

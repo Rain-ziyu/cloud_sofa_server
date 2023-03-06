@@ -9,4 +9,8 @@ public interface SystemValue {
     String LOGIN_USER = "login_user";
     String NULL_STRING = "null";
     String USER_AREA = "user_area";
+    /**
+     * 在线用户的权限信息   统一前缀
+     */
+    String ONLINE_USER_AUTH = "online_user_auth:";
 }

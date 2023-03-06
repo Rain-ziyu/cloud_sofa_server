@@ -39,7 +39,7 @@ public class TokenLogoutHandler implements LogoutHandler {
                 ResponseUtil.out(response, Result.OK("注销的token不存在"));
             }
 
-            redisTemplate.delete(username);
+            redisTemplate.delete(SystemValue.ONLINE_USER_AUTH + username);
             // 从登录用户中移除 在线用户信息
             redisTemplate.opsForHash().delete(SystemValue.LOGIN_USER, username);
             // 删除登陆用户数

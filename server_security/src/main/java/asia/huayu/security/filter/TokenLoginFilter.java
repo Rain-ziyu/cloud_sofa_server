@@ -72,7 +72,7 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
         String token = tokenManager.createToken(user.getUsername());
         tokenDTO.setExpires(new Date(System.currentTimeMillis() + SystemValue.TOKEN_EXPIRATION_TIME));
         // 把用户名称和用户权限列表放到redis   加上失效时间，是为了减小redis缓存数据量，不能根据该值是否存在判断用户token是否失效
-        redisTemplate.opsForValue().set(user.getUsername(), user.getPermissionValueList(), SystemValue.TOKEN_EXPIRATION_TIME, TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue().set(SystemValue.ONLINE_USER_AUTH + user.getUsername(), user.getPermissionValueList(), SystemValue.TOKEN_EXPIRATION_TIME, TimeUnit.MILLISECONDS);
         // 根据用户名生成refreshToken
         String refreshToken = tokenManager.createRefreshToken(user.getUsername());
         tokenDTO.setToken(token);
