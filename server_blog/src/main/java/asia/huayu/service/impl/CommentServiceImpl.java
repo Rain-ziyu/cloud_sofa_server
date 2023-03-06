@@ -285,7 +285,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                         map.put("replyComment", "@" + mentionUserInfo.getNickname() + " " + parentComment.getCommentContent());
                     }
                 } else {
-                    map.put("replyComment", parentComment.getCommentContent());
+                    map.put("replyComment", comment.getCommentContent());
                 }
             }
         } else {
