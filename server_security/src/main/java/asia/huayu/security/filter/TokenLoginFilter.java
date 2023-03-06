@@ -85,12 +85,20 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
         onlineUser.setLoginType(1);
         String ipAddress = IpUtil.getIpAddress(request);
         onlineUser.setIpAddress(ipAddress);
-        onlineUser.setIpSource(IpUtil.getIpSource(ipAddress));
+        String ipSource = IpUtil.getIpSource(ipAddress);
+        onlineUser.setIpSource(ipSource);
         onlineUser.setBrowser(IpUtil.getUserAgent(request).getBrowser().getName());
         onlineUser.setOs(IpUtil.getUserAgent(request).getOperatingSystem().getName());
         onlineUser.setName(user.getUsername());
         userLoginInfoService.addLoginInfo(onlineUser);
         redisTemplate.opsForHash().put(SystemValue.LOGIN_USER, user.getUsername(), onlineUser);
+        // 同步在redis中增加记录登录的地域信息   存在自增加一 不存在更新
+        String ipProvince = IpUtil.getIpProvince(ipSource);
+        if (redisTemplate.opsForHash().hasKey(SystemValue.USER_AREA, ipProvince)) {
+            redisTemplate.opsForHash().increment(SystemValue.USER_AREA, ipProvince, 1L);
+        } else {
+            redisTemplate.opsForHash().put(SystemValue.USER_AREA, ipProvince, 1L);
+        }
         ResponseUtil.out(response, Result.OK(SystemEnums.LOGIN_SUCCESS.VALUE, tokenDTO));
     }
 

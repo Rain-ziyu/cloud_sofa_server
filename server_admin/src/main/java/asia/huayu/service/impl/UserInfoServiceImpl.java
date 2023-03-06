@@ -2,6 +2,7 @@ package asia.huayu.service.impl;
 
 import asia.huayu.auth.entity.UserRole;
 import asia.huayu.auth.service.UserRoleService;
+import asia.huayu.common.util.IpUtil;
 import asia.huayu.common.util.RequestUtil;
 import asia.huayu.entity.User;
 import asia.huayu.entity.UserInfo;
@@ -106,8 +107,12 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     public void removeOnlineUser(Integer userId) {
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getId, userId));
         redisService.del(user.getUsername());
+        // 获取登陆的用户信息
+        OnlineUser onlineUser = (OnlineUser) redisService.hGet(SystemValue.LOGIN_USER, user.getUsername());
         // 删除redis中登录用户信息
         redisService.hDel(SystemValue.LOGIN_USER, user.getUsername());
+        // 删除redis中所统计的用户ip
+        redisService.hIncr(SystemValue.USER_AREA, IpUtil.getIpProvince(onlineUser.getIpSource()), -1L);
     }
 
 

@@ -2,6 +2,7 @@ package asia.huayu.security.security;
 
 
 import asia.huayu.common.entity.Result;
+import asia.huayu.common.util.IpUtil;
 import asia.huayu.common.util.ResponseUtil;
 import asia.huayu.security.util.SystemValue;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -41,6 +42,11 @@ public class TokenLogoutHandler implements LogoutHandler {
             redisTemplate.delete(username);
             // 从登录用户中移除 在线用户信息
             redisTemplate.opsForHash().delete(SystemValue.LOGIN_USER, username);
+            // 删除登陆用户数
+            String ipAddress = IpUtil.getIpAddress(request);
+            String ipSource = IpUtil.getIpSource(ipAddress);
+            String ipProvince = IpUtil.getIpProvince(ipSource);
+            redisTemplate.opsForHash().increment(SystemValue.USER_AREA, ipProvince, -1L);
         }
         ResponseUtil.out(response, Result.OK("注销成功"));
     }

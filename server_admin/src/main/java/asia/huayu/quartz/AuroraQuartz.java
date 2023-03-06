@@ -4,14 +4,17 @@ import asia.huayu.common.util.IpUtil;
 import asia.huayu.config.RestConfig;
 import asia.huayu.constant.CommonConstant;
 import asia.huayu.constant.RedisConstant;
-import asia.huayu.entity.*;
+import asia.huayu.entity.Article;
+import asia.huayu.entity.Resource;
+import asia.huayu.entity.RoleResource;
+import asia.huayu.entity.UniqueView;
 import asia.huayu.mapper.UniqueViewMapper;
 import asia.huayu.mapper.UserLoginInfoMapper;
-import asia.huayu.model.dto.UserAreaDTO;
+import asia.huayu.security.entity.OnlineUser;
+import asia.huayu.security.util.SystemValue;
 import asia.huayu.service.*;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
-import com.alibaba.fastjson2.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,8 +74,32 @@ public class AuroraQuartz {
         redisService.del(RedisConstant.VISITOR_AREA);
     }
 
+    /**
+     * 方法statisticalUserArea作用为：
+     * 定时刷新用户登录统计区域 在security中协助进行实时的更新  过滤掉部分用户登陆一次未注销
+     *
+     * @param
+     * @return void
+     * @throws
+     * @author RainZiYu
+     */
     public void statisticalUserArea() {
-        Map<String, Long> userAreaMap = userLoginInfoMapper.selectList(new LambdaQueryWrapper<UserLoginInfo>().select(UserLoginInfo::getIpSource))
+        // 将在线的用户信息存从redis中取出
+        Map<String, Object> userMaps = redisService.hGetAll(SystemValue.LOGIN_USER);
+        Collection<Object> values = userMaps.values();
+        ArrayList<OnlineUser> onlineUsers = new ArrayList<>();
+        for (Object value : values) {
+            OnlineUser onlineUser = (OnlineUser) value;
+            // 如果当前时间小于过期时间
+            if (DateUtil.compare(onlineUser.getExpireTime(), new Date()) > 0) {
+                onlineUsers.add(onlineUser);
+            } else {
+                // 移除token已经过期的
+                redisService.hDel(SystemValue.LOGIN_USER, onlineUser.getName());
+            }
+        }
+
+        Map<String, Long> userAreaMap = onlineUsers
                 .stream()
                 .map(item -> {
                     if (Objects.nonNull(item) && StringUtils.isNotBlank(item.getIpSource())) {
@@ -81,13 +108,7 @@ public class AuroraQuartz {
                     return CommonConstant.UNKNOWN;
                 })
                 .collect(Collectors.groupingBy(item -> item, Collectors.counting()));
-        List<UserAreaDTO> userAreaList = userAreaMap.entrySet().stream()
-                .map(item -> UserAreaDTO.builder()
-                        .name(item.getKey())
-                        .value(item.getValue())
-                        .build())
-                .collect(Collectors.toList());
-        redisService.set(RedisConstant.USER_AREA, JSON.toJSONString(userAreaList));
+        redisService.hSetAll(RedisConstant.USER_AREA, userAreaMap);
     }
 
     public void baiduSeo() {

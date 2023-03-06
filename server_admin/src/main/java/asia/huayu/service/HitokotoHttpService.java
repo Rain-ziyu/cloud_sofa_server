@@ -9,7 +9,7 @@ import asia.huayu.model.dto.TheWordOfTheDayDTO;
 public interface HitokotoHttpService {
     /**
      * 方法getTheWordOfTheDay作用为：
-     * 调用一言接口获取每日一言  内置参数动漫、漫画
+     * 调用一言接口获取每日一言  内置参数动漫、漫画 https://developer.hitokoto.cn/sentence/
      *
      * @param
      * @return asia.huayu.model.dto.TheWordOfTheDayDTO

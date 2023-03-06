@@ -10,7 +10,6 @@ import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.service.RedisService;
 import asia.huayu.service.UserService;
 import asia.huayu.util.PageUtil;
-import com.alibaba.fastjson2.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,9 +41,14 @@ public class UserServiceImpl implements UserService {
         List<UserAreaDTO> userAreaDTOs = new ArrayList<>();
         switch (Objects.requireNonNull(getUserAreaType(conditionVO.getType()))) {
             case USER:
-                Object userArea = redisService.get(RedisConstant.USER_AREA);
+                Map<String, Object> userArea = redisService.hGetAll(RedisConstant.USER_AREA);
                 if (Objects.nonNull(userArea)) {
-                    userAreaDTOs = JSON.parseObject(userArea.toString(), List.class);
+                    userAreaDTOs = userArea.entrySet().stream()
+                            .map(item -> UserAreaDTO.builder()
+                                    .name(item.getKey())
+                                    .value(Long.valueOf(item.getValue().toString()))
+                                    .build())
+                            .collect(Collectors.toList());
                 }
                 return userAreaDTOs;
             case VISITOR:
