@@ -106,7 +106,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Override
     public void removeOnlineUser(Integer userId) {
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getId, userId));
-        redisService.del(user.getUsername());
+        redisService.del(SystemValue.ONLINE_USER_AUTH + user.getUsername());
         // 获取登陆的用户信息
         OnlineUser onlineUser = (OnlineUser) redisService.hGet(SystemValue.LOGIN_USER, user.getUsername());
         // 删除redis中登录用户信息
