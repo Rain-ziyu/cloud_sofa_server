@@ -9,7 +9,6 @@ import asia.huayu.entity.Resource;
 import asia.huayu.entity.RoleResource;
 import asia.huayu.entity.UniqueView;
 import asia.huayu.mapper.UniqueViewMapper;
-import asia.huayu.mapper.UserLoginInfoMapper;
 import asia.huayu.security.entity.OnlineUser;
 import asia.huayu.security.util.SystemValue;
 import asia.huayu.service.*;
@@ -50,8 +49,6 @@ public class AuroraQuartz {
     @Autowired
     private UniqueViewMapper uniqueViewMapper;
 
-    @Autowired
-    private UserLoginInfoMapper userLoginInfoMapper;
 
     @Autowired
     private RestConfig.RestService restService;
@@ -133,6 +130,7 @@ public class AuroraQuartz {
         resourceService.importSwagger();
         List<Integer> resourceIds = resourceService.list().stream().map(Resource::getId).collect(Collectors.toList());
         List<RoleResource> roleResources = new ArrayList<>();
+        // 默认全部赋予管理员可用
         for (Integer resourceId : resourceIds) {
             roleResources.add(RoleResource.builder()
                     .roleId(1)

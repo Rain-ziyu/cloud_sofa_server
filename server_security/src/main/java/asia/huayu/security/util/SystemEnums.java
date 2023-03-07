@@ -11,7 +11,8 @@ public enum SystemEnums {
     LOGIN_ERROR("登录异常，请稍后重试"),
     // 请求头中携带token的key
     AUTH_NAME("token"),
-    TOKEN_ERROR("token无效");
+    TOKEN_ERROR("token无效"),
+    NO_AUTH("无权限");
     public String VALUE;
 
     SystemEnums(String VALUE) {

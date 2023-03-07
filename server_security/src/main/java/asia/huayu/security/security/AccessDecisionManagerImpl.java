@@ -1,5 +1,6 @@
-package asia.huayu.handler;
+package asia.huayu.security.security;
 
+import asia.huayu.security.util.SystemEnums;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
@@ -13,8 +14,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * @author User
- * 全局判断用户权限自定义处理
+ * @author RainZiYu
+ * @Date 2023/3/7
+ * 用于动态的当前接口所需权限获取
  */
 @Component
 public class AccessDecisionManagerImpl implements AccessDecisionManager {
@@ -29,7 +31,7 @@ public class AccessDecisionManagerImpl implements AccessDecisionManager {
                 return;
             }
         }
-        throw new AccessDeniedException("权限不足");
+        throw new AccessDeniedException(SystemEnums.NO_AUTH.VALUE);
     }
 
     @Override

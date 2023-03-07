@@ -1,7 +1,7 @@
 package asia.huayu.auth.service.impl;
 
 
-import asia.huayu.auth.service.PermissionService;
+import asia.huayu.auth.service.RoleService;
 import asia.huayu.auth.service.SecurityUserInfoService;
 import asia.huayu.security.entity.SecurityUser;
 import asia.huayu.security.entity.SecurityUserInfo;
@@ -22,7 +22,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private SecurityUserInfoService securityUserInfoService;
     @Autowired
-    private PermissionService permissionService;
+    private RoleService roleService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -32,8 +32,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("用户不存在");
         }
-        // 根据用户id查询用户权限列表
-        List<String> permissionValueList = permissionService.selectPermissionValueByUserId(String.valueOf(user.getId()));
+        // 根据用户id查询用户接口权限列表
+        List<String> permissionValueList = roleService.selectRoleByUserId(String.valueOf(user.getId()));
         SecurityUser securityUser = new SecurityUser();
         // 设置当前SecurityUserInfo为用户信息
         securityUser.setSecurityUserInfo(user);

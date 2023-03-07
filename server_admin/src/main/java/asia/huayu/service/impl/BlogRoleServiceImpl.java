@@ -1,5 +1,6 @@
 package asia.huayu.service.impl;
 
+import asia.huayu.auth.config.FilterInvocationSecurityMetadataSourceImpl;
 import asia.huayu.auth.entity.Role;
 import asia.huayu.auth.entity.RolePermission;
 import asia.huayu.auth.entity.UserRole;
@@ -15,6 +16,7 @@ import asia.huayu.model.dto.UserRoleDTO;
 import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.model.vo.RoleVO;
 import asia.huayu.service.BlogRoleService;
+import asia.huayu.service.RedisService;
 import asia.huayu.service.RoleResourceService;
 import asia.huayu.util.BeanCopyUtil;
 import asia.huayu.util.PageUtil;
@@ -39,6 +41,8 @@ public class BlogRoleServiceImpl extends ServiceImpl<BlogRoleMapper, Role> imple
 
     @Autowired
     private UserRoleMapper userRoleMapper;
+    @Autowired
+    private RedisService redisService;
 
     @Autowired
     private RoleResourceService roleResourceService;
@@ -46,8 +50,8 @@ public class BlogRoleServiceImpl extends ServiceImpl<BlogRoleMapper, Role> imple
     @Autowired
     private RolePermissionService rolePermissionService;
 
-/*     @Autowired
-    private FilterInvocationSecurityMetadataSourceImpl filterInvocationSecurityMetadataSource; */
+    @Autowired
+    private FilterInvocationSecurityMetadataSourceImpl filterInvocationSecurityMetadataSource;
 
     @Override
     public List<UserRoleDTO> listUserRoles() {
@@ -77,18 +81,21 @@ public class BlogRoleServiceImpl extends ServiceImpl<BlogRoleMapper, Role> imple
         saveOrUpdate(role);
         // 循环赋予资源列表
         if (Objects.nonNull(roleVO.getResourceIds())) {
+            // 先删除该角色拥有的全部接口权限
             if (Objects.nonNull(roleVO.getId())) {
                 roleResourceService.remove(new LambdaQueryWrapper<RoleResource>()
                         .eq(RoleResource::getRoleId, roleVO.getId()));
             }
+            // 插入
             List<RoleResource> roleResourceList = roleVO.getResourceIds().stream()
                     .map(resourceId -> RoleResource.builder()
                             .roleId(role.getId())
                             .resourceId(resourceId)
                             .build())
                     .collect(Collectors.toList());
-            roleResourceService.saveBatch(roleResourceList);
-            /*             filterInvocationSecurityMetadataSource.clearDataSource(); */
+            boolean b = roleResourceService.saveBatch(roleResourceList);
+            // 当角色拥有的接口权限更新或者新增时时，更新redis缓存
+            filterInvocationSecurityMetadataSource.clearDataSource();
         }
         // 循环赋予菜单权限
         if (Objects.nonNull(roleVO.getMenuIds())) {

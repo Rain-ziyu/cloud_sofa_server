@@ -32,8 +32,6 @@ import java.util.stream.Collectors;
 @Service
 public class MenuServiceImpl extends ServiceImpl<MenuMapper, Permission> implements MenuService {
 
-    @Autowired
-    private MenuMapper menuMapper;
 
     @Autowired
     private RolePermissionMapper rolePermissionMapper;

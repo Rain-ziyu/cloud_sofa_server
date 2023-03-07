@@ -1,5 +1,6 @@
 package asia.huayu.service.impl;
 
+import asia.huayu.auth.config.FilterInvocationSecurityMetadataSourceImpl;
 import asia.huayu.common.exception.ServiceProcessException;
 import asia.huayu.constant.CommonConstant;
 import asia.huayu.entity.Resource;
@@ -10,6 +11,8 @@ import asia.huayu.model.dto.LabelOptionDTO;
 import asia.huayu.model.dto.ResourceDTO;
 import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.model.vo.ResourceVO;
+import asia.huayu.security.util.SystemValue;
+import asia.huayu.service.RedisService;
 import asia.huayu.service.ResourceService;
 import asia.huayu.util.BeanCopyUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -28,6 +31,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * @author User
+ * 接口权限服务类
+ */
 @Service
 public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource> implements ResourceService {
 
@@ -36,10 +43,12 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource> i
 
     @Autowired
     private ResourceMapper resourceMapper;
-
+    @Autowired
+    private RedisService redisService;
     @Autowired
     private RoleResourceMapper roleResourceMapper;
-
+    @Autowired
+    private FilterInvocationSecurityMetadataSourceImpl filterInvocationSecurityMetadataSource;
 
     @SuppressWarnings("all")
     @Transactional(rollbackFor = Exception.class)
@@ -59,14 +68,14 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource> i
             resources.add(resource);
         });
         this.saveBatch(resources);
-        Map<String, Integer> permissionMap = resources.stream()
+        Map<String, Integer> resourcesMap = resources.stream()
                 .collect(Collectors.toMap(Resource::getResourceName, Resource::getId));
         resources.clear();
         Map<String, Map<String, Map<String, Object>>> path = (Map<String, Map<String, Map<String, Object>>>) data.get("paths");
         path.forEach((url, value) -> value.forEach((requestMethod, info) -> {
             String permissionName = info.get("summary").toString();
             List<String> tag = (List<String>) info.get("tags");
-            Integer parentId = permissionMap.get(tag.get(0));
+            Integer parentId = resourcesMap.get(tag.get(0));
             Resource resource = Resource.builder()
                     .resourceName(permissionName)
                     .url(url.replaceAll("\\{[^}]*\\}", "*"))
@@ -84,6 +93,11 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource> i
     public void saveOrUpdateResource(ResourceVO resourceVO) {
         Resource resource = BeanCopyUtil.copyObject(resourceVO, Resource.class);
         this.saveOrUpdate(resource);
+        // 同步更新redis中的资源   如果存在则清空redis  没有的话先不管 因为该资源暂时没有对应的角色 不会影响鉴权
+        if (redisService.hHasKey(SystemValue.ROLE_AUTH, String.valueOf(resource.getId()))) {
+            filterInvocationSecurityMetadataSource.clearDataSource();
+        }
+
     }
 
     @Override

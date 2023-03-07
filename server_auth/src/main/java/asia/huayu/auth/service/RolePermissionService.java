@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- * 角色权限 服务类
+ * 角色菜单权限 服务类
  * </p>
  *
  * @author testjava
