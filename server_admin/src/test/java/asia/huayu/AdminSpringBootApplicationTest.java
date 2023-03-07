@@ -32,4 +32,19 @@ public class AdminSpringBootApplicationTest {
     void testUserArea() {
         auroraQuartz.statisticalUserArea();
     }
+
+
+    /**
+     * 方法testImportSwagger作用为：
+     * 初始化resource表以及接口的权限信息
+     *
+     * @param
+     * @return void
+     * @throws
+     * @author RainZiYu
+     */
+    @Test
+    void testImportSwagger() {
+        auroraQuartz.importSwagger();
+    }
 }

@@ -2,6 +2,7 @@ package asia.huayu.service.impl;
 
 import asia.huayu.auth.config.FilterInvocationSecurityMetadataSourceImpl;
 import asia.huayu.common.exception.ServiceProcessException;
+import asia.huayu.config.RestConfig;
 import asia.huayu.constant.CommonConstant;
 import asia.huayu.entity.Resource;
 import asia.huayu.entity.RoleResource;
@@ -22,7 +23,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource> implements ResourceService {
 
     @Autowired
-    private RestTemplate restTemplate;
+    private RestConfig.RestService restService;
 
     @Autowired
     private ResourceMapper resourceMapper;
@@ -53,21 +53,21 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource> i
     @SuppressWarnings("all")
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void importSwagger() {
-        this.remove(null);
+    public void importSwagger(String targetUrl, String urlPrefix) {
+        // this.remove(null);   不删除所有
         roleResourceMapper.delete(null);
         List<Resource> resources = new ArrayList<>();
-        Map<String, Object> data = restTemplate.getForObject("http://localhost:8080/v2/api-docs", Map.class);
-        List<Map<String, String>> tagList = (List<Map<String, String>>) data.get("tags");
-        tagList.forEach(item -> {
-            Resource resource = Resource.builder()
-                    .resourceName(item.get("name"))
-                    .isAnonymous(CommonConstant.FALSE)
-                    .createTime(LocalDateTime.now())
-                    .build();
-            resources.add(resource);
-        });
-        this.saveBatch(resources);
+        Map<String, Object> data = restService.restTemplate.getForObject(targetUrl, Map.class);
+        // List<Map<String, String>> tagList = (List<Map<String, String>>) data.get("tags");
+        // tagList.forEach(item -> {
+        //     Resource resource = Resource.builder()
+        //             .resourceName(item.get("name"))
+        //             .isAnonymous(CommonConstant.FALSE)
+        //             .createTime(LocalDateTime.now())
+        //             .build();
+        //     resources.add(resource);
+        // });
+        // this.saveBatch(resources);
         Map<String, Integer> resourcesMap = resources.stream()
                 .collect(Collectors.toMap(Resource::getResourceName, Resource::getId));
         resources.clear();
@@ -78,7 +78,7 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource> i
             Integer parentId = resourcesMap.get(tag.get(0));
             Resource resource = Resource.builder()
                     .resourceName(permissionName)
-                    .url(url.replaceAll("\\{[^}]*\\}", "*"))
+                    .url(urlPrefix + url.replaceAll("\\{[^}]*\\}", "*"))
                     .parentId(parentId)
                     .requestMethod(requestMethod.toUpperCase())
                     .isAnonymous(CommonConstant.FALSE)

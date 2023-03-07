@@ -127,7 +127,8 @@ public class AuroraQuartz {
     }
 
     public void importSwagger() {
-        resourceService.importSwagger();
+        resourceService.importSwagger("http://localhost:8080/user/v3/api-docs/blog", "/user");
+        resourceService.importSwagger("http://localhost:3399/admin/v3/api-docs/admin", "/admin");
         List<Integer> resourceIds = resourceService.list().stream().map(Resource::getId).collect(Collectors.toList());
         List<RoleResource> roleResources = new ArrayList<>();
         // 默认全部赋予管理员可用

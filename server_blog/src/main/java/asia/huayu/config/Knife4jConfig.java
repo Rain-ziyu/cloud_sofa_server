@@ -23,7 +23,7 @@ public class Knife4jConfig {
     public GroupedOpenApi userApi() {
         String[] paths = {"/**"};
         String[] packagedToMatch = {"asia.huayu.controller"};
-        return GroupedOpenApi.builder().group("blog模块")
+        return GroupedOpenApi.builder().group("blog")
                 .pathsToMatch(paths)
                 .addOperationCustomizer((operation, handlerMethod) -> {
                     return operation.addParametersItem(new HeaderParameter().name("token").example("token").description("token").schema(new StringSchema()._default("BR").name("token").description("token")));
@@ -37,10 +37,10 @@ public class Knife4jConfig {
                 .info(new Info()
                         .title("aurora-cloud文档")
                         .version("1.0")
-                        .description("server_admin")
-                        .termsOfService("https://prod.huayu.asia/api")
+                        .description("server_blog")
+                        .termsOfService("https://prod.huayu.asia/user")
                         .license(new License().name("Apache 2.0")
-                                .url("http://doc.xiaominfo.com")));
+                                .url("https://prod.huayu.asia/user")));
     }
 
 }

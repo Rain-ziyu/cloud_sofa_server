@@ -18,7 +18,7 @@
         <module>server_auth</module>
         <module>base_common</module>
         <module>server_security</module>
-        <module>server_system</module>
+        <module>server_gateway</module>
         <module>server_file</module>
         <module>server_pic</module>
         <module>server_admin</module>

@@ -1,4 +1,4 @@
-import asia.huayu.ServerStartApplication;
+import asia.huayu.gateway.ServerStartApplication;
 import asia.huayu.security.security.TokenManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
