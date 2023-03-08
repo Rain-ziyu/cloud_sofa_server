@@ -25,14 +25,26 @@
     </sql>
 
     <select id="selectPermissionByUserId" resultMap="permissionMap">
-        select
-        <include refid="columns"/>
+        select distinct (p
+            .
+            id)
+                      , p.parent_id
+                      , p.name
+                      , p.type
+                      , p.permission_value
+                      , `path`
+                      , p.component
+                      , p.icon
+                      , p.status
+                      , p.create_time
+                      , p.update_time
+                      , p.`rank`
         from user_role ur
-        inner join role_permission rp on rp.role_id = ur.role_id
-        inner join permission p on p.id = rp.permission_id
+                 inner join role_permission rp on rp.role_id = ur.role_id
+                 inner join permission p on p.id = rp.permission_id
         where ur.user_id = #{userId}
-        and ur.is_deleted = 0
-        and rp.is_deleted = 0
+          and ur.is_deleted = 0
+          and rp.is_deleted = 0
     </select>
 
     <select id="selectPermissionValueByUserId" resultType="String">
