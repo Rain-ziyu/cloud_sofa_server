@@ -45,6 +45,7 @@ public class AdminSpringBootApplicationTest {
      */
     @Test
     void testImportSwagger() {
-        auroraQuartz.importSwagger();
+        auroraQuartz.importSwagger("http://localhost:8080/user/v3/api-docs/blog", "/user");
+        auroraQuartz.importSwagger("http://localhost:3399/admin/v3/api-docs/admin", "/admin");
     }
 }

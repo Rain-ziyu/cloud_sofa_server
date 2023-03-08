@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface ResourceService extends IService<Resource> {
 
-    void importSwagger(String targetUrl, String urlPrefix);
+    List<Resource> importSwagger(String targetUrl, String urlPrefix);
 
     void saveOrUpdateResource(ResourceVO resourceVO);
 

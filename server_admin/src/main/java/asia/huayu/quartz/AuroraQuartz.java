@@ -126,10 +126,9 @@ public class AuroraQuartz {
         jobLogService.cleanJobLogs();
     }
 
-    public void importSwagger() {
-        resourceService.importSwagger("http://localhost:8080/user/v3/api-docs/blog", "/user");
-        resourceService.importSwagger("http://localhost:3399/admin/v3/api-docs/admin", "/admin");
-        List<Integer> resourceIds = resourceService.list().stream().map(Resource::getId).collect(Collectors.toList());
+    public void importSwagger(String targetUrl,String urlPrefix) {
+        List<Resource> resources = resourceService.importSwagger(targetUrl, urlPrefix);
+        List<Integer> resourceIds = resources.stream().map(Resource::getId).collect(Collectors.toList());
         List<RoleResource> roleResources = new ArrayList<>();
         // 默认全部赋予管理员可用
         for (Integer resourceId : resourceIds) {

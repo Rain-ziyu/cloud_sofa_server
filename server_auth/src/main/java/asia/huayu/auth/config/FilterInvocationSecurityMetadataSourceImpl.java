@@ -99,6 +99,7 @@ public class FilterInvocationSecurityMetadataSourceImpl implements FilterInvocat
         String method = fi.getRequest().getMethod();
         String url = fi.getRequest().getRequestURI();
         AntPathMatcher antPathMatcher = new AntPathMatcher();
+        // 这里只能是遍历进行 match  使用map也无法绕过需要遍历match
         for (
                 ResourceRole resourceRole : resourceRoleList) {
             if (antPathMatcher.match(resourceRole.getUrl(), url) && resourceRole.getRequestMethod().equals(method)) {

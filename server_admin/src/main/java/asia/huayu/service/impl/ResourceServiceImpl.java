@@ -16,6 +16,7 @@ import asia.huayu.security.util.SystemValue;
 import asia.huayu.service.RedisService;
 import asia.huayu.service.ResourceService;
 import asia.huayu.util.BeanCopyUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -53,29 +54,30 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource> i
     @SuppressWarnings("all")
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void importSwagger(String targetUrl, String urlPrefix) {
+    public List<Resource> importSwagger(String targetUrl, String urlPrefix) {
         // this.remove(null);   不删除所有
-        roleResourceMapper.delete(null);
-        List<Resource> resources = new ArrayList<>();
+        // roleResourceMapper.delete(null);
+        List<Resource> resources = this.list(new LambdaQueryWrapper<Resource>().isNull(Resource::getParentId));
         Map<String, Object> data = restService.restTemplate.getForObject(targetUrl, Map.class);
-        // List<Map<String, String>> tagList = (List<Map<String, String>>) data.get("tags");
-        // tagList.forEach(item -> {
-        //     Resource resource = Resource.builder()
-        //             .resourceName(item.get("name"))
-        //             .isAnonymous(CommonConstant.FALSE)
-        //             .createTime(LocalDateTime.now())
-        //             .build();
-        //     resources.add(resource);
-        // });
-        // this.saveBatch(resources);
         Map<String, Integer> resourcesMap = resources.stream()
                 .collect(Collectors.toMap(Resource::getResourceName, Resource::getId));
         resources.clear();
         Map<String, Map<String, Map<String, Object>>> path = (Map<String, Map<String, Map<String, Object>>>) data.get("paths");
         path.forEach((url, value) -> value.forEach((requestMethod, info) -> {
-            String permissionName = info.get("summary").toString();
+            String permissionName = info.getOrDefault("summary", "").toString();
             List<String> tag = (List<String>) info.get("tags");
             Integer parentId = resourcesMap.get(tag.get(0));
+            // 如果以前不存在这个tag则新增
+            if (ObjectUtil.isNull(parentId)) {
+                Resource resource = Resource.builder()
+                        .resourceName(tag.get(0))
+                        .isAnonymous(CommonConstant.FALSE)
+                        .createTime(LocalDateTime.now())
+                        .build();
+                this.save(resource);
+                parentId = resource.getId();
+                resourcesMap.put(resource.getResourceName(),resource.getId());
+            }
             Resource resource = Resource.builder()
                     .resourceName(permissionName)
                     .url(urlPrefix + url.replaceAll("\\{[^}]*\\}", "*"))
@@ -84,9 +86,16 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource> i
                     .isAnonymous(CommonConstant.FALSE)
                     .createTime(LocalDateTime.now())
                     .build();
-            resources.add(resource);
+            Long aLong = resourceMapper.selectCount(new LambdaQueryWrapper<Resource>()
+                    .eq(Resource::getUrl, resource.getUrl()).eq(Resource::getRequestMethod, resource.getRequestMethod()));
+            if (aLong == 0) {
+                this.save(resource);
+                // 原来不存在则加入保存列表
+                resources.add(resource);
+            }
         }));
-        this.saveBatch(resources);
+
+        return resources;
     }
 
     @Override
