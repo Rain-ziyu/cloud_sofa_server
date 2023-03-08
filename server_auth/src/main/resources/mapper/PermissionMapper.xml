@@ -21,7 +21,7 @@
         p
         .
         id
-        ,p.parent_id,p.name,p.type,p.permission_value,path,p.component,p.icon,p.status,p.create_time,p.update_time,p.rank
+        ,p.parent_id,p.name,p.type,p.permission_value,`path`,p.component,p.icon,p.status,p.create_time,p.update_time,p.`rank`
     </sql>
 
     <select id="selectPermissionByUserId" resultMap="permissionMap">
