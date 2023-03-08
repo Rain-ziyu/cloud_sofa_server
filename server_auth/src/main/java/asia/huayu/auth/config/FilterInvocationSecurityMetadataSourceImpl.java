@@ -57,13 +57,14 @@ public class FilterInvocationSecurityMetadataSourceImpl implements FilterInvocat
                     resourceRoleMap.put(resourceRole.getId(), resourceRole);
                 }
         );
+        redisTemplate.delete(SystemValue.ROLE_AUTH);
         redisTemplate.opsForHash().putAll(SystemValue.ROLE_AUTH, resourceRoleMap);
     }
 
     public void clearDataSource() {
         readWriteLock.readLock().lock();
         try {
-            redisTemplate.opsForHash().delete(SystemValue.ROLE_AUTH);
+            redisTemplate.delete(SystemValue.ROLE_AUTH);
         } finally {
             readWriteLock.readLock().unlock();
         }
