@@ -77,10 +77,9 @@ public class TokenWebSecurityConfig extends WebSecurityConfigurerAdapter {
                     }
                 });
         http.exceptionHandling()
-
-                .authenticationEntryPoint(new UnauthEntryPoint())// 登陆失败
                 // 设置权限不足时处理
                 .accessDeniedHandler(accessDeniedHandler)
+                .authenticationEntryPoint(new UnauthEntryPoint())// 登陆失败
                 .and().csrf().disable()
                 .authorizeRequests()
                 // 走 Spring Security 过滤器链的放行 虽然会放行该请求 但是仍然会走security的过滤器链
