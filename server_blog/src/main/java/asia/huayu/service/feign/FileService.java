@@ -1,4 +1,4 @@
-package asia.huayu.service;
+package asia.huayu.service.feign;
 
 import asia.huayu.common.entity.Result;
 import asia.huayu.service.fallback.FileFallbackService;

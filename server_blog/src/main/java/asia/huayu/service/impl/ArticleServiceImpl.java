@@ -1,31 +1,28 @@
 package asia.huayu.service.impl;
 
+import asia.huayu.common.entity.Result;
 import asia.huayu.common.exception.ServiceProcessException;
-import asia.huayu.constant.RabbitMQConstant;
 import asia.huayu.constant.RedisConstant;
 import asia.huayu.entity.*;
 import asia.huayu.mapper.ArticleMapper;
 import asia.huayu.mapper.ArticleTagMapper;
 import asia.huayu.mapper.CategoryMapper;
-import asia.huayu.mapper.TagMapper;
 import asia.huayu.model.dto.*;
 import asia.huayu.model.vo.ArticlePasswordVO;
 import asia.huayu.model.vo.ArticleVO;
 import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.service.*;
+import asia.huayu.service.feign.ArticleFeignService;
 import asia.huayu.strategy.context.SearchStrategyContext;
-import asia.huayu.util.BeanCopyUtil;
 import asia.huayu.util.PageUtil;
 import asia.huayu.util.UserUtil;
-import com.alibaba.fastjson2.JSON;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.SneakyThrows;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageProperties;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,8 +49,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Autowired
     private CategoryMapper categoryMapper;
 
-    @Autowired
-    private TagMapper tagMapper;
 
     @Autowired
     private TagService tagService;
@@ -64,10 +59,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private UserService userService;
     @Autowired
     private RedisService redisService;
-
     @Autowired
-    private RabbitTemplate rabbitTemplate;
-
+    private TokenService tokenService;
+    @Autowired
+    private ArticleFeignService articleFeignService;
 
     @Autowired
     private SearchStrategyContext searchStrategyContext;
@@ -229,20 +224,18 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveOrUpdateArticle(ArticleVO articleVO) {
-        Category category = saveArticleCategory(articleVO);
-        Article article = BeanCopyUtil.copyObject(articleVO, Article.class);
-        if (Objects.nonNull(category)) {
-            article.setCategoryId(category.getId());
+    public Result saveOrUpdateArticle(ArticleVO articleVO) {
+        Authentication authentication = UserUtil.getAuthentication();
+        String token;
+        // 如果该用户未认证
+        if (ObjectUtil.isNull(authentication)) {
+            //     创建匿名用户进行发布
+            token = tokenService.getSystemToken();
+        } else {
+            token = authentication.getCredentials().toString();
         }
-        User user = userService.getUserByUsername(UserUtil.getAuthentication().getName());
-        article.setUserId(user.getId());
-        this.saveOrUpdate(article);
-        saveArticleTag(articleVO, article.getId());
-        if (article.getStatus().equals(1)) {
-            // 向rabbitmq发送订阅通知
-            rabbitTemplate.convertAndSend(RabbitMQConstant.SUBSCRIBE_EXCHANGE, "*", new Message(JSON.toJSONBytes(article.getId()), new MessageProperties()));
-        }
+        Result result = articleFeignService.saveOrUpdateArticle(articleVO, token);
+        return result;
     }
 
 

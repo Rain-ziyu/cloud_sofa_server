@@ -2,7 +2,7 @@ package asia.huayu.strategy.impl.upload;
 
 import asia.huayu.common.entity.Result;
 import asia.huayu.common.util.RequestUtil;
-import asia.huayu.service.FileService;
+import asia.huayu.service.feign.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;

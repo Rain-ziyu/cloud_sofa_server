@@ -4,6 +4,7 @@ import asia.huayu.common.controller.base.BaseController;
 import asia.huayu.common.entity.Result;
 import asia.huayu.model.dto.*;
 import asia.huayu.model.vo.ArticlePasswordVO;
+import asia.huayu.model.vo.ArticleVO;
 import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.service.ArticleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -70,6 +71,12 @@ public class ArticleController extends BaseController {
     @GetMapping("/articles/search")
     public Result<List<ArticleSearchDTO>> listArticlesBySearch(ConditionVO condition) {
         return Result.OK(articleService.listArticlesBySearch(condition));
+    }
+
+    @Operation(summary = "用户发布文章")
+    @PostMapping("/articles")
+    public Result saveOrUpdate(@Valid @RequestBody ArticleVO articleVO) {
+        return restProcessor(() -> articleService.saveOrUpdateArticle(articleVO));
     }
 
 }

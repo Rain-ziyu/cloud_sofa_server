@@ -2,7 +2,7 @@ package asia.huayu.service.fallback;
 
 import asia.huayu.common.entity.Result;
 import asia.huayu.common.exception.ServiceProcessException;
-import asia.huayu.service.FileService;
+import asia.huayu.service.feign.FileService;
 import feign.Response;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
