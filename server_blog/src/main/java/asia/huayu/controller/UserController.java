@@ -26,10 +26,10 @@ public class UserController {
     private UserService userService;
 
     @Operation(summary = "发送邮箱验证码")
-    @Parameter(name = "userEmail", description = "邮箱", required = true)
+    @Parameter(name = "username", description = "邮箱", required = true)
     @GetMapping("/users/code")
-    public Result<?> sendCode(String userEmail) {
-        userService.sendCode(userEmail);
+    public Result<?> sendCode(String username) {
+        userService.sendCode(username);
         return Result.OK(ReturnMessageConstant.SEND_VERIFY_SUCCESS);
     }
 
