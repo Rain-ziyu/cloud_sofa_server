@@ -9,7 +9,6 @@ import asia.huayu.model.vo.QQLoginVO;
 import asia.huayu.model.vo.UserVO;
 import asia.huayu.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,10 +25,10 @@ public class UserController {
     private UserService userService;
 
     @Operation(summary = "发送邮箱验证码")
-    @Parameter(name = "username", description = "邮箱", required = true)
+    // @Parameter(name = "username", description = "邮箱", required = true)
     @GetMapping("/users/code")
-    public Result<?> sendCode(String username) {
-        userService.sendCode(username);
+    public Result<?> sendCode(String userEmail) {
+        userService.sendCode(userEmail);
         return Result.OK(ReturnMessageConstant.SEND_VERIFY_SUCCESS);
     }
 
