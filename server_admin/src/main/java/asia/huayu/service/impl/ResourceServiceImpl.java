@@ -102,8 +102,8 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource> i
     public void saveOrUpdateResource(ResourceVO resourceVO) {
         Resource resource = BeanCopyUtil.copyObject(resourceVO, Resource.class);
         this.saveOrUpdate(resource);
-        // 同步更新redis中的资源   如果存在则清空redis  没有的话先不管 因为该资源暂时没有对应的角色 不会影响鉴权
-        if (redisService.hHasKey(SystemValue.ROLE_AUTH, resource.getId())) {
+        // 同步更新redis中的资源   如果存在或者接口权限是从允许匿名被修改为不允许则清空redis  没有的话先不管 因为该资源暂时没有对应的角色 不会影响鉴权
+        if (redisService.hHasKey(SystemValue.ROLE_AUTH, resource.getId()) || resource.getIsAnonymous() == 0) {
             filterInvocationSecurityMetadataSource.clearDataSource();
         }
 
