@@ -10,6 +10,7 @@ import asia.huayu.model.vo.UserVO;
 import asia.huayu.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,7 @@ import static asia.huayu.constant.OptTypeConstant.UPDATE;
 
 @Tag(name = "用户账号模块")
 @RestController
+@Slf4j
 public class UserController {
 
     @Autowired
@@ -28,6 +30,7 @@ public class UserController {
     // @Parameter(name = "username", description = "邮箱", required = true)
     @GetMapping("/users/code")
     public Result<?> sendCode(String userEmail) {
+        log.info(userEmail);
         userService.sendCode(userEmail);
         return Result.OK(ReturnMessageConstant.SEND_VERIFY_SUCCESS);
     }
