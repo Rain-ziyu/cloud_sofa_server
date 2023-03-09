@@ -82,6 +82,7 @@ public class UserServiceImpl implements UserService {
         if (!checkEmail(userEmail)) {
             throw new ServiceProcessException("请输入正确邮箱");
         }
+        log.info("开始生成验证码");
         String code = getRandomCode();
         log.info("code:" + code);
         Map<String, Object> map = new HashMap<>();
