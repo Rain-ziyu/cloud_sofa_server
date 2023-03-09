@@ -45,11 +45,11 @@ public interface RedisService {
 
     Boolean hSetAll(String key, Map<String, Object> map, long time);
 
-    void hSetAll(String key, Map<String, ?> map);
+    void hSetAll(String key, Map<?, ?> map);
 
     void hDel(String key, Object... hashKey);
 
-    Boolean hHasKey(String key, String hashKey);
+    Boolean hHasKey(String key, Object hashKey);
 
     Long hIncr(String key, String hashKey, Long delta);
 

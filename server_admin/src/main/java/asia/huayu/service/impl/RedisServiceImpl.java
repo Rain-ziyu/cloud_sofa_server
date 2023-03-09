@@ -116,7 +116,7 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public void hSetAll(String key, Map<String, ?> map) {
+    public void hSetAll(String key, Map<?, ?> map) {
         redisTemplate.opsForHash().putAll(key, map);
     }
 
@@ -126,7 +126,7 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public Boolean hHasKey(String key, String hashKey) {
+    public Boolean hHasKey(String key, Object hashKey) {
         return redisTemplate.opsForHash().hasKey(key, hashKey);
     }
 
