@@ -86,11 +86,11 @@ public class FilterInvocationSecurityMetadataSourceImpl implements FilterInvocat
         if (ObjectUtil.isNull(resourceRoleMap) || resourceRoleMap.size() == 0) {
             readWriteLock.writeLock().lock();
             try {
-                if (ObjectUtil.isNull(resourceRoleMap)) {
+                if (ObjectUtil.isNull(resourceRoleMap) || resourceRoleMap.size() == 0) {
                     loadResourceRoleList();
                 }
                 // load完之后加载一次
-                resourceRoleMap = (HashMap<Integer, ResourceRole>) redisTemplate.opsForValue().get(SystemValue.ROLE_AUTH);
+                resourceRoleMap = (HashMap<Integer, ResourceRole>) redisTemplate.opsForHash().entries(SystemValue.ROLE_AUTH);
             } finally {
                 readWriteLock.writeLock().unlock();
             }
