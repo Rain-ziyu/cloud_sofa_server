@@ -83,7 +83,7 @@ public class FilterInvocationSecurityMetadataSourceImpl implements FilterInvocat
     public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
         HashMap<Integer, ResourceRole> resourceRoleMap = (HashMap<Integer, ResourceRole>) redisTemplate.opsForHash().entries(SystemValue.ROLE_AUTH);
         // TODO: 采用双端检锁防止缓存击穿  实际上微服务中应该引入分布式锁
-        if (ObjectUtil.isNull(resourceRoleMap)) {
+        if (ObjectUtil.isNull(resourceRoleMap) || resourceRoleMap.size() == 0) {
             readWriteLock.writeLock().lock();
             try {
                 if (ObjectUtil.isNull(resourceRoleMap)) {

@@ -1,6 +1,7 @@
 package asia.huayu.service.impl;
 
 import asia.huayu.auth.entity.UserRole;
+import asia.huayu.auth.service.RoleService;
 import asia.huayu.auth.service.UserRoleService;
 import asia.huayu.common.util.IpUtil;
 import asia.huayu.common.util.RequestUtil;
@@ -43,7 +44,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Autowired
     private UserMapper userMapper;
 
-
+    @Autowired
+    private RoleService roleService;
     @Autowired
     private RedisService redisService;
 
@@ -64,6 +66,13 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                         .build())
                 .collect(Collectors.toList());
         userRoleService.saveBatch(userRoleList);
+        //     更新redis中该用户的角色信息
+        User user = userMapper.selectById(userRoleVO.getId());
+        // 如果该用户处于登录状态 更新redis
+        if (redisService.hasKey(user.getUsername())) {
+            List<String> roles = roleService.selectRoleByUserId(String.valueOf(user.getId()));
+            redisService.set(user.getUsername(), roles);
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)

@@ -4,7 +4,6 @@ package asia.huayu.auth.service.impl;
 import asia.huayu.auth.entity.Permission;
 import asia.huayu.auth.mapper.PermissionMapper;
 import asia.huayu.auth.service.PermissionService;
-import asia.huayu.auth.service.RolePermissionService;
 import asia.huayu.auth.service.SecurityUserInfoService;
 import asia.huayu.security.entity.SecurityUserInfo;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -24,8 +23,6 @@ import java.util.List;
 @Service
 public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permission> implements PermissionService {
 
-    @Autowired
-    private RolePermissionService rolePermissionService;
 
     @Autowired
     private SecurityUserInfoService securityUserInfoService;
