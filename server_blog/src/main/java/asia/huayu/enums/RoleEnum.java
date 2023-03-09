@@ -9,9 +9,7 @@ public enum RoleEnum {
 
     ADMIN(1, "管理员", "admin"),
 
-    USER(2, "用户", "user"),
-
-    TEST(3, "测试", "test");
+    USER(2, "用户", "user");
 
     private final Integer roleId;
 

@@ -1,7 +1,6 @@
 package asia.huayu.auth.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -32,13 +31,13 @@ public class UserRole implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private String id;
 
-
+    @TableField(value = "role_id")
     private String roleId;
 
-
+    @TableField(value = "user_id")
     private String userId;
 
-
+    @TableField(value = "is_deleted")
     private Boolean isDeleted;
 
 
