@@ -25,6 +25,7 @@ import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -41,7 +42,7 @@ import java.util.Objects;
 import static asia.huayu.util.CommonUtil.checkEmail;
 import static asia.huayu.util.CommonUtil.getRandomCode;
 
-
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -82,6 +83,7 @@ public class UserServiceImpl implements UserService {
             throw new ServiceProcessException("请输入正确邮箱");
         }
         String code = getRandomCode();
+        log.info("code:" + code);
         Map<String, Object> map = new HashMap<>();
         map.put("content", "您的验证码为 " + code + " 有效期15分钟，请不要告诉他人哦！");
         EmailDTO emailDTO = EmailDTO.builder()
@@ -90,7 +92,9 @@ public class UserServiceImpl implements UserService {
                 .template("common.html")
                 .commentMap(map)
                 .build();
+        log.info(JSON.toJSONString(emailDTO));
         rabbitTemplate.convertAndSend(RabbitMQConstant.EMAIL_EXCHANGE, "*", new Message(JSON.toJSONBytes(emailDTO), new MessageProperties()));
+        log.info("fangruredis");
         redisService.set(RedisConstant.USER_CODE_KEY + userEmail, code, RedisConstant.CODE_EXPIRE_TIME);
     }
 
