@@ -17,7 +17,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticleAdminDTO {
+public class ArticleListDTO {
 
     private Integer id;
 

@@ -10,8 +10,8 @@ import asia.huayu.mapper.ArticleMapper;
 import asia.huayu.mapper.ArticleTagMapper;
 import asia.huayu.mapper.CategoryMapper;
 import asia.huayu.mapper.TagMapper;
-import asia.huayu.model.dto.ArticleAdminDTO;
 import asia.huayu.model.dto.ArticleAdminViewDTO;
+import asia.huayu.model.dto.ArticleListDTO;
 import asia.huayu.model.dto.PageResultDTO;
 import asia.huayu.model.vo.ArticleTopFeaturedVO;
 import asia.huayu.model.vo.ArticleVO;
@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static asia.huayu.enums.ArticleStatusEnum.DRAFT;
@@ -76,22 +77,44 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @SneakyThrows
     @Override
-    public PageResultDTO<ArticleAdminDTO> listArticlesAdmin(ConditionVO conditionVO) {
+    public PageResultDTO<ArticleListDTO> listArticlesAdmin(ConditionVO conditionVO) {
         CompletableFuture<Integer> asyncCount = CompletableFuture.supplyAsync(() -> articleMapper.countArticleAdmins(conditionVO));
-        List<ArticleAdminDTO> articleAdminDTOs = articleMapper.listArticlesAdmin(PageUtil.getLimitCurrent(), PageUtil.getSize(), conditionVO);
+        List<ArticleListDTO> articleListDTOS = articleMapper.listArticlesAdmin(PageUtil.getLimitCurrent(), PageUtil.getSize(), conditionVO);
         Map<Object, Double> viewsCountMap = redisService.zAllScore(RedisConstant.ARTICLE_VIEWS_COUNT);
-        articleAdminDTOs.forEach(item -> {
+        articleListDTOS.forEach(item -> {
             Double viewsCount = viewsCountMap.get(item.getId());
             if (Objects.nonNull(viewsCount)) {
                 item.setViewsCount(viewsCount.intValue());
             }
         });
-        return new PageResultDTO<>(articleAdminDTOs, asyncCount.get());
+        return new PageResultDTO<>(articleListDTOS, asyncCount.get());
+    }
+
+    @Override
+    public PageResultDTO<ArticleListDTO> listArticlesByUser(ConditionVO conditionVO) throws ExecutionException, InterruptedException {
+        String name = UserUtil.getAuthentication().getName();
+        User userByUsername = userService.getUserByUsername(name);
+        CompletableFuture<Integer> asyncCount = CompletableFuture.supplyAsync(() -> articleMapper.countArticleByUser(conditionVO, userByUsername.getId()));
+        List<ArticleListDTO> articleListDTOS = articleMapper.listArticlesByUser(PageUtil.getLimitCurrent(), PageUtil.getSize(), conditionVO, userByUsername.getId());
+        Map<Object, Double> viewsCountMap = redisService.zAllScore(RedisConstant.ARTICLE_VIEWS_COUNT);
+        articleListDTOS.forEach(item -> {
+            Double viewsCount = viewsCountMap.get(item.getId());
+            if (Objects.nonNull(viewsCount)) {
+                item.setViewsCount(viewsCount.intValue());
+            }
+        });
+        return new PageResultDTO<>(articleListDTOS, asyncCount.get());
+    }
+
+    @Override
+    public PageResultDTO<ArticleListDTO> listArticleById(List<Integer> articleIds, ConditionVO conditionVO) {
+        List<ArticleListDTO> articleListDTOS = articleMapper.listArticlesById(PageUtil.getLimitCurrent(), PageUtil.getSize(), articleIds, conditionVO);
+        return new PageResultDTO<>(articleListDTOS, articleIds.size());
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveOrUpdateArticle(ArticleVO articleVO) {
+    public String saveOrUpdateArticle(ArticleVO articleVO) {
         Category category = saveArticleCategory(articleVO);
         Article article = BeanCopyUtil.copyObject(articleVO, Article.class);
         if (Objects.nonNull(category)) {
@@ -99,12 +122,19 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         }
         User user = userService.getUserByUsername(UserUtil.getAuthentication().getName());
         article.setUserId(user.getId());
+        if (articleVO.getId() != null) {
+            Article articleInfo = articleMapper.selectById(article.getId());
+            if (!articleInfo.getUserId().equals(user.getId())) {
+                throw new ServiceProcessException("您无权限修改当前文章");
+            }
+        }
         this.saveOrUpdate(article);
         saveArticleTag(articleVO, article.getId());
         if (article.getStatus().equals(1)) {
             // 向rabbitmq发送订阅通知
             rabbitTemplate.convertAndSend(RabbitMQConstant.SUBSCRIBE_EXCHANGE, "*", new Message(JSON.toJSONBytes(article.getId()), new MessageProperties()));
         }
+        return String.valueOf(article.getId());
     }
 
     @Override

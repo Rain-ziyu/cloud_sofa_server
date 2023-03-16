@@ -76,7 +76,7 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource> i
                         .build();
                 this.save(resource);
                 parentId = resource.getId();
-                resourcesMap.put(resource.getResourceName(),resource.getId());
+                resourcesMap.put(resource.getResourceName(), resource.getId());
             }
             Resource resource = Resource.builder()
                     .resourceName(permissionName)

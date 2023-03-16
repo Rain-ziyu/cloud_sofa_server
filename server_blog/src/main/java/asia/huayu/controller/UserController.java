@@ -30,7 +30,6 @@ public class UserController {
     // @Parameter(name = "username", description = "邮箱", required = true)
     @GetMapping("/users/code")
     public Result<?> sendCode(String userEmail) {
-        log.info(userEmail);
         userService.sendCode(userEmail);
         return Result.OK(ReturnMessageConstant.SEND_VERIFY_SUCCESS);
     }

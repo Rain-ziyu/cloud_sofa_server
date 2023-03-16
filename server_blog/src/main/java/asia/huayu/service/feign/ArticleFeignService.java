@@ -1,12 +1,18 @@
 package asia.huayu.service.feign;
 
 import asia.huayu.common.entity.Result;
+import asia.huayu.model.dto.ArticleIdAndFilterDTO;
+import asia.huayu.model.dto.ArticleListDTO;
+import asia.huayu.model.dto.ArticleViewDTO;
+import asia.huayu.model.dto.PageResultDTO;
 import asia.huayu.model.vo.ArticleVO;
+import asia.huayu.model.vo.ConditionVO;
+import asia.huayu.model.vo.DeleteVO;
 import asia.huayu.service.fallback.ArticleFallbackService;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
@@ -16,6 +22,31 @@ import javax.validation.Valid;
  */
 @FeignClient(value = "cloud-sofa-server-admin", fallback = ArticleFallbackService.class)
 public interface ArticleFeignService {
-    @PostMapping("/articles")
-    Result<?> saveOrUpdateArticle(@Valid @RequestBody ArticleVO articleVO, @RequestHeader("token") String token);
+    @PostMapping("/admin/articles")
+    Result<String> saveOrUpdateArticle(@Valid @RequestBody ArticleVO articleVO, @RequestHeader("token") String token);
+
+
+    @GetMapping("/admin/articles/byUser")
+    Result<PageResultDTO<ArticleListDTO>> getArticlesCurrentUser(@RequestParam ConditionVO conditionVO, @RequestHeader("token") String token);
+
+    /**
+     * 方法updateArticleDelete作用为：
+     * 不主动携带交由FeignBuilder统一添加
+     *
+     * @param deleteVO
+     * @return asia.huayu.common.entity.Result<?>
+     * @throws
+     * @author RainZiYu
+     */
+    @PutMapping("/admin/articles")
+    Result<?> updateArticleDelete(@Valid @RequestBody DeleteVO deleteVO);
+
+    @GetMapping("/admin/articles/{articleId}")
+    Result<ArticleViewDTO> getArticleBackById(@PathVariable("articleId") Integer articleId, @RequestHeader("token") String token);
+
+    @PostMapping(value = "/admin/articles/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    Result<String> saveArticleImages(@RequestPart("file") MultipartFile file, @RequestHeader("token") String token);
+
+    @PostMapping("/admin/articles/byId")
+    Result<PageResultDTO<ArticleListDTO>> listArticlesById(@RequestBody ArticleIdAndFilterDTO articleIdAndFilterDTO, @RequestHeader("token") String token);
 }

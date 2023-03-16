@@ -15,16 +15,16 @@ import java.util.List;
  * @Entity asia.huayu.entity.UserLoginInfo
  */
 public interface UserLoginInfoMapper extends BaseMapper<UserLoginInfo> {
- /**
-  * 方法getOnlineUserLoginInfo作用为：
-  * 获取在线用户的登录信息   暂不使用 因为redis中已包含所有待查询数据
-  *
-  * @param
-  * @return asia.huayu.entity.UserLoginInfo
-  * @throws
-  * @author RainZiYu
-  */
- List<UserLoginInfo> getOnlineUserLoginInfo(List<OnlineUser> onlineUsers);
+    /**
+     * 方法getOnlineUserLoginInfo作用为：
+     * 获取在线用户的登录信息   暂不使用 因为redis中已包含所有待查询数据
+     *
+     * @param
+     * @return asia.huayu.entity.UserLoginInfo
+     * @throws
+     * @author RainZiYu
+     */
+    List<UserLoginInfo> getOnlineUserLoginInfo(List<OnlineUser> onlineUsers);
 }
 
 

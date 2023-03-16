@@ -42,7 +42,7 @@
             <result property="tagName" column="tag_name"/>
         </collection>
     </resultMap>
-    <resultMap id="articleAdminResultMap" type="asia.huayu.model.dto.ArticleAdminDTO">
+    <resultMap id="articleAdminResultMap" type="asia.huayu.model.dto.ArticleListDTO">
         <id property="id" column="id"/>
         <result property="articleCover" column="article_cover"/>
         <result property="articleTitle" column="article_title"/>
@@ -507,5 +507,183 @@
         FROM article
         GROUP BY date
         ORDER BY date DESC
+    </select>
+    <select id="countArticleByUser" resultType="java.lang.Integer">
+        SELECT
+        count(DISTINCT a.id)
+        from
+        article a
+        LEFT JOIN article_tag at on a.id = at.article_id
+        <where>
+            is_delete = #{conditionVO.isDelete}
+            <if test="conditionVO.keywords != null">
+                and article_title like concat('%',#{conditionVO.keywords},'%')
+            </if>
+            <if test="conditionVO.status != null">
+                and `status` = #{conditionVO.status}
+            </if>
+            <if test="conditionVO.categoryId != null">
+                and category_id = #{conditionVO.categoryId}
+            </if>
+            <if test="conditionVO.type != null">
+                and type = #{conditionVO.type}
+            </if>
+            <if test="conditionVO.tagId != null">
+                and at.tag_id = #{conditionVO.tagId}
+            </if>
+            and a.user_id = #{userId}
+        </where>
+    </select>
+    <select id="listArticlesByUser" resultMap="articleAdminResultMap">
+        SELECT
+        a.id,
+        a.user_id,
+        article_cover,
+        article_title,
+        is_top,
+        is_featured,
+        a.is_delete,
+        a.status,
+        a.type,
+        a.create_time,
+        a.update_time,
+        category_name,
+        t.id AS tag_id,
+        t.tag_name
+        FROM
+        (
+        SELECT
+        id,
+        user_id,
+        article_cover,
+        article_title,
+        is_top,
+        is_featured,
+        is_delete,
+        status,
+        type,
+        create_time,
+        update_time,
+        category_id
+        FROM
+        article
+        <where>
+            is_delete = #{conditionVO.isDelete}
+            <if test="conditionVO.keywords != null">
+                and article_title like concat('%',#{conditionVO.keywords},'%')
+            </if>
+            <if test="conditionVO.status != null">
+                and status = #{conditionVO.status}
+            </if>
+            <if test="conditionVO.categoryId != null">
+                and category_id = #{conditionVO.categoryId}
+            </if>
+            <if test="conditionVO.type!=null">
+                and type = #{conditionVO.type}
+            </if>
+            <if test="conditionVO.tagId != null">
+                and id in
+                (
+                SELECT
+                article_id
+                FROM
+                article_tag
+                WHERE
+                tag_id = #{conditionVO.tagId}
+                )
+            </if>
+        </where>
+        ORDER BY
+        is_top DESC,
+        is_featured DESC,
+        id DESC
+        LIMIT #{current},#{size}
+        ) a
+        LEFT JOIN category c ON a.category_id = c.id
+        LEFT JOIN article_tag at ON a.id = at.article_id
+        LEFT JOIN tag t ON t.id = at.tag_id
+        where a.user_id = #{userId}
+        ORDER BY
+        is_top DESC,
+        is_featured DESC,
+        a.update_time DESC
+
+    </select>
+    <select id="listArticlesById" resultMap="articleAdminResultMap">
+        SELECT
+        a.id,
+        a.user_id,
+        article_cover,
+        article_title,
+        is_top,
+        is_featured,
+        a.is_delete,
+        a.status,
+        a.type,
+        a.create_time,
+        a.update_time,
+        category_name,
+        t.id AS tag_id,
+        t.tag_name
+        FROM
+        (
+        SELECT
+        id,
+        user_id,
+        article_cover,
+        article_title,
+        is_top,
+        is_featured,
+        is_delete,
+        status,
+        type,
+        create_time,
+        update_time,
+        category_id
+        FROM
+        article
+        <where>
+            id in
+            <foreach open="(" collection="articleIds" item="articleId" separator="," close=")">
+                #{articleId}
+            </foreach>
+            and is_delete = #{conditionVO.isDelete}
+            <if test="conditionVO.keywords != null">
+                and article_title like concat('%',#{conditionVO.keywords},'%')
+            </if>
+            <if test="conditionVO.status != null">
+                and status = #{conditionVO.status}
+            </if>
+            <if test="conditionVO.categoryId != null">
+                and category_id = #{conditionVO.categoryId}
+            </if>
+            <if test="conditionVO.type!=null">
+                and type = #{conditionVO.type}
+            </if>
+            <if test="conditionVO.tagId != null">
+                and id in
+                (
+                SELECT
+                article_id
+                FROM
+                article_tag
+                WHERE
+                tag_id = #{conditionVO.tagId}
+                )
+            </if>
+        </where>
+        ORDER BY
+        is_top DESC,
+        is_featured DESC,
+        id DESC
+        LIMIT #{current},#{size}
+        ) a
+        LEFT JOIN category c ON a.category_id = c.id
+        LEFT JOIN article_tag at ON a.id = at.article_id
+        LEFT JOIN tag t ON t.id = at.tag_id
+        ORDER BY
+        is_top DESC,
+        is_featured DESC,
+        a.update_time DESC
     </select>
 </mapper>

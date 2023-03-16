@@ -1,9 +1,16 @@
 package asia.huayu.service.fallback;
 
 import asia.huayu.common.entity.Result;
+import asia.huayu.model.dto.ArticleIdAndFilterDTO;
+import asia.huayu.model.dto.ArticleListDTO;
+import asia.huayu.model.dto.ArticleViewDTO;
+import asia.huayu.model.dto.PageResultDTO;
 import asia.huayu.model.vo.ArticleVO;
+import asia.huayu.model.vo.ConditionVO;
+import asia.huayu.model.vo.DeleteVO;
 import asia.huayu.service.feign.ArticleFeignService;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author RainZiYu
@@ -13,7 +20,32 @@ import org.springframework.stereotype.Component;
 public class ArticleFallbackService implements ArticleFeignService {
 
     @Override
-    public Result<?> saveOrUpdateArticle(ArticleVO articleVO, String token) {
+    public Result<String> saveOrUpdateArticle(ArticleVO articleVO, String token) {
         return Result.ERROR("发布文章服务已下线");
+    }
+
+    @Override
+    public Result<PageResultDTO<ArticleListDTO>> getArticlesCurrentUser(ConditionVO conditionVO, String token) {
+        return Result.ERROR("加载文章列表已下线");
+    }
+
+    @Override
+    public Result<?> updateArticleDelete(DeleteVO deleteVO) {
+        return Result.ERROR("更改文章删除状态已下线");
+    }
+
+    @Override
+    public Result<ArticleViewDTO> getArticleBackById(Integer articleId, String token) {
+        return Result.ERROR("用户发布文章已下线");
+    }
+
+    @Override
+    public Result<String> saveArticleImages(MultipartFile file, String token) {
+        return Result.ERROR("文章封面上传已下线");
+    }
+
+    @Override
+    public Result<PageResultDTO<ArticleListDTO>> listArticlesById(ArticleIdAndFilterDTO articleIdAndFilterDTO, String token) {
+        return Result.ERROR("根据文章id获取文章列表已下线");
     }
 }

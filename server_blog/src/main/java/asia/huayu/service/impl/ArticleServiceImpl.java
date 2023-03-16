@@ -2,8 +2,14 @@ package asia.huayu.service.impl;
 
 import asia.huayu.common.entity.Result;
 import asia.huayu.common.exception.ServiceProcessException;
+import asia.huayu.common.util.IdUtils;
+import asia.huayu.common.util.IpUtil;
+import asia.huayu.common.util.RequestUtil;
 import asia.huayu.constant.RedisConstant;
-import asia.huayu.entity.*;
+import asia.huayu.entity.Article;
+import asia.huayu.entity.ArticleTag;
+import asia.huayu.entity.TempArticle;
+import asia.huayu.entity.User;
 import asia.huayu.mapper.ArticleMapper;
 import asia.huayu.mapper.ArticleTagMapper;
 import asia.huayu.mapper.CategoryMapper;
@@ -14,27 +20,29 @@ import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.service.*;
 import asia.huayu.service.feign.ArticleFeignService;
 import asia.huayu.strategy.context.SearchStrategyContext;
+import asia.huayu.util.BeanCopyUtil;
 import asia.huayu.util.PageUtil;
 import asia.huayu.util.UserUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import eu.bitwalker.useragentutils.Browser;
+import eu.bitwalker.useragentutils.OperatingSystem;
+import eu.bitwalker.useragentutils.UserAgent;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
-import static asia.huayu.enums.ArticleStatusEnum.DRAFT;
 import static asia.huayu.enums.StatusCodeEnum.ARTICLE_ACCESS_FAIL;
 
 @Service
@@ -63,7 +71,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private TokenService tokenService;
     @Autowired
     private ArticleFeignService articleFeignService;
-
+    @Autowired
+    private TempArticleService tempArticleService;
     @Autowired
     private SearchStrategyContext searchStrategyContext;
 
@@ -228,14 +237,69 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         Authentication authentication = UserUtil.getAuthentication();
         String token;
         // 如果该用户未认证
-        if (ObjectUtil.isNull(authentication)) {
+        if (ObjectUtil.isNull(authentication) || authentication.getPrincipal().equals("anonymousUser")) {
             //     创建匿名用户进行发布
             token = tokenService.getSystemToken();
+            if (ObjectUtil.isNull(articleVO.getId())) {
+                //     如果接口没有传递id说明是创建新的
+                Result<String> result = articleFeignService.saveOrUpdateArticle(articleVO, token);
+                if (!result.isSuccess()) {
+                    throw new ServiceProcessException(result.getMessage());
+                }
+                HttpServletRequest request = RequestUtil.getRequest();
+                String ipAddress = IpUtil.getIpAddress(request);
+                UserAgent userAgent = IpUtil.getUserAgent(request);
+                Browser browser = userAgent.getBrowser();
+                OperatingSystem operatingSystem = userAgent.getOperatingSystem();
+                String tmpUserEnv = ipAddress + browser.getName() + operatingSystem.getName();
+                TempArticle tempArticle = new TempArticle();
+                tempArticle.setId(IdUtils.getId());
+                tempArticle.setTmpUserEnv(tmpUserEnv);
+                tempArticle.setArticleId(Integer.parseInt(result.getData()));
+                tempArticleService.save(tempArticle);
+                return Result.OK(String.valueOf(tempArticle.getId()));
+            } else {
+                //     临时用户更新文章时 传递的也是正常的文章id
+                Result<String> result = articleFeignService.saveOrUpdateArticle(articleVO, token);
+                if (!result.isSuccess()) {
+                    throw new ServiceProcessException(result.getMessage());
+                }
+                result.setData(String.valueOf(articleVO.getId()));
+                return result;
+            }
+        } else {
+            // 如果是登录用户直接保存或更新 不是发布人时无权限
+            token = authentication.getCredentials().toString();
+            Result<String> result = articleFeignService.saveOrUpdateArticle(articleVO, token);
+            if (!result.isSuccess()) {
+                throw new ServiceProcessException(result.getMessage());
+            }
+            return result;
+        }
+
+    }
+
+    /**
+     * 方法listArchivesByUser作用为：
+     * 获取该用户发表的文章
+     *
+     * @return asia.huayu.model.dto.PageResultDTO<asia.huayu.model.dto.ArchiveDTO>
+     * @throws
+     * @author RainZiYu
+     */
+    @Override
+    public PageResultDTO<ArticleListDTO> listArticlesByUser(ConditionVO conditionVO) {
+        Authentication authentication = UserUtil.getAuthentication();
+        String token;
+        // 如果该用户未认证
+        if (ObjectUtil.isNull(authentication) || authentication.getPrincipal().equals("anonymousUser")) {
+            //     如果用户未登录 返回空让他从cookie中找
+            throw new ServiceProcessException("用户未登录，去local查找");
         } else {
             token = authentication.getCredentials().toString();
         }
-        Result result = articleFeignService.saveOrUpdateArticle(articleVO, token);
-        return result;
+        Result<PageResultDTO<ArticleListDTO>> pageResultDTOResult = articleFeignService.getArticlesCurrentUser(conditionVO, token);
+        return pageResultDTOResult.getData();
     }
 
 
@@ -244,57 +308,54 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return searchStrategyContext.executeSearchStrategy(condition.getKeywords());
     }
 
+    @Override
+    public PageResultDTO listArticlesByTempId(List<Long> tempArticleIds, ConditionVO conditionVO) {
+        List<Integer> articleIds = tempArticleService.getArticleIds(tempArticleIds);
+        String token = tokenService.getSystemToken();
+        ArticleIdAndFilterDTO articleIdAndFilterDTO = new ArticleIdAndFilterDTO();
+        articleIdAndFilterDTO.setArticleIds(articleIds);
+        articleIdAndFilterDTO.setConditionVO(conditionVO);
+        Result<PageResultDTO<ArticleListDTO>> pageResultDTOResult = articleFeignService.listArticlesById(articleIdAndFilterDTO, token);
+        // 将使用Feign调用获取到的真实文章信息封装为临时文章
+        if (pageResultDTOResult.isSuccess()) {
+            List<TempArticleListDTO> tempArticleListDTOS = new ArrayList<>();
+            pageResultDTOResult.getData().getRecords().forEach(x -> {
+                TempArticle tempArticle = tempArticleService.getOne(new LambdaQueryWrapper<TempArticle>().eq((TempArticle::getArticleId), x.getId()));
+                TempArticleListDTO tempArticleListDTO = BeanCopyUtil.copyObject(x, TempArticleListDTO.class);
+                tempArticleListDTO.setId(String.valueOf(tempArticle.getId()));
+                tempArticleListDTOS.add(tempArticleListDTO);
+            });
+            return new PageResultDTO<TempArticleListDTO>(tempArticleListDTOS, pageResultDTOResult.getData().getCount());
+        } else {
+            return new PageResultDTO<ArticleListDTO>(new ArrayList(), 0);
+        }
+
+    }
+
+    @Override
+    public Result<ArticleViewDTO> getArticleBackById(Long articleId) {
+        Authentication authentication = UserUtil.getAuthentication();
+        String token;
+        // 如果该用户未认证
+        if (ObjectUtil.isNull(authentication) || authentication.getPrincipal().equals("anonymousUser")) {
+            //     创建匿名用户进行获取编辑信息
+            token = tokenService.getSystemToken();
+            // 匿名用户传递临时文章的id 需要进行转换
+            TempArticle tempArticle = tempArticleService.getById(articleId);
+            Result<ArticleViewDTO> articleBackById = articleFeignService.getArticleBackById(tempArticle.getArticleId(), token);
+            return articleBackById;
+        } else {
+            // 如果是登录用户用该用户身份直接获取
+            token = authentication.getCredentials().toString();
+            Result<ArticleViewDTO> articleBackById = articleFeignService.getArticleBackById(Math.toIntExact(articleId), token);
+            return articleBackById;
+        }
+
+    }
+
     public void updateArticleViewsCount(Integer articleId) {
         redisService.zIncr(RedisConstant.ARTICLE_VIEWS_COUNT, articleId, 1D);
     }
 
-    private Category saveArticleCategory(ArticleVO articleVO) {
-        Category category = categoryMapper.selectOne(new LambdaQueryWrapper<Category>()
-                .eq(Category::getCategoryName, articleVO.getCategoryName()));
-        if (Objects.isNull(category) && !articleVO.getStatus().equals(DRAFT.getStatus())) {
-            category = Category.builder()
-                    .categoryName(articleVO.getCategoryName())
-                    .build();
-            categoryMapper.insert(category);
-        }
-        return category;
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    public void saveArticleTag(ArticleVO articleVO, Integer articleId) {
-        if (Objects.nonNull(articleVO.getId())) {
-            articleTagMapper.delete(new LambdaQueryWrapper<ArticleTag>()
-                    .eq(ArticleTag::getArticleId, articleVO.getId()));
-        }
-        List<String> tagNames = articleVO.getTagNames();
-        if (CollectionUtils.isNotEmpty(tagNames)) {
-            List<Tag> existTags = tagService.list(new LambdaQueryWrapper<Tag>()
-                    .in(Tag::getTagName, tagNames));
-            List<String> existTagNames = existTags.stream()
-                    .map(Tag::getTagName)
-                    .collect(Collectors.toList());
-            List<Integer> existTagIds = existTags.stream()
-                    .map(Tag::getId)
-                    .collect(Collectors.toList());
-            tagNames.removeAll(existTagNames);
-            if (CollectionUtils.isNotEmpty(tagNames)) {
-                List<Tag> tags = tagNames.stream().map(item -> Tag.builder()
-                                .tagName(item)
-                                .build())
-                        .collect(Collectors.toList());
-                tagService.saveBatch(tags);
-                List<Integer> tagIds = tags.stream()
-                        .map(Tag::getId)
-                        .collect(Collectors.toList());
-                existTagIds.addAll(tagIds);
-            }
-            List<ArticleTag> articleTags = existTagIds.stream().map(item -> ArticleTag.builder()
-                            .articleId(articleId)
-                            .tagId(item)
-                            .build())
-                    .collect(Collectors.toList());
-            articleTagService.saveBatch(articleTags);
-        }
-    }
 
 }

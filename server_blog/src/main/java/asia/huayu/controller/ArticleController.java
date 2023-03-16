@@ -2,15 +2,22 @@ package asia.huayu.controller;
 
 import asia.huayu.common.controller.base.BaseController;
 import asia.huayu.common.entity.Result;
+import asia.huayu.constant.CommonConstant;
 import asia.huayu.model.dto.*;
 import asia.huayu.model.vo.ArticlePasswordVO;
 import asia.huayu.model.vo.ArticleVO;
 import asia.huayu.model.vo.ConditionVO;
+import asia.huayu.model.vo.DeleteVO;
 import asia.huayu.service.ArticleService;
+import asia.huayu.service.TempArticleService;
+import asia.huayu.service.TokenService;
+import asia.huayu.service.feign.ArticleFeignService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -19,7 +26,8 @@ import java.util.List;
 @Tag(name = "文章模块")
 @RestController
 public class ArticleController extends BaseController {
-
+    @Autowired
+    private ArticleFeignService articleFeignService;
     @Autowired
     private ArticleService articleService;
 
@@ -72,11 +80,71 @@ public class ArticleController extends BaseController {
     public Result<List<ArticleSearchDTO>> listArticlesBySearch(ConditionVO condition) {
         return Result.OK(articleService.listArticlesBySearch(condition));
     }
+    @Autowired
+    private TokenService tokenService;
+    @Autowired
+    private TempArticleService tempArticleService;
 
     @Operation(summary = "用户发布文章")
     @PostMapping("/articles")
-    public Result saveOrUpdate(@Valid @RequestBody ArticleVO articleVO) {
+    public Result<String> saveOrUpdate(@Valid @RequestBody ArticleVO articleVO) {
         return restProcessor(() -> articleService.saveOrUpdateArticle(articleVO));
     }
 
+    @Operation(summary = "获取用户发布文章")
+    @GetMapping("/articles")
+    public Result getUserArticles(ConditionVO conditionVO) {
+        return restProcessor(() -> Result.OK(articleService.listArticlesByUser(conditionVO)));
+    }
+
+    @Operation(summary = "获取文章列表通过临时文章id")
+    @PostMapping("/articles/tempId")
+    public Result getUserArticlesByTempId(@RequestBody TempArticleIdAndFilterDTO tempArticleIdAndFilterDTO) {
+        return restProcessor(() -> Result.OK(articleService.listArticlesByTempId(tempArticleIdAndFilterDTO.getTempArticleIds(), tempArticleIdAndFilterDTO.getConditionVO())));
+    }
+
+    @Operation(summary = "修改用户文章删除状态")
+    @DeleteMapping("/articles")
+    public Result deleteArticles(@Valid @RequestBody DeleteVO deleteVO) {
+        return restProcessor(() -> Result.OK(articleFeignService.updateArticleDelete(deleteVO)));
+    }
+
+    /**
+     * 方法getArticleBackById作用为：
+     * 获取编辑文章页面需要的信息  如果是临时文章那么传递的是临时文章id 在线文章传递的是正常id
+     *
+     * @param articleId
+     * @return asia.huayu.common.entity.Result<asia.huayu.model.dto.ArticleViewDTO>
+     * @throws
+     * @author RainZiYu
+     */
+    @Operation(summary = "根据文章id获取编辑文章所需信息")
+    @GetMapping("/articles/edit/{articleId}")
+    public Result<ArticleViewDTO> getArticleBackById(@PathVariable("articleId") Long articleId) {
+        return restProcessor(() -> articleService.getArticleBackById(articleId));
+    }
+
+    @Parameter(name = "file", description = "文章图片", required = true)
+    @PostMapping("/articles/images")
+    public Result<String> saveArticleImages(MultipartFile file) {
+        String token = tokenService.getUserTokenOrSystemToken();
+        return restProcessor(() -> Result.OK(articleFeignService.saveArticleImages(file, token)));
+    }
+
+    /**
+     * 方法作用为：
+     * 绑定用户与临时文章
+     *
+     * @param
+     * @return
+     * @throws
+     * @author RainZiYu
+     */
+    @PostMapping("/binding/articles")
+    public Result bindingTempArticles(@RequestBody List<Long> tempArticleId) {
+        return restProcessor(() -> {
+            tempArticleService.bindTempArticle(tempArticleId);
+            return Result.OK(CommonConstant.BINDING_SUCCESS);
+        });
+    }
 }

@@ -48,7 +48,7 @@ public class TokenAuthFilter extends BasicAuthenticationFilter {
         // 从header获取token
         String token = request.getHeader(SystemEnums.AUTH_NAME.VALUE);
         // 解决客户端提交了空的token引发的token无法获取用户信息的问题  如果用户没有传递或者传递的是空字符串 那么不需要设置这次请求的SecurityContextHolder.getContext().setAuthentication
-        if (token != null && !token.isBlank() && !SystemValue.NULL_STRING.equals(token)) {
+        if (token != null && !token.isBlank()) {
             // 从token获取用户名  如果请求时对方携带了token但是经由tokenManager无法获取对应的用户名则抛出AuthenticationServiceException异常 交由UnauthEntryPoint进行处理
             String username = null;
             try {
@@ -61,6 +61,7 @@ public class TokenAuthFilter extends BasicAuthenticationFilter {
             }
             // 从redis获取对应权限列表
             List<String> permissionValueList = (List<String>) redisTemplate.opsForValue().get(SystemValue.ONLINE_USER_AUTH + username);
+
             Collection<GrantedAuthority> authority = new ArrayList<>();
             for (String permissionValue : permissionValueList) {
                 SimpleGrantedAuthority auth = new SimpleGrantedAuthority(permissionValue);

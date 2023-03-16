@@ -15,6 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class AdminSpringBootApplicationTest {
     @Autowired
     private ElasticsearchMapper elasticsearchMapper;
+    @Autowired
+    private AuroraQuartz auroraQuartz;
 
     @Test
     void saveData() {
@@ -24,9 +26,6 @@ public class AdminSpringBootApplicationTest {
         articleSearchDTO.setArticleTitle("wwl");
         elasticsearchMapper.save(articleSearchDTO);
     }
-
-    @Autowired
-    private AuroraQuartz auroraQuartz;
 
     @Test
     void testUserArea() {

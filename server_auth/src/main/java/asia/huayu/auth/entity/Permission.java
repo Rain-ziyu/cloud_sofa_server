@@ -1,7 +1,6 @@
 package asia.huayu.auth.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -58,7 +57,6 @@ public class Permission implements Serializable {
     // 注意这里的rank是mysql的关键字需要``进行包裹
     @TableField("`rank`")
     private Integer rank;
-
 
 
     @TableField(exist = false)

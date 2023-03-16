@@ -12,14 +12,14 @@ import java.util.List;
 
 /**
  * @author 花未眠
- * 文章编辑页码DTO
+ * 文章编辑面DTO
  */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "文章")
-public class ArticleAdminViewDTO {
+public class ArticleViewDTO {
 
     private Integer id;
 

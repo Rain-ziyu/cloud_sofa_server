@@ -126,7 +126,7 @@ public class AuroraQuartz {
         jobLogService.cleanJobLogs();
     }
 
-    public void importSwagger(String targetUrl,String urlPrefix) {
+    public void importSwagger(String targetUrl, String urlPrefix) {
         List<Resource> resources = resourceService.importSwagger(targetUrl, urlPrefix);
         List<Integer> resourceIds = resources.stream().map(Resource::getId).collect(Collectors.toList());
         List<RoleResource> roleResources = new ArrayList<>();

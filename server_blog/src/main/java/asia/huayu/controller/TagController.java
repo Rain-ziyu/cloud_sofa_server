@@ -3,6 +3,7 @@ package asia.huayu.controller;
 
 import asia.huayu.common.entity.Result;
 import asia.huayu.model.dto.TagDTO;
+import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.service.TagService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,5 +31,10 @@ public class TagController {
     @GetMapping("/tags/topTen")
     public Result<List<TagDTO>> getTopTenTags() {
         return Result.OK(tagService.listTopTenTags());
+    }
+
+    @GetMapping("/tags/search")
+    public Result<List<TagDTO>> listTagsAdminBySearch(ConditionVO condition) {
+        return Result.OK(tagService.listTagsBySearch(condition));
     }
 }

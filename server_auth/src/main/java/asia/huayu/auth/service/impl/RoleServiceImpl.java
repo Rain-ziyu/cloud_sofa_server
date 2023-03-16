@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements RoleService {
-@Autowired
-private RoleMapper roleMapper;
+    @Autowired
+    private RoleMapper roleMapper;
     @Autowired
     private UserRoleService userRoleService;
 

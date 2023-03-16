@@ -33,6 +33,7 @@ public interface ArticleMapper extends BaseMapper<Article> {
 
     List<ArticleCardDTO> listArchives(@Param("current") Long current, @Param("size") Long size);
 
+    int updateArticleOwner(List<Integer> articleIds, Integer userId);
 
 }
 

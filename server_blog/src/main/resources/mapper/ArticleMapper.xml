@@ -42,7 +42,7 @@
             <result property="tagName" column="tag_name"/>
         </collection>
     </resultMap>
-    <resultMap id="articleAdminResultMap" type="asia.huayu.model.dto.ArticleAdminDTO">
+    <resultMap id="articleAdminResultMap" type="asia.huayu.model.dto.ArticleListDTO">
         <id property="id" column="id"/>
         <result property="articleCover" column="article_cover"/>
         <result property="articleTitle" column="article_title"/>
@@ -58,6 +58,12 @@
             <result column="tag_name" property="tagName"/>
         </collection>
     </resultMap>
+    <update id="updateArticleOwner">
+        update article set user_id = #{userId} where id in
+        <foreach open="(" collection="articleIds" item="articleId" separator="," close=")">
+            #{articleId}
+        </foreach>
+    </update>
     <select id="listTopAndFeaturedArticles" resultMap="ArticleCardDTOResultMap">
         SELECT a.id                            AS id,
                category_id,
@@ -505,4 +511,5 @@
         GROUP BY date
         ORDER BY date DESC
     </select>
+
 </mapper>

@@ -1,32 +1,23 @@
 package asia.huayu.model.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 /**
- * @author 花未眠
- * 后台文章
+ * @author RainZiYu
+ * @Date 2023/3/16
  */
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class ArticleAdminDTO {
-
-    private Integer id;
+public class TempArticleListDTO {
+    private String id;
 
     private String articleCover;
 
     private String articleTitle;
 
     private LocalDateTime createTime;
-    private LocalDateTime updateTime;
 
     private Integer viewsCount;
 

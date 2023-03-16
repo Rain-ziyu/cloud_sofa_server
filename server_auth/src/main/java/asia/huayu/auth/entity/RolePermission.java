@@ -1,7 +1,6 @@
 package asia.huayu.auth.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-
 import lombok.*;
 import lombok.experimental.Accessors;
 

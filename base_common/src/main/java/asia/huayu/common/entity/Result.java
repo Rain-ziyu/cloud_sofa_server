@@ -11,7 +11,6 @@ import java.io.Serializable;
  * @author wwl
  */
 @Data
-
 public class Result<T> implements Serializable {
 
     private static final long serialVersionUID = 1L;

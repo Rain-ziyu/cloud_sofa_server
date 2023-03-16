@@ -51,7 +51,6 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     }
 
 
-
     /**
      * 判断用户是否系统管理员
      *
@@ -62,7 +61,6 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         SecurityUserInfo user = securityUserInfoService.getById(userId);
         return null != user && "admin".equals(user.getUsername());
     }
-
 
 
 }

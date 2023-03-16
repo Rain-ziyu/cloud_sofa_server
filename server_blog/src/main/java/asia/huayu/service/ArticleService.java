@@ -31,6 +31,21 @@ public interface ArticleService extends IService<Article> {
     @Transactional(rollbackFor = Exception.class)
     Result saveOrUpdateArticle(ArticleVO articleVO);
 
+    /**
+     * 方法listArchivesByUser作用为：
+     * 获取该用户发表的文章
+     *
+     * @param
+     * @return asia.huayu.model.dto.PageResultDTO<asia.huayu.model.dto.ArchiveDTO>
+     * @throws
+     * @author RainZiYu
+     */
+    PageResultDTO<ArticleListDTO> listArticlesByUser(ConditionVO conditionVO);
+
     List<ArticleSearchDTO> listArticlesBySearch(ConditionVO condition);
 
+
+    PageResultDTO listArticlesByTempId(List<Long> tempArticleIds, ConditionVO conditionVO);
+
+    Result<ArticleViewDTO> getArticleBackById(Long articleId);
 }

@@ -54,7 +54,7 @@
                 <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
-<!--            指定snakeyaml的版本  解决与集成shardingsphere的jdbc时的方法找不到-->
+            <!--            指定snakeyaml的版本  解决与集成shardingsphere的jdbc时的方法找不到-->
             <dependency>
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>

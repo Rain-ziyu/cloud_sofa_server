@@ -82,9 +82,7 @@ public class UserServiceImpl implements UserService {
         if (!checkEmail(userEmail)) {
             throw new ServiceProcessException("请输入正确邮箱");
         }
-        log.info("开始生成验证码");
         String code = getRandomCode();
-        log.info("code:" + code);
         Map<String, Object> map = new HashMap<>();
         map.put("content", "您的验证码为 " + code + " 有效期15分钟，请不要告诉他人哦！");
         EmailDTO emailDTO = EmailDTO.builder()
@@ -93,9 +91,7 @@ public class UserServiceImpl implements UserService {
                 .template("common.html")
                 .commentMap(map)
                 .build();
-        log.info(JSON.toJSONString(emailDTO));
         rabbitTemplate.convertAndSend(RabbitMQConstant.EMAIL_EXCHANGE, "*", new Message(JSON.toJSONBytes(emailDTO), new MessageProperties()));
-        log.info("fangruredis");
         redisService.set(RedisConstant.USER_CODE_KEY + userEmail, code, RedisConstant.CODE_EXPIRE_TIME);
     }
 

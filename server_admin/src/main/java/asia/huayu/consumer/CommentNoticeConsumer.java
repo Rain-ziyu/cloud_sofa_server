@@ -23,9 +23,9 @@ import static asia.huayu.constant.RabbitMQConstant.EMAIL_QUEUE;
 public class CommentNoticeConsumer {
 
     @Autowired
-    private EmailUtil emailUtil;
-    @Autowired
     HitokotoHttpService hitokotoHttpService;
+    @Autowired
+    private EmailUtil emailUtil;
     @Autowired
     private AuroraInfoService auroraInfoService;
     @Value("${website.url}")

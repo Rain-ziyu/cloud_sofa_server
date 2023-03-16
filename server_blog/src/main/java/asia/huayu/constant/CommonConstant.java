@@ -42,5 +42,8 @@ public interface CommonConstant {
 
     String MENTION_REMIND = "@提醒";
     String SYSTEM_USER = "system_user";
+    String SYSTEM_USER_ID = "1034";
+    String BINDING_SUCCESS = "绑定成功";
+
 
 }

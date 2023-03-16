@@ -4,8 +4,9 @@ import asia.huayu.annotation.OptLog;
 import asia.huayu.common.controller.base.BaseController;
 import asia.huayu.common.entity.Result;
 import asia.huayu.enums.FilePathEnum;
-import asia.huayu.model.dto.ArticleAdminDTO;
 import asia.huayu.model.dto.ArticleAdminViewDTO;
+import asia.huayu.model.dto.ArticleIdAndFilterDTO;
+import asia.huayu.model.dto.ArticleListDTO;
 import asia.huayu.model.dto.PageResultDTO;
 import asia.huayu.model.vo.ArticleTopFeaturedVO;
 import asia.huayu.model.vo.ArticleVO;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static asia.huayu.constant.OptTypeConstant.*;
 
@@ -39,19 +41,45 @@ public class ArticleController extends BaseController {
     @Autowired
     private ArticleImportStrategyContext articleImportStrategyContext;
 
+    @Operation(summary = "根据id查看后台文章")
+    @Parameter(name = "articleId", description = "文章id", required = true)
+    @GetMapping("/articles/{articleId}")
+    public Result<ArticleAdminViewDTO> getArticleBackById(@PathVariable("articleId") Integer articleId) {
+        return Result.OK(articleService.getArticleByIdAdmin(articleId));
+    }
 
     @Operation(summary = "获取后台文章")
     @GetMapping("/articles")
-    public Result<PageResultDTO<ArticleAdminDTO>> listArticlesAdmin(ConditionVO conditionVO) {
+    public Result<PageResultDTO<ArticleListDTO>> listArticlesAdmin(ConditionVO conditionVO) {
         return Result.OK(articleService.listArticlesAdmin(conditionVO));
+    }
+
+    @Operation(summary = "获取该用户文章列表")
+    @GetMapping("/articles/byUser")
+    public Result<PageResultDTO<ArticleListDTO>> listArticles(ConditionVO conditionVO) throws ExecutionException, InterruptedException {
+        return Result.OK(articleService.listArticlesByUser(conditionVO));
+    }
+
+    @Operation(summary = "根据文章id获取文章列表展示需要的信息")
+    @PostMapping("/articles/byId")
+    public Result<PageResultDTO<ArticleListDTO>> listArticlesById(@RequestBody ArticleIdAndFilterDTO tempArticleIdDTO) {
+        return Result.OK(articleService.listArticleById(tempArticleIdDTO.getArticleIds(), tempArticleIdDTO.getConditionVO()));
     }
 
     @OptLog(optType = SAVE_OR_UPDATE)
     @Operation(summary = "保存和修改文章")
     @PostMapping("/articles")
+    /**
+     * 方法saveOrUpdateArticle作用为：
+     * 返回文章的id
+     * @author RainZiYu
+     * @param articleVO
+     * @throws
+     * @return asia.huayu.common.entity.Result<?>
+     */
     public Result<?> saveOrUpdateArticle(@Valid @RequestBody ArticleVO articleVO) {
-        articleService.saveOrUpdateArticle(articleVO);
-        return Result.OK("保存成功");
+        String articleId = articleService.saveOrUpdateArticle(articleVO);
+        return Result.OK("保存成功", articleId);
     }
 
     @OptLog(optType = UPDATE)
@@ -85,12 +113,6 @@ public class ArticleController extends BaseController {
         return Result.OK(uploadStrategyContext.executeUploadStrategy(file, FilePathEnum.ARTICLE.getPath()));
     }
 
-    @Operation(summary = "根据id查看后台文章")
-    @Parameter(name = "articleId", description = "文章id", required = true)
-    @GetMapping("/articles/{articleId}")
-    public Result<ArticleAdminViewDTO> getArticleBackById(@PathVariable("articleId") Integer articleId) {
-        return Result.OK(articleService.getArticleByIdAdmin(articleId));
-    }
 
     @OptLog(optType = UPLOAD)
     @Operation(summary = "导入文章")
