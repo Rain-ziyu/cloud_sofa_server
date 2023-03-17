@@ -53,22 +53,24 @@ public class TokenAuthFilter extends BasicAuthenticationFilter {
             String username = null;
             try {
                 username = tokenManager.getUserInfoFromToken(token);
+
+                // 从redis获取对应权限列表
+                List<String> permissionValueList = (List<String>) redisTemplate.opsForValue().get(SystemValue.ONLINE_USER_AUTH + username);
+
+                Collection<GrantedAuthority> authority = new ArrayList<>();
+                for (String permissionValue : permissionValueList) {
+                    SimpleGrantedAuthority auth = new SimpleGrantedAuthority(permissionValue);
+                    authority.add(auth);
+                }
+
+                // 这里也可以不仅放username 也可以查询数据库来存放完整的用户信息
+                return new UsernamePasswordAuthenticationToken(username, token, authority);
             } catch (Exception e) {
                 // 即使用户携带的token有异常我们也不管了直接返回null   security会有自己的机制可能会在缓存中读到正确的用户token
                 // throw new AuthenticationServiceException("token无法解析", e);
                 logger.info("一个用户的token无法解析");
                 return null;
             }
-            // 从redis获取对应权限列表
-            List<String> permissionValueList = (List<String>) redisTemplate.opsForValue().get(SystemValue.ONLINE_USER_AUTH + username);
-
-            Collection<GrantedAuthority> authority = new ArrayList<>();
-            for (String permissionValue : permissionValueList) {
-                SimpleGrantedAuthority auth = new SimpleGrantedAuthority(permissionValue);
-                authority.add(auth);
-            }
-            // 这里也可以不仅放username 也可以查询数据库来存放完整的用户信息
-            return new UsernamePasswordAuthenticationToken(username, token, authority);
         }
         return null;
     }

@@ -235,7 +235,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                                 .tagName(item)
                                 .build())
                         .collect(Collectors.toList());
-                tagService.saveBatch(tags);
+                for (Tag tag : tags) {
+                    tagService.saveOrUpdate(tag);
+                }
                 List<Integer> tagIds = tags.stream()
                         .map(Tag::getId)
                         .collect(Collectors.toList());

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.elasticsearch.annotations.Field;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +18,7 @@ public class Tag {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
-
+    @Field("tag_name")
     private String tagName;
 
     @TableField(fill = FieldFill.INSERT)

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author RainZiYu
@@ -39,7 +40,7 @@ public interface ArticleFeignService {
      * @author RainZiYu
      */
     @PutMapping("/admin/articles")
-    Result<?> updateArticleDelete(@Valid @RequestBody DeleteVO deleteVO);
+    Result<String> updateArticleDelete(@Valid @RequestBody DeleteVO deleteVO, @RequestHeader("token") String token);
 
     @GetMapping("/admin/articles/{articleId}")
     Result<ArticleViewDTO> getArticleBackById(@PathVariable("articleId") Integer articleId, @RequestHeader("token") String token);
@@ -49,4 +50,7 @@ public interface ArticleFeignService {
 
     @PostMapping("/admin/articles/byId")
     Result<PageResultDTO<ArticleListDTO>> listArticlesById(@RequestBody ArticleIdAndFilterDTO articleIdAndFilterDTO, @RequestHeader("token") String token);
+
+    @DeleteMapping("/admin/articles/delete")
+    Result<String> deleteArticles(@RequestBody List<Integer> articleIds, @RequestHeader("token") String token);
 }

@@ -12,11 +12,8 @@ import asia.huayu.entity.TempArticle;
 import asia.huayu.entity.User;
 import asia.huayu.mapper.ArticleMapper;
 import asia.huayu.mapper.ArticleTagMapper;
-import asia.huayu.mapper.CategoryMapper;
 import asia.huayu.model.dto.*;
-import asia.huayu.model.vo.ArticlePasswordVO;
-import asia.huayu.model.vo.ArticleVO;
-import asia.huayu.model.vo.ConditionVO;
+import asia.huayu.model.vo.*;
 import asia.huayu.service.*;
 import asia.huayu.service.feign.ArticleFeignService;
 import asia.huayu.strategy.context.SearchStrategyContext;
@@ -54,15 +51,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Autowired
     private ArticleTagMapper articleTagMapper;
 
-    @Autowired
-    private CategoryMapper categoryMapper;
-
-
-    @Autowired
-    private TagService tagService;
-
-    @Autowired
-    private ArticleTagService articleTagService;
     @Autowired
     private UserService userService;
     @Autowired
@@ -264,7 +252,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 if (!result.isSuccess()) {
                     throw new ServiceProcessException(result.getMessage());
                 }
-                result.setData(String.valueOf(articleVO.getId()));
+                // 更新临时文章需要主动查出临时文章id进行返回
+                TempArticle tempArticleByArticleId = tempArticleService.getTempArticleByArticleId(String.valueOf(articleVO.getId()));
+                result.setData(String.valueOf(tempArticleByArticleId.getId()));
                 return result;
             }
         } else {
@@ -351,6 +341,41 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             return articleBackById;
         }
 
+    }
+
+    @Override
+    public String updateArticleDelete(TempDeleteVO tempDeleteVO) {
+        String userTokenOrSystemToken = tokenService.getUserTokenOrSystemToken();
+        DeleteVO deleteVO = new DeleteVO();
+        deleteVO.setIsDelete(tempDeleteVO.getIsDelete());
+        // 根据用户登陆状态处理文章id
+        if (UserUtil.userIsLogin()) {
+            List<Integer> ids = new ArrayList<>();
+            for (Long id : tempDeleteVO.getIds()) {
+                ids.add(Math.toIntExact(id));
+            }
+            deleteVO.setIds(ids);
+        } else {
+            List<Integer> articleIds = tempArticleService.getArticleIds(tempDeleteVO.getIds());
+            deleteVO.setIds(articleIds);
+        }
+        return articleFeignService.updateArticleDelete(deleteVO, userTokenOrSystemToken).getData();
+    }
+
+    @Override
+    public String deleteArticles(List<Long> tmpArticleIds) {
+        String userTokenOrSystemToken = tokenService.getUserTokenOrSystemToken();
+
+        List<Integer> articleIds = new ArrayList<>();
+        // 根据用户登陆状态处理文章id
+        if (!UserUtil.userIsLogin()) {
+            articleIds = tempArticleService.getArticleIds(tmpArticleIds);
+        } else {
+            for (Long tmpArticleId : tmpArticleIds) {
+                articleIds.add(Math.toIntExact(tmpArticleId));
+            }
+        }
+        return articleFeignService.deleteArticles(articleIds, userTokenOrSystemToken).getData();
     }
 
     public void updateArticleViewsCount(Integer articleId) {

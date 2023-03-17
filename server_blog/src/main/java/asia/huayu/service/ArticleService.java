@@ -6,6 +6,7 @@ import asia.huayu.model.dto.*;
 import asia.huayu.model.vo.ArticlePasswordVO;
 import asia.huayu.model.vo.ArticleVO;
 import asia.huayu.model.vo.ConditionVO;
+import asia.huayu.model.vo.TempDeleteVO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,4 +49,8 @@ public interface ArticleService extends IService<Article> {
     PageResultDTO listArticlesByTempId(List<Long> tempArticleIds, ConditionVO conditionVO);
 
     Result<ArticleViewDTO> getArticleBackById(Long articleId);
+
+    String updateArticleDelete(TempDeleteVO tempDeleteVO);
+
+    String deleteArticles(List<Long> articleIds);
 }

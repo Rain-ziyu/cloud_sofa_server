@@ -7,7 +7,7 @@ import asia.huayu.model.dto.*;
 import asia.huayu.model.vo.ArticlePasswordVO;
 import asia.huayu.model.vo.ArticleVO;
 import asia.huayu.model.vo.ConditionVO;
-import asia.huayu.model.vo.DeleteVO;
+import asia.huayu.model.vo.TempDeleteVO;
 import asia.huayu.service.ArticleService;
 import asia.huayu.service.TempArticleService;
 import asia.huayu.service.TokenService;
@@ -31,6 +31,10 @@ public class ArticleController extends BaseController {
     @Autowired
     private ArticleService articleService;
 
+    @Autowired
+    private TokenService tokenService;
+    @Autowired
+    private TempArticleService tempArticleService;
 
     @Operation(summary = "获取置顶和推荐文章")
     @GetMapping("/articles/topAndFeatured")
@@ -80,10 +84,7 @@ public class ArticleController extends BaseController {
     public Result<List<ArticleSearchDTO>> listArticlesBySearch(ConditionVO condition) {
         return Result.OK(articleService.listArticlesBySearch(condition));
     }
-    @Autowired
-    private TokenService tokenService;
-    @Autowired
-    private TempArticleService tempArticleService;
+
 
     @Operation(summary = "用户发布文章")
     @PostMapping("/articles")
@@ -99,14 +100,20 @@ public class ArticleController extends BaseController {
 
     @Operation(summary = "获取文章列表通过临时文章id")
     @PostMapping("/articles/tempId")
-    public Result getUserArticlesByTempId(@RequestBody TempArticleIdAndFilterDTO tempArticleIdAndFilterDTO) {
+    public Result getUserArticlesByTempId(@Valid @RequestBody TempArticleIdAndFilterDTO tempArticleIdAndFilterDTO) {
         return restProcessor(() -> Result.OK(articleService.listArticlesByTempId(tempArticleIdAndFilterDTO.getTempArticleIds(), tempArticleIdAndFilterDTO.getConditionVO())));
     }
 
     @Operation(summary = "修改用户文章删除状态")
-    @DeleteMapping("/articles")
-    public Result deleteArticles(@Valid @RequestBody DeleteVO deleteVO) {
-        return restProcessor(() -> Result.OK(articleFeignService.updateArticleDelete(deleteVO)));
+    @PutMapping("/articles")
+    public Result updateArticlesDelete(@Valid @RequestBody TempDeleteVO deleteVO) {
+        return restProcessor(() -> Result.OK((Object) articleService.updateArticleDelete(deleteVO)));
+    }
+
+    @Operation(summary = "彻底删除用户文章")
+    @DeleteMapping("/articles/delete")
+    public Result<?> deleteArticles(@RequestBody List<Long> tempArticleIds) {
+        return Result.OK(articleService.deleteArticles(tempArticleIds));
     }
 
     /**

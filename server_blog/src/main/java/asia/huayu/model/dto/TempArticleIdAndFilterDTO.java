@@ -3,6 +3,7 @@ package asia.huayu.model.dto;
 import asia.huayu.model.vo.ConditionVO;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**
@@ -12,6 +13,7 @@ import java.util.List;
  */
 @Data
 public class TempArticleIdAndFilterDTO {
+    @NotEmpty
     List<Long> tempArticleIds;
     ConditionVO conditionVO;
 }

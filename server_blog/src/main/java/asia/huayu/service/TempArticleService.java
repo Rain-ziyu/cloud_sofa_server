@@ -32,4 +32,6 @@ public interface TempArticleService extends IService<TempArticle> {
      * @author RainZiYu
      */
     List<Integer> getArticleIds(List<Long> tempArticleId);
+
+    TempArticle getTempArticleByArticleId(String articleId);
 }

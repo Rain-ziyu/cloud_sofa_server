@@ -60,6 +60,12 @@ public class TempArticleServiceImpl extends ServiceImpl<TempArticleMapper, TempA
         });
         return articleIds;
     }
+
+    @Override
+    public TempArticle getTempArticleByArticleId(String articleId) {
+        TempArticle tempArticle = tempArticleMapper.selectOne(new LambdaQueryWrapper<TempArticle>().in(TempArticle::getArticleId, articleId));
+        return tempArticle;
+    }
 }
 
 
