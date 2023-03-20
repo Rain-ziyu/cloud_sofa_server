@@ -36,10 +36,10 @@ public class TokenAuthFilter extends BasicAuthenticationFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         // 获取当前认证成功用户权限信息
         UsernamePasswordAuthenticationToken authRequest = getAuthentication(request);
-        // 判断如果有权限信息，放到权限上下文中
-        if (authRequest != null) {
-            SecurityContextHolder.getContext().setAuthentication(authRequest);
-        }
+        // 判断如果有权限信息，放到权限上下文中   暂时不管有没有都放
+        // if (authRequest != null) {
+        SecurityContextHolder.getContext().setAuthentication(authRequest);
+        // }
 
         chain.doFilter(request, response);
     }
@@ -66,7 +66,7 @@ public class TokenAuthFilter extends BasicAuthenticationFilter {
                 // 这里也可以不仅放username 也可以查询数据库来存放完整的用户信息
                 return new UsernamePasswordAuthenticationToken(username, token, authority);
             } catch (Exception e) {
-                // 即使用户携带的token有异常我们也不管了直接返回null   security会有自己的机制可能会在缓存中读到正确的用户token
+                // 即使用户携带的token有异常我们也不管了直接返回null   security会有自己的机制可能会在缓存中读到正确的用户token 如果我们抛出异常会导致直接返回请求，不会执行后续controller即使是不需要权限的
                 // throw new AuthenticationServiceException("token无法解析", e);
                 logger.info("一个用户的token无法解析");
                 return null;

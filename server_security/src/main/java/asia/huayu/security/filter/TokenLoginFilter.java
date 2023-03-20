@@ -68,15 +68,11 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
         TokenDTO tokenDTO = new TokenDTO();
         // 认证成功，得到认证成功之后用户信息
         SecurityUser user = (SecurityUser) authResult.getPrincipal();
-        // 根据用户名生成token
-        String token = tokenManager.createToken(user.getUsername());
+
         tokenDTO.setExpires(new Date(System.currentTimeMillis() + SystemValue.TOKEN_EXPIRATION_TIME));
         // 把用户名称和用户权限列表放到redis   加上失效时间，是为了减小redis缓存数据量，不能根据该值是否存在判断用户token是否失效
         redisTemplate.opsForValue().set(SystemValue.ONLINE_USER_AUTH + user.getUsername(), user.getPermissionValueList(), SystemValue.TOKEN_EXPIRATION_TIME, TimeUnit.MILLISECONDS);
-        // 根据用户名生成refreshToken
-        String refreshToken = tokenManager.createRefreshToken(user.getUsername());
-        tokenDTO.setToken(token);
-        tokenDTO.setRefreshToken(refreshToken);
+
         // 将登陆用户写到redis的set中
         OnlineUser onlineUser = new OnlineUser();
         onlineUser.setUserId(Integer.parseInt(user.getSecurityUserInfo().getId()));
@@ -91,7 +87,12 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
         onlineUser.setOs(IpUtil.getUserAgent(request).getOperatingSystem().getName());
         onlineUser.setName(user.getUsername());
         userLoginInfoService.addLoginInfo(onlineUser);
-        redisTemplate.opsForHash().put(SystemValue.LOGIN_USER, user.getUsername(), onlineUser);
+        // 根据用户名生成token
+        String token = tokenManager.createToken(user.getUsername(), onlineUser);
+        // 根据用户名生成refreshToken
+        String refreshToken = tokenManager.createRefreshToken(user.getUsername());
+        tokenDTO.setToken(token);
+        tokenDTO.setRefreshToken(refreshToken);
         // 同步在redis中增加记录登录的地域信息   存在自增加一 不存在更新
         String ipProvince = IpUtil.getIpProvince(ipSource);
         if (redisTemplate.opsForHash().hasKey(SystemValue.USER_AREA, ipProvince)) {

@@ -83,16 +83,16 @@ public class AuroraQuartz {
     public void statisticalUserArea() {
         // 将在线的用户信息存从redis中取出
         Map<String, Object> userMaps = redisService.hGetAll(SystemValue.LOGIN_USER);
-        Collection<Object> values = userMaps.values();
+        Collection<String> values = userMaps.keySet();
         ArrayList<OnlineUser> onlineUsers = new ArrayList<>();
         for (Object value : values) {
-            OnlineUser onlineUser = (OnlineUser) value;
+            OnlineUser onlineUser = (OnlineUser) userMaps.get(value);
             // 如果当前时间小于过期时间
             if (DateUtil.compare(onlineUser.getExpireTime(), new Date()) > 0) {
                 onlineUsers.add(onlineUser);
             } else {
                 // 移除token已经过期的
-                redisService.hDel(SystemValue.LOGIN_USER, onlineUser.getName());
+                redisService.hDel(SystemValue.LOGIN_USER, value);
             }
         }
 

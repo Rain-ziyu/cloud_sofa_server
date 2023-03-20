@@ -146,8 +146,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     public UserInfoDTO getUserInfo() {
         User userByUsername = userMapper.getUserByUsername(UserUtil.getAuthentication().getName());
         UserInfoDTO userInfo = userInfoMapper.selectDTOById(userByUsername.getId());
+        // 返回用户名
         HttpServletRequest request = RequestUtil.getRequest();
-
+        userInfo.setUsername(UserUtil.getAuthentication().getName());
         userInfo.setToken(request.getParameter("token"));
         userInfo.setRefreshToken(request.getParameter("refreshToken"));
         return userInfo;

@@ -2,6 +2,7 @@ package asia.huayu.service.impl;
 
 import asia.huayu.auth.service.RoleService;
 import asia.huayu.constant.CommonConstant;
+import asia.huayu.security.entity.OnlineUser;
 import asia.huayu.security.security.TokenManager;
 import asia.huayu.security.util.SystemValue;
 import asia.huayu.service.RedisService;
@@ -39,8 +40,11 @@ public class TokenServiceImpl implements TokenService {
             concurrentHashMap.put("token", token);
             return token;
         } catch (Exception e) {
-            // 如果token解析失败
-            token = tokenManager.createToken(CommonConstant.SYSTEM_USER);
+            // TODO:带传递真实onlineUser
+            OnlineUser onlineUser = new OnlineUser();
+
+            // 如果token解析失败  创建系统内置token
+            token = tokenManager.createToken(CommonConstant.SYSTEM_USER, onlineUser);
             List<String> selectRoleByUserId = roleService.selectRoleByUserId(CommonConstant.SYSTEM_USER_ID);
             redisService.set(SystemValue.ONLINE_USER_AUTH + CommonConstant.SYSTEM_USER, selectRoleByUserId);
             concurrentHashMap.put("token", token);

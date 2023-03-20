@@ -15,6 +15,7 @@ import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.model.vo.UserDisableVO;
 import asia.huayu.model.vo.UserRoleVO;
 import asia.huayu.security.entity.OnlineUser;
+import asia.huayu.security.security.TokenManager;
 import asia.huayu.security.util.SystemValue;
 import asia.huayu.service.RedisService;
 import asia.huayu.service.UserInfoService;
@@ -112,14 +113,18 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         return new PageResultDTO<>(userOnlineList, onlineUsers.size());
     }
 
+    @Autowired
+    TokenManager tokenManager;
+
     @Override
-    public void removeOnlineUser(Integer userId) {
-        User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getId, userId));
-        redisService.del(SystemValue.ONLINE_USER_AUTH + user.getUsername());
+    public void removeOnlineUser(String userToken) {
+        String userInfoFromToken = tokenManager.getUserInfoFromToken(userToken);
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, userInfoFromToken));
+        // redisService.del(SystemValue.ONLINE_USER_AUTH + user.getUsername());
         // 获取登陆的用户信息
-        OnlineUser onlineUser = (OnlineUser) redisService.hGet(SystemValue.LOGIN_USER, user.getUsername());
+        OnlineUser onlineUser = (OnlineUser) redisService.hGet(SystemValue.LOGIN_USER, userToken);
         // 删除redis中登录用户信息
-        redisService.hDel(SystemValue.LOGIN_USER, user.getUsername());
+        redisService.hDel(SystemValue.LOGIN_USER, userToken);
         // 删除redis中所统计的用户ip
         redisService.hIncr(SystemValue.USER_AREA, IpUtil.getIpProvince(onlineUser.getIpSource()), -1L);
     }

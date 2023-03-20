@@ -51,9 +51,9 @@ public class UserInfoController {
 
     @OptLog(optType = DELETE)
     @Operation(summary = "下线用户")
-    @DeleteMapping("/users/{userInfoId}/online")
-    public Result<?> removeOnlineUser(@PathVariable("userInfoId") Integer userInfoId) {
-        userInfoService.removeOnlineUser(userInfoId);
+    @DeleteMapping("/users/{userToken}/online")
+    public Result<?> removeOnlineUser(@PathVariable("userToken") String userToken) {
+        userInfoService.removeOnlineUser(userToken);
         return Result.OK();
     }
 

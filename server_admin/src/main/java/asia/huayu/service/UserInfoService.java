@@ -18,7 +18,7 @@ public interface UserInfoService extends IService<UserInfo> {
 
     PageResultDTO<OnlineUser> listOnlineUsers(ConditionVO conditionVO);
 
-    void removeOnlineUser(Integer userInfoId);
+    void removeOnlineUser(String userToken);
 
 
     UserInfo getUserInfoByName(String username);

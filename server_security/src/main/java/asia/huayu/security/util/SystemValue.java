@@ -17,4 +17,6 @@ public interface SystemValue {
      * 角色权限
      */
     String ROLE_AUTH = "role_auth";
+    String TOKEN_PREFIX = "user_token:";
+    String USER_LOGIN_COUNT = "user_login_count";
 }

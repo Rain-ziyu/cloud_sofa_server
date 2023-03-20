@@ -40,4 +40,5 @@ public class OnlineUser {
      */
     private String os;
     private String name;
+    private String token;
 }

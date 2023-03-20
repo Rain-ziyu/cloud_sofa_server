@@ -14,8 +14,10 @@ import asia.huayu.mapper.UserMapper;
 import asia.huayu.model.dto.SocialTokenDTO;
 import asia.huayu.model.dto.SocialUserInfoDTO;
 import asia.huayu.model.dto.UserDetailsDTO;
+import asia.huayu.security.entity.OnlineUser;
 import asia.huayu.security.entity.SecurityUser;
 import asia.huayu.security.security.TokenManager;
+import asia.huayu.security.util.SystemValue;
 import asia.huayu.service.RedisService;
 import asia.huayu.service.impl.UserLoginInfoServiceImpl;
 import asia.huayu.strategy.SocialLoginStrategy;
@@ -27,6 +29,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.Objects;
 
 import static asia.huayu.constant.CommonConstant.TRUE;
@@ -56,7 +59,7 @@ public abstract class AbstractSocialLoginStrategyImpl implements SocialLoginStra
     public UserDetailsDTO login(String data) {
         UserDetailsDTO userDetailsDTO;
         SocialTokenDTO socialTokenDTO = getSocialToken(data);
-
+        HttpServletRequest request = RequestUtil.getRequest();
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
                 .eq(User::getUsername, socialTokenDTO.getOpenId())
                 .eq(User::getRegisterType, socialTokenDTO.getLoginType()));
@@ -70,7 +73,21 @@ public abstract class AbstractSocialLoginStrategyImpl implements SocialLoginStra
             throw new ServiceProcessException("用户帐号已被锁定");
         }
         // TODO: 使用tokenManager 为集成登录创建token
-        String token = tokenManager.createToken(user.getUsername());
+        OnlineUser onlineUser = new OnlineUser();
+        onlineUser.setUserId(user.getId());
+        // 存储登陆时间为当前时间+时间偏移 方便获取的时候比较
+        onlineUser.setExpireTime(DateUtil.offsetMillisecond(new Date(), Math.toIntExact(SystemValue.TOKEN_EXPIRATION_TIME)));
+        // 集成登录
+        onlineUser.setLoginType(2);
+        String ipAddress = IpUtil.getIpAddress(request);
+        onlineUser.setIpAddress(ipAddress);
+        String ipSource = IpUtil.getIpSource(ipAddress);
+        onlineUser.setIpSource(ipSource);
+        onlineUser.setBrowser(IpUtil.getUserAgent(request).getBrowser().getName());
+        onlineUser.setOs(IpUtil.getUserAgent(request).getOperatingSystem().getName());
+        onlineUser.setName(user.getUsername());
+        userLoginInfoService.addLoginInfo(onlineUser);
+        String token = tokenManager.createToken(user.getUsername(), onlineUser);
         String refreshToken = tokenManager.createRefreshToken(user.getUsername());
         userDetailsDTO.setToken(token);
         userDetailsDTO.setRefreshToken(refreshToken);
