@@ -4,7 +4,6 @@ import asia.huayu.common.entity.Result;
 import asia.huayu.common.exception.ServiceProcessException;
 import asia.huayu.common.util.IdUtils;
 import asia.huayu.common.util.IpUtil;
-import asia.huayu.common.util.RequestUtil;
 import asia.huayu.constant.RedisConstant;
 import asia.huayu.entity.Article;
 import asia.huayu.entity.ArticleTag;
@@ -23,16 +22,13 @@ import asia.huayu.util.UserUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import eu.bitwalker.useragentutils.Browser;
-import eu.bitwalker.useragentutils.OperatingSystem;
-import eu.bitwalker.useragentutils.UserAgent;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -234,12 +230,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 if (!result.isSuccess()) {
                     throw new ServiceProcessException(result.getMessage());
                 }
-                HttpServletRequest request = RequestUtil.getRequest();
-                String ipAddress = IpUtil.getIpAddress(request);
-                UserAgent userAgent = IpUtil.getUserAgent(request);
-                Browser browser = userAgent.getBrowser();
-                OperatingSystem operatingSystem = userAgent.getOperatingSystem();
-                String tmpUserEnv = ipAddress + browser.getName() + operatingSystem.getName();
+                String tmpUserEnv = IpUtil.getUserENV();
                 TempArticle tempArticle = new TempArticle();
                 tempArticle.setId(IdUtils.getId());
                 tempArticle.setTmpUserEnv(tmpUserEnv);
@@ -365,7 +356,20 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public String deleteArticles(List<Long> tmpArticleIds) {
         String userTokenOrSystemToken = tokenService.getUserTokenOrSystemToken();
+        List<Integer> articleIds = idListConversion(tmpArticleIds);
+        return articleFeignService.deleteArticles(articleIds, userTokenOrSystemToken).getData();
+    }
 
+    /**
+     * 方法idListConversion作用为：
+     * 将id列表转换为实际文章列表   临时id进行查询数据库，实际id直接转换类型
+     *
+     * @param tmpArticleIds
+     * @return java.util.List<java.lang.Integer>
+     * @throws
+     * @author RainZiYu
+     */
+    private List<Integer> idListConversion(List<Long> tmpArticleIds) {
         List<Integer> articleIds = new ArrayList<>();
         // 根据用户登陆状态处理文章id
         if (!UserUtil.userIsLogin()) {
@@ -375,7 +379,49 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 articleIds.add(Math.toIntExact(tmpArticleId));
             }
         }
-        return articleFeignService.deleteArticles(articleIds, userTokenOrSystemToken).getData();
+        return articleIds;
+    }
+
+    /**
+     * 方法exportArticles作用为：
+     * 导出文章，返回给前端文件下载地址
+     *
+     * @param tmpArticleIds
+     * @return java.util.List<java.lang.String>
+     * @throws
+     * @author RainZiYu
+     */
+    @Override
+    public Result<List<String>> exportArticles(List<Long> tmpArticleIds) {
+        String userTokenOrSystemToken = tokenService.getUserTokenOrSystemToken();
+        List<Integer> articleIds = idListConversion(tmpArticleIds);
+        return articleFeignService.exportArticles(articleIds, userTokenOrSystemToken);
+    }
+
+    @Override
+    public Result importArticles(MultipartFile file, String type) {
+        String userTokenOrSystemToken = tokenService.getUserTokenOrSystemToken();
+        Result<String> result = articleFeignService.importArticles(file, type, userTokenOrSystemToken);
+        if (result.isSuccess()) {
+            String articleId = result.getData();
+            if (!UserUtil.userIsLogin()) {
+                String tmpUserEnv = IpUtil.getUserENV();
+                // 如果触发了同名文章更新
+                TempArticle tempArticleByArticleId = tempArticleService.getTempArticleByArticleId(articleId);
+                if (ObjectUtil.isNotEmpty(tempArticleByArticleId)) {
+                    result.setData(String.valueOf(tempArticleByArticleId.getId()));
+                } else {
+                    TempArticle tempArticle = new TempArticle();
+                    tempArticle.setArticleId(Integer.valueOf(articleId));
+                    tempArticle.setId(IdUtils.getId());
+                    tempArticle.setTmpUserEnv(tmpUserEnv);
+                    tempArticleService.save(tempArticle);
+                    result.setData(String.valueOf(tempArticle.getId()));
+                }
+            }
+            return result;
+        }
+        throw new ServiceProcessException(result.getMessage());
     }
 
     public void updateArticleViewsCount(Integer articleId) {

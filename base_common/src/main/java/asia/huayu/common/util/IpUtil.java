@@ -1,5 +1,7 @@
 package asia.huayu.common.util;
 
+import eu.bitwalker.useragentutils.Browser;
+import eu.bitwalker.useragentutils.OperatingSystem;
 import eu.bitwalker.useragentutils.UserAgent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -92,6 +94,16 @@ public class IpUtil {
 
     public static UserAgent getUserAgent(HttpServletRequest request) {
         return UserAgent.parseUserAgentString(request.getHeader("User-Agent"));
+    }
+
+    public static String getUserENV() {
+        HttpServletRequest request = RequestUtil.getRequest();
+        String ipAddress = IpUtil.getIpAddress(request);
+        UserAgent userAgent = IpUtil.getUserAgent(request);
+        Browser browser = userAgent.getBrowser();
+        OperatingSystem operatingSystem = userAgent.getOperatingSystem();
+        String tmpUserEnv = ipAddress + browser.getName() + operatingSystem.getName();
+        return tmpUserEnv;
     }
 
     @PostConstruct

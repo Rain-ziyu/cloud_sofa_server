@@ -9,6 +9,7 @@ import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.model.vo.TempDeleteVO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -53,4 +54,17 @@ public interface ArticleService extends IService<Article> {
     String updateArticleDelete(TempDeleteVO tempDeleteVO);
 
     String deleteArticles(List<Long> articleIds);
+
+    /**
+     * 方法exportArticles作用为：
+     * 导出文章，返回给前端文件下载地址
+     *
+     * @param articleIds
+     * @return java.util.List<java.lang.String>
+     * @throws
+     * @author RainZiYu
+     */
+    Result<List<String>> exportArticles(List<Long> articleIds);
+
+    Result importArticles(MultipartFile file, String type);
 }

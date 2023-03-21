@@ -29,7 +29,7 @@ public class NormalArticleImportStrategyImpl implements ArticleImportStrategy {
     private ArticleService articleService;
 
     @Override
-    public void importArticles(MultipartFile file) {
+    public String importArticles(MultipartFile file) {
         String articleTitle = Objects.requireNonNull(file.getOriginalFilename()).split("\\.")[0];
         StringBuilder articleContent = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
@@ -53,6 +53,7 @@ public class NormalArticleImportStrategyImpl implements ArticleImportStrategy {
             articleVO.setId(article.getId());
             articleVO.setStatus(article.getStatus());
         }
-        articleService.saveOrUpdateArticle(articleVO);
+        String articleId = articleService.saveOrUpdateArticle(articleVO);
+        return articleId;
     }
 }

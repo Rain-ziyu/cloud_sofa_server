@@ -18,7 +18,8 @@ public class ArticleImportStrategyContext {
     @Autowired
     private Map<String, ArticleImportStrategy> articleImportStrategyMap;
 
-    public void importArticles(MultipartFile file, String type) {
-        articleImportStrategyMap.get(MarkdownTypeEnum.getMarkdownType(type)).importArticles(file);
+    public String importArticles(MultipartFile file, String type) {
+        String articleId = articleImportStrategyMap.get(MarkdownTypeEnum.getMarkdownType(type)).importArticles(file);
+        return articleId;
     }
 }

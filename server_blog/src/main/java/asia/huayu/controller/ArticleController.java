@@ -130,7 +130,7 @@ public class ArticleController extends BaseController {
     public Result<ArticleViewDTO> getArticleBackById(@PathVariable("articleId") Long articleId) {
         return restProcessor(() -> articleService.getArticleBackById(articleId));
     }
-
+    @Operation(summary = "上传文章封面")
     @Parameter(name = "file", description = "文章图片", required = true)
     @PostMapping("/articles/images")
     public Result<String> saveArticleImages(MultipartFile file) {
@@ -147,11 +147,26 @@ public class ArticleController extends BaseController {
      * @throws
      * @author RainZiYu
      */
+    @Operation(summary = "绑定临时文章")
     @PostMapping("/binding/articles")
     public Result bindingTempArticles(@RequestBody List<Long> tempArticleId) {
         return restProcessor(() -> {
             tempArticleService.bindTempArticle(tempArticleId);
             return Result.OK(CommonConstant.BINDING_SUCCESS);
+        });
+    }
+
+    @Operation(summary = "文章导出")
+    @PostMapping("/articles/export")
+    public Result<List<String>> exportArticles(@RequestBody List<Long> articleIds) {
+        return restProcessor(() -> articleService.exportArticles(articleIds));
+    }
+
+    @Operation(summary = "导入文章")
+    @PostMapping("/articles/import")
+    public Result<?> importArticles(MultipartFile file, @RequestParam(required = false) String type) {
+        return restProcessor(() -> {
+            return articleService.importArticles(file, type);
         });
     }
 }

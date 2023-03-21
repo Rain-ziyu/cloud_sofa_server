@@ -53,4 +53,10 @@ public interface ArticleFeignService {
 
     @DeleteMapping("/admin/articles/delete")
     Result<String> deleteArticles(@RequestBody List<Integer> articleIds, @RequestHeader("token") String token);
+
+    @PostMapping("/admin/articles/export")
+    Result<List<String>> exportArticles(@RequestBody List<Integer> articleIds, @RequestHeader("token") String token);
+
+    @PostMapping(value = "/admin/articles/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    Result<String> importArticles(@RequestPart("file") MultipartFile file, @RequestParam(required = false) String type, @RequestHeader("token") String token);
 }

@@ -55,4 +55,14 @@ public class ArticleFallbackService implements ArticleFeignService {
     public Result<String> deleteArticles(List<Integer> articleIds, String token) {
         return Result.ERROR("永久删除文章功能已下线");
     }
+
+    @Override
+    public Result<List<String>> exportArticles(List<Integer> articleIds, String token) {
+        return Result.ERROR("批量导出文章功能已下线");
+    }
+
+    @Override
+    public Result<String> importArticles(MultipartFile file, String type, String token) {
+        return Result.ERROR("批量导入文章功能已下线");
+    }
 }

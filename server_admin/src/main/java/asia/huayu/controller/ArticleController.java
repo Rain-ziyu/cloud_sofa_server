@@ -118,8 +118,8 @@ public class ArticleController extends BaseController {
     @Operation(summary = "导入文章")
     @PostMapping("/articles/import")
     public Result<?> importArticles(MultipartFile file, @RequestParam(required = false) String type) {
-        articleImportStrategyContext.importArticles(file, type);
-        return Result.OK();
+        String articles = articleImportStrategyContext.importArticles(file, type);
+        return Result.OK("导入成功", articles);
     }
 
     @OptLog(optType = EXPORT)
