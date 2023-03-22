@@ -4,7 +4,7 @@ import asia.huayu.common.controller.base.BaseController;
 import asia.huayu.common.entity.Result;
 import asia.huayu.common.exception.ServiceProcessException;
 import asia.huayu.pic.generate.GeneratePic;
-import asia.huayu.util.BaseVariableUtil;
+import asia.huayu.util.SystemValue;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,7 +34,7 @@ public class PicController extends BaseController {
     public void generatePicByKeyword(String keyword, HttpServletResponse response) {
         restProcessor(() -> {
 
-            String picPath = GeneratePic.create(keyword, BaseVariableUtil.TMP_PIC_FOLDER);
+            String picPath = GeneratePic.create(keyword, SystemValue.TMP_PIC_FOLDER);
 
             Optional<MediaType> mediaType = MediaTypeFactory.getMediaType(picPath);
             String contentType = mediaType.orElse(MediaType.APPLICATION_OCTET_STREAM).toString();

@@ -130,12 +130,12 @@ public class ArticleController extends BaseController {
     public Result<ArticleViewDTO> getArticleBackById(@PathVariable("articleId") Long articleId) {
         return restProcessor(() -> articleService.getArticleBackById(articleId));
     }
-    @Operation(summary = "上传文章封面")
+    @Operation(summary = "保存文章内图片、封面")
     @Parameter(name = "file", description = "文章图片", required = true)
     @PostMapping("/articles/images")
     public Result<String> saveArticleImages(MultipartFile file) {
         String token = tokenService.getUserTokenOrSystemToken();
-        return restProcessor(() -> Result.OK(articleFeignService.saveArticleImages(file, token)));
+        return restProcessor(() -> articleFeignService.saveArticleImages(file, token));
     }
 
     /**
