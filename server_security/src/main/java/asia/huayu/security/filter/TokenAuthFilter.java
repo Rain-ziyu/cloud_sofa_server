@@ -68,7 +68,7 @@ public class TokenAuthFilter extends BasicAuthenticationFilter {
             } catch (Exception e) {
                 // 即使用户携带的token有异常我们也不管了直接返回null   security会有自己的机制可能会在缓存中读到正确的用户token 如果我们抛出异常会导致直接返回请求，不会执行后续controller即使是不需要权限的
                 // throw new AuthenticationServiceException("token无法解析", e);
-                logger.info("一个用户的token无法解析");
+                logger.info("一个用户的token无法解析,使用匿名访问");
                 return null;
             }
         }

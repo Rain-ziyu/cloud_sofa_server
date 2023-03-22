@@ -6,6 +6,7 @@ package asia.huayu.auth.config;
  */
 
 import asia.huayu.auth.entity.ResourceRole;
+import asia.huayu.auth.lock.RedissonLock;
 import asia.huayu.auth.mapper.RoleMapper;
 import asia.huayu.security.util.SystemValue;
 import cn.hutool.core.util.ObjectUtil;
@@ -38,6 +39,8 @@ public class FilterInvocationSecurityMetadataSourceImpl implements FilterInvocat
      * 采用读写锁来控制 保证load之间相互冲突 load与clear之间相互冲突 但是clear之间不冲突 保证如果正在load的时候
      */
     private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+    @Autowired
+    private RedissonLock redissonLock;
 
     /**
      * 方法loadResourceRoleList作用为：
@@ -50,15 +53,27 @@ public class FilterInvocationSecurityMetadataSourceImpl implements FilterInvocat
      */
     @PostConstruct
     private void loadResourceRoleList() {
-        List<ResourceRole> resourceRoleList = roleMapper.listResourceRoles();
-        HashMap<Integer, ResourceRole> resourceRoleMap = new HashMap();
-        resourceRoleList.stream().forEach(resourceRole ->
-                {
-                    resourceRoleMap.put(resourceRole.getId(), resourceRole);
+        // 初始化分布式锁
+        readWriteLock = redissonLock.getReadWriteLock(SystemValue.ROLE_AUTH_LOCK);
+        if (!redisTemplate.hasKey(SystemValue.ROLE_AUTH)) {
+            readWriteLock.writeLock().lock();
+            try {
+                if (!redisTemplate.hasKey(SystemValue.ROLE_AUTH)) {
+                    List<ResourceRole> resourceRoleList = roleMapper.listResourceRoles();
+                    HashMap<Integer, ResourceRole> resourceRoleMap = new HashMap();
+                    resourceRoleList.stream().forEach(resourceRole ->
+                            {
+                                resourceRoleMap.put(resourceRole.getId(), resourceRole);
+                            }
+                    );
+                    redisTemplate.delete(SystemValue.ROLE_AUTH);
+                    redisTemplate.opsForHash().putAll(SystemValue.ROLE_AUTH, resourceRoleMap);
                 }
-        );
-        redisTemplate.delete(SystemValue.ROLE_AUTH);
-        redisTemplate.opsForHash().putAll(SystemValue.ROLE_AUTH, resourceRoleMap);
+            } finally {
+                readWriteLock.writeLock().unlock();
+            }
+        }
+
     }
 
     public void clearDataSource() {

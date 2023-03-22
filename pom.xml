@@ -43,11 +43,18 @@
         <knife4j.version>4.0.0</knife4j.version>
         <shardingsphere.version>5.2.1</shardingsphere.version>
         <yaml.version>1.33</yaml.version>
+        <redisson.version>3.17.7</redisson.version>
     </properties>
 
 
     <dependencyManagement>
         <dependencies>
+            <!--        引入分布式锁Redisson -->
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
             <!-- 集成shardingsphere的jdbc-->
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
