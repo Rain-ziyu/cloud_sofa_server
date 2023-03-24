@@ -22,7 +22,7 @@ import java.util.List;
  * @author RainZiYu
  * @Date 2023/3/9
  */
-@FeignClient(value = "cloud-sofa-server-admin", contextId = "articles", fallback = ArticleFallbackService.class)
+@FeignClient(value = "cloud-sofa-server-admin", contextId = "articleFeignService", fallback = ArticleFallbackService.class)
 public interface ArticleFeignService {
     @PostMapping("/admin/articles")
     Result<String> saveOrUpdateArticle(@Valid @RequestBody ArticleVO articleVO, @RequestHeader("token") String token);

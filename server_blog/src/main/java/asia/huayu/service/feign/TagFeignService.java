@@ -15,7 +15,7 @@ import java.util.List;
  * @author RainZiYu
  * @Date 2023/3/14
  */
-@FeignClient(value = "cloud-sofa-server-admin", contextId = "tags", fallback = TagFallbackService.class)
+@FeignClient(value = "cloud-sofa-server-admin", contextId = "tagFeignService", fallback = TagFallbackService.class)
 public interface TagFeignService {
     /**
      * 方法listTagsAdminBySearch作用为：
