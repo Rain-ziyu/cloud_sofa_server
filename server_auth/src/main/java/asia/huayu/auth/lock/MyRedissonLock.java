@@ -12,7 +12,7 @@
 //  * @Date 2023/3/22
 //  */
 // @Component
-// public class RedissonLock {
+// public class MyRedissonLock {
 //     @Autowired
 //     RedissonClient redissonClient;
 //
