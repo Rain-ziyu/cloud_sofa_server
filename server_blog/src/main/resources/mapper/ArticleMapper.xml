@@ -52,6 +52,7 @@
         <result property="status" column="status"/>
         <result property="type" column="type"/>
         <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
         <result property="categoryName" column="category_name"/>
         <collection property="tagDTOs" ofType="asia.huayu.model.dto.TagDTO">
             <id column="tag_id" property="id"/>

@@ -3,7 +3,7 @@ package asia.huayu.service.feign;
 import asia.huayu.common.entity.Result;
 import asia.huayu.model.dto.CategoryOptionDTO;
 import asia.huayu.model.vo.ConditionVO;
-import asia.huayu.service.fallback.ArticleFallbackService;
+import asia.huayu.service.fallback.CategoryFallbackService;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +15,7 @@ import java.util.List;
  * @author RainZiYu
  * @Date 2023/3/14
  */
-@FeignClient(value = "cloud-sofa-server-admin", fallback = ArticleFallbackService.class)
+@FeignClient(value = "cloud-sofa-server-admin", contextId = "categories", fallback = CategoryFallbackService.class)
 public interface CategoryFeignService {
     /**
      * 方法listCategoriesAdminBySearch作用为：

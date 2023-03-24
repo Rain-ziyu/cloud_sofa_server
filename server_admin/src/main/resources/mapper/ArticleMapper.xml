@@ -561,7 +561,7 @@
         is_featured,
         is_delete,
         status,
-        type,
+        `type`,
         create_time,
         update_time,
         category_id
@@ -569,6 +569,7 @@
         article
         <where>
             is_delete = #{conditionVO.isDelete}
+            and user_id = #{userId}
             <if test="conditionVO.keywords != null">
                 and article_title like concat('%',#{conditionVO.keywords},'%')
             </if>
@@ -592,6 +593,7 @@
                 tag_id = #{conditionVO.tagId}
                 )
             </if>
+
         </where>
         ORDER BY
         is_top DESC,
@@ -599,14 +601,15 @@
         id DESC
         LIMIT #{current},#{size}
         ) a
+
         LEFT JOIN category c ON a.category_id = c.id
         LEFT JOIN article_tag at ON a.id = at.article_id
         LEFT JOIN tag t ON t.id = at.tag_id
-        where a.user_id = #{userId}
         ORDER BY
         is_top DESC,
         is_featured DESC,
         a.update_time DESC
+
 
     </select>
     <select id="listArticlesById" resultMap="articleAdminResultMap">

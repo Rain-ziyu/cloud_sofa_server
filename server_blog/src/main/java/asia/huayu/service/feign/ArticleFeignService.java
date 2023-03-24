@@ -10,6 +10,7 @@ import asia.huayu.model.vo.ConditionVO;
 import asia.huayu.model.vo.DeleteVO;
 import asia.huayu.service.fallback.ArticleFallbackService;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,14 +22,14 @@ import java.util.List;
  * @author RainZiYu
  * @Date 2023/3/9
  */
-@FeignClient(value = "cloud-sofa-server-admin", fallback = ArticleFallbackService.class)
+@FeignClient(value = "cloud-sofa-server-admin", contextId = "articles", fallback = ArticleFallbackService.class)
 public interface ArticleFeignService {
     @PostMapping("/admin/articles")
     Result<String> saveOrUpdateArticle(@Valid @RequestBody ArticleVO articleVO, @RequestHeader("token") String token);
 
 
     @GetMapping("/admin/articles/byUser")
-    Result<PageResultDTO<ArticleListDTO>> getArticlesCurrentUser(@RequestParam ConditionVO conditionVO, @RequestHeader("token") String token);
+    Result<PageResultDTO<ArticleListDTO>> getArticlesCurrentUser(@SpringQueryMap ConditionVO conditionVO, @RequestHeader("token") String token);
 
     /**
      * 方法updateArticleDelete作用为：

@@ -3,7 +3,7 @@ package asia.huayu.service.feign;
 import asia.huayu.common.entity.Result;
 import asia.huayu.model.dto.TagAdminDTO;
 import asia.huayu.model.vo.ConditionVO;
-import asia.huayu.service.fallback.ArticleFallbackService;
+import asia.huayu.service.fallback.TagFallbackService;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +15,7 @@ import java.util.List;
  * @author RainZiYu
  * @Date 2023/3/14
  */
-@FeignClient(value = "cloud-sofa-server-admin", fallback = ArticleFallbackService.class)
+@FeignClient(value = "cloud-sofa-server-admin", contextId = "tags", fallback = TagFallbackService.class)
 public interface TagFeignService {
     /**
      * 方法listTagsAdminBySearch作用为：

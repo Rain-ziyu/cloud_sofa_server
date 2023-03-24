@@ -3,8 +3,8 @@ version: '3.7'
 # Settings and configurations that are common for all containers
 x-minio-common: &minio-common
   # image: minio:1.0
-  image: quay.io/minio/minio:RELEASE.2023-01-12T02-06-16Z
-  command: server --console-address ":9001" http://minio1/data{1...2}
+  image: quay.io/minio/minio
+  command: server --console-address ":9001" http://minio/data{1...2}
   environment:
     MINIO_ROOT_USER: wwlhuayu
     MINIO_ROOT_PASSWORD: wwlhuayu
@@ -18,24 +18,55 @@ x-minio-common: &minio-common
 # using nginx reverse proxy, load balancing, you can access
 # it through port 9000.
 services:
-  minio1:
+  minio:
     <<: *minio-common
     hostname: minio
     volumes:
       - minio-data1-1:/data1
       - minio-data1-2:/data2
-    ports:
-      - "9000:9000"
-      - "9001:9001"
+    # ports:
+    #   - "9000:9000"
+    #   - "9001:9001"
+    labels:
+      "type": "1"
+    networks:
+      - ali
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
   nginx:
     image: nginx:latest
     hostname: nginx
     ports:
-      - "80:80"
-      - "443-443"
+      # 开启host模式，使用宿主机的网络，用于记录真实ip
+      - target: 80
+        published: 80
+        mode: host
+      - target: 443
+        published: 443
+        mode: host
+      - target: 9000
+        published: 9000
+        mode: host
+      - target: 9001
+        published: 9001
+        mode: host
+    labels:
+      "type": "1"
+    networks:
+      - ali
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
     volumes:
       - /opt/nginx/conf:/etc/nginx/
       - /opt/nginx/html:/usr/share/nginx/html
 volumes:
   minio-data1-1:
   minio-data1-2:
+networks:
+  ali:
+    external: true
+    name: huayu
