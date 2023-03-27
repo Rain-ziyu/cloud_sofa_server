@@ -6,6 +6,7 @@ package asia.huayu.auth.config;
  */
 
 import asia.huayu.auth.entity.ResourceRole;
+import asia.huayu.auth.lock.MyRedissonLock;
 import asia.huayu.auth.mapper.RoleMapper;
 import asia.huayu.security.util.SystemValue;
 import cn.hutool.core.util.ObjectUtil;
@@ -38,42 +39,8 @@ public class FilterInvocationSecurityMetadataSourceImpl implements FilterInvocat
      * 采用读写锁来控制 保证load之间相互冲突 load与clear之间相互冲突 但是clear之间不冲突 保证如果正在load的时候
      */
     private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
-    // @Autowired
-    // private MyRedissonLock myRedissonLock;
-
-    /**
-     * 方法loadResourceRoleList作用为：
-     * 初始化将数据库中的角色权限信息加载到redis中   来解决微服务时不同服务更新了接口权限 其他微服务如何读取
-     *
-     * @param
-     * @return void
-     * @throws
-     * @author RainZiYu
-     */
-  /*   @PostConstruct
-    private void loadResourceRoleList() {
-        // 初始化分布式锁
-        // readWriteLock = redissonLock.getReadWriteLock(SystemValue.ROLE_AUTH_LOCK);
-        // if (!redisTemplate.hasKey(SystemValue.ROLE_AUTH)) {
-        //     readWriteLock.writeLock().lock();
-        //     try {
-                if (!redisTemplate.hasKey(SystemValue.ROLE_AUTH)) {
-                    List<ResourceRole> resourceRoleList = roleMapper.listResourceRoles();
-                    HashMap<Integer, ResourceRole> resourceRoleMap = new HashMap();
-                    resourceRoleList.stream().forEach(resourceRole ->
-                            {
-                                resourceRoleMap.put(resourceRole.getId(), resourceRole);
-                            }
-                    );
-                    redisTemplate.delete(SystemValue.ROLE_AUTH);
-                    redisTemplate.opsForHash().putAll(SystemValue.ROLE_AUTH, resourceRoleMap);
-                }
-        //     } finally {
-        //         readWriteLock.writeLock().unlock();
-        //     }
-        // }
-
-    } */
+    @Autowired
+    private MyRedissonLock myRedissonLock;
 
     /**
      * 方法loadResourceRoleList作用为：
@@ -86,6 +53,41 @@ public class FilterInvocationSecurityMetadataSourceImpl implements FilterInvocat
      */
     @PostConstruct
     private void loadResourceRoleList() {
+        // 初始化分布式锁
+        readWriteLock = myRedissonLock.getReadWriteLock(SystemValue.ROLE_AUTH_LOCK);
+        // if (!redisTemplate.hasKey(SystemValue.ROLE_AUTH)) {
+        //     readWriteLock.writeLock().lock();
+        //     try {
+        //         if (!redisTemplate.hasKey(SystemValue.ROLE_AUTH)) {
+        // todo:排查一天无法解决，直接执行时都执行初始化不再使用双端检锁    roleMapper.listResourceRoles();不执行就会导致整个项目执行sql出问题
+        List<ResourceRole> resourceRoleList = roleMapper.listResourceRoles();
+        HashMap<Integer, ResourceRole> resourceRoleMap = new HashMap();
+        resourceRoleList.stream().forEach(resourceRole ->
+                {
+                    resourceRoleMap.put(resourceRole.getId(), resourceRole);
+                }
+        );
+        redisTemplate.delete(SystemValue.ROLE_AUTH);
+        redisTemplate.opsForHash().putAll(SystemValue.ROLE_AUTH, resourceRoleMap);
+        // }
+        //     } finally {
+        //         readWriteLock.writeLock().unlock();
+        //     }
+        // }
+
+    }
+
+    /**
+     * 方法loadResourceRoleList作用为：
+     * 初始化将数据库中的角色权限信息加载到redis中   来解决微服务时不同服务更新了接口权限 其他微服务如何读取
+     *
+     * @param
+     * @return void
+     * @throws
+     * @author RainZiYu
+     */
+/*     @PostConstruct
+    private void loadResourceRoleList() {
         List<ResourceRole> resourceRoleList = roleMapper.listResourceRoles();
         HashMap<Integer, ResourceRole> resourceRoleMap = new HashMap();
         resourceRoleList.stream().forEach(resourceRole ->
@@ -94,7 +96,7 @@ public class FilterInvocationSecurityMetadataSourceImpl implements FilterInvocat
                 }
         );
         redisTemplate.opsForHash().putAll(SystemValue.ROLE_AUTH, resourceRoleMap);
-    }
+    } */
 
     public void clearDataSource() {
         readWriteLock.readLock().lock();

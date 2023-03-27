@@ -16,7 +16,6 @@ import java.util.List;
  * @since 2020-01-12
  */
 @Mapper
-
 public interface RoleMapper extends BaseMapper<Role> {
     /**
      * 方法listResourceRoles作用为：
