@@ -44,11 +44,19 @@
         <shardingsphere.version>5.2.1</shardingsphere.version>
         <yaml.version>1.33</yaml.version>
         <redisson.version>3.17.7</redisson.version>
+        <arthas.version>3.6.7</arthas.version>
     </properties>
 
 
     <dependencyManagement>
         <dependencies>
+            <!--            引入arthas用于在线服务调试-->
+            <dependency>
+                <groupId>com.taobao.arthas</groupId>
+                <artifactId>arthas-spring-boot-starter</artifactId>
+                <version>${arthas.version}</version>
+            </dependency>
+
             <!--        引入分布式锁Redisson -->
             <dependency>
                 <groupId>org.redisson</groupId>

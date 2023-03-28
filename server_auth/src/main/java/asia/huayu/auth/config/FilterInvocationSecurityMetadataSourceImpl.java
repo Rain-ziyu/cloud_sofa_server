@@ -21,6 +21,7 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +57,8 @@ public class FilterInvocationSecurityMetadataSourceImpl implements FilterInvocat
         // 初始化分布式锁
         readWriteLock = myRedissonLock.getReadWriteLock(SystemValue.ROLE_AUTH_LOCK);
         // todo:排查一天无法解决，直接执行时都执行初始化不再使用双端检锁    roleMapper.listResourceRoles();不执行就会导致整个项目执行sql出问题
-        List<ResourceRole> resourceRoleList = roleMapper.listResourceRoles();
+        // List<ResourceRole> resourceRoleList = roleMapper.listResourceRoles();
+        List<ResourceRole> resourceRoleList = new ArrayList<>();
         HashMap<Integer, ResourceRole> resourceRoleMap = new HashMap(64 * 2);
         resourceRoleList.stream().forEach(resourceRole ->
                 {
