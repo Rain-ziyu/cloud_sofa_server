@@ -19,6 +19,37 @@
 
 9.开放用户发帖(已完成)
 
+# 项目说明
+
+本项目主要涉及的技术栈以及使用的主要依赖
+
+| 技术或框架                                        | 版本         | 用途                    |
+|:---------------------------------------------|------------|-----------------------|
+| spring-boot                                  | 2.7.8      | 基础Java框架，提供IOC容器、AOP等 |
+| spring-cloud                                 | 2021.0.5   | Spring微服务框架           |
+| spring-cloud-starter-alibaba-nacos           | 2021.0.4.0 | 阿里的微服务框架主要使用Nacos     |
+| mybatis-plus-boot-starter                    | 3.5.3      | 半ORM框架、数据库操作          |
+| mysql-connector-j                            | 8.0.31     | 数据库驱动                 |
+| hutool-all                                   | 5.8.11     | 工具类                   |
+| minio（java）                                  | 8.4.5      | 连接minio               |
+| knife4j-openapi3-spring-boot-starter         | 4.0.0      | 接口文档                  |
+| shardingsphere-jdbc-core-spring-boot-starter | 5.2.1      | 读写分离、分库分表             |
+| redisson                                     | 3.17.7     | redis连接、主要使用分布式锁      |
+| fastjson2                                    | 2.0.22     | 阿里的json序列化            |
+| spring-boot-starter-data-redis               | 2.7.8      | redis客户端工具            |
+| ip2region                                    | 1.7.2      | ip解析归属地               |
+| spring-boot-starter-thymeleaf                | 2.7.8      | 邮件模板                  |
+| spring-boot-starter-mail                     | 2.7.8      | 邮件发送                  |
+| spring-boot-starter-amqp                     | 2.7.8      | 消息中间件                 |
+| spring-boot-starter-security                 | 2.7.8      | 鉴权框架                  |
+| spring-cloud-starter-openfeign               | 3.1.5      | 微服务间调用                |
+| maxwell                                      | 1.39.6     | 监听mysqlbinlog日志进行数据同步 |
+| minio                                        |            | 对象存储，存储图片导入文件等        |
+| rabbitmq                                     | management | 消息中间件，消息推送与订阅         |
+| mysql                                        | 8.0.25     | 数据库、一主一从              |
+| redis                                        | 6.2.6      | 内存中间件                 |
+|                                              |            |                       |
+
 # 前置条件
 
 你已经部署了自己的nacos注册中心，并且自己部署了mysql与es存储引擎
