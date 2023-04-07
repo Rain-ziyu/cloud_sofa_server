@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 
 import static asia.huayu.constant.CommonConstant.UNKNOWN;
 import static asia.huayu.constant.RedisConstant.*;
@@ -55,7 +56,8 @@ public class AuroraInfoServiceImpl implements AuroraInfoService {
 
     @Autowired
     private RedisService redisService;
-
+    @Autowired
+    private ExecutorService executorService;
 
     @Override
     public void report() {
@@ -85,15 +87,16 @@ public class AuroraInfoServiceImpl implements AuroraInfoService {
     @SneakyThrows
     @Override
     public AuroraHomeInfoDTO getAuroraHomeInfo() {
-        CompletableFuture<Long> asyncArticleCount = CompletableFuture.supplyAsync(() -> articleMapper.selectCount(new LambdaQueryWrapper<Article>().eq(Article::getIsDelete, CommonConstant.FALSE)));
-        CompletableFuture<Long> asyncCategoryCount = CompletableFuture.supplyAsync(() -> categoryMapper.selectCount(null));
-        CompletableFuture<Long> asyncTagCount = CompletableFuture.supplyAsync(() -> tagMapper.selectCount(null));
-        CompletableFuture<Long> asyncTalkCount = CompletableFuture.supplyAsync(() -> talkMapper.selectCount(null));
-        CompletableFuture<WebsiteConfigDTO> asyncWebsiteConfig = CompletableFuture.supplyAsync(this::getWebsiteConfig);
+        // 直接使用默认线程池进行异步执行会导致shardingSphere的SPI加载异常 https://github.com/apache/shardingsphere/issues/24891
+        CompletableFuture<Long> asyncArticleCount = CompletableFuture.supplyAsync(() -> articleMapper.selectCount(new LambdaQueryWrapper<Article>().eq(Article::getIsDelete, CommonConstant.FALSE)), executorService);
+        CompletableFuture<Long> asyncCategoryCount = CompletableFuture.supplyAsync(() -> categoryMapper.selectCount(null), executorService);
+        CompletableFuture<Long> asyncTagCount = CompletableFuture.supplyAsync(() -> tagMapper.selectCount(null), executorService);
+        CompletableFuture<Long> asyncTalkCount = CompletableFuture.supplyAsync(() -> talkMapper.selectCount(null), executorService);
+        CompletableFuture<WebsiteConfigDTO> asyncWebsiteConfig = CompletableFuture.supplyAsync(this::getWebsiteConfig, executorService);
         CompletableFuture<Long> asyncViewCount = CompletableFuture.supplyAsync(() -> {
             Object count = redisService.get(RedisConstant.BLOG_VIEWS_COUNT);
             return Long.parseLong(Optional.ofNullable(count).orElse(0).toString());
-        });
+        }, executorService);
         return AuroraHomeInfoDTO.builder()
                 .articleCount(Math.toIntExact(asyncArticleCount.get()))
                 .categoryCount(Math.toIntExact(asyncCategoryCount.get()))
