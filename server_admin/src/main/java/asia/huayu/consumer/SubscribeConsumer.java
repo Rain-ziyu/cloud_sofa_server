@@ -4,7 +4,9 @@ package asia.huayu.consumer;
 import asia.huayu.entity.Article;
 import asia.huayu.entity.UserInfo;
 import asia.huayu.model.dto.EmailDTO;
+import asia.huayu.model.dto.WebsiteConfigDTO;
 import asia.huayu.service.ArticleService;
+import asia.huayu.service.AuroraInfoService;
 import asia.huayu.service.UserInfoService;
 import asia.huayu.util.EmailUtil;
 import com.alibaba.fastjson2.JSON;
@@ -42,10 +44,13 @@ public class SubscribeConsumer {
 
     @Autowired
     private EmailUtil emailUtil;
+    @Autowired
+    private AuroraInfoService auroraInfoService;
 
     @RabbitHandler
     public void process(byte[] data) {
         Integer articleId = JSON.parseObject(new String(data), Integer.class);
+        WebsiteConfigDTO websiteConfig = auroraInfoService.getWebsiteConfig();
         Article article = articleService.getOne(new LambdaQueryWrapper<Article>().eq(Article::getId, articleId));
         List<UserInfo> users = userInfoService.list(new LambdaQueryWrapper<UserInfo>().eq(UserInfo::getIsSubscribe, TRUE));
         List<String> emails = users.stream().map(UserInfo::getEmail).collect(Collectors.toList());
@@ -57,12 +62,14 @@ public class SubscribeConsumer {
             emailDTO.setTemplate("common.html");
             String url = websiteUrl + "/articles/" + articleId;
             if (article.getUpdateTime() == null) {
-                map.put("content", "花未眠的个人博客发布了新的文章，"
+                map.put("content", "RainZiYu的个人博客发布了新的文章，"
                         + "<a style=\"text-decoration:none;color:#12addb\" href=\"" + url + "\">点击查看</a>");
             } else {
-                map.put("content", "花未眠的个人博客对《" + article.getArticleTitle() + "》进行了更新，"
+                map.put("content", "RainZiYu的个人博客对《" + article.getArticleTitle() + "》进行了更新，"
                         + "<a style=\"text-decoration:none;color:#12addb\" href=\"" + url + "\">点击查看</a>");
             }
+            map.put("webUrl", websiteUrl);
+            map.put("webName", websiteConfig.getName());
             emailDTO.setCommentMap(map);
             emailUtil.sendHtmlMail(emailDTO);
         }

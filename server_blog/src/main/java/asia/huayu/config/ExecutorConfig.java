@@ -24,7 +24,7 @@ public class ExecutorConfig {
         NamedThreadFactory namedThreadFactory = new NamedThreadFactory("MySelf", false);
         return new ThreadPoolExecutor(coreCount / 2, coreCount, 10,
                 TimeUnit.SECONDS,
-                // 无容量的阻塞队列，一旦达到最大线程数并出现新任务就会抛出RejectedExecutionException，交由饱和策略处理
+                // 无容量的阻塞队列，一旦达到最大线程数并仍然有新任务就会抛出RejectedExecutionException，交由饱和策略处理 解决短时高峰期间的任务处理
                 new SynchronousQueue(),
                 namedThreadFactory,
                 // 将提交的任务交由提交的线程处理，如果提交线程已结束就会丢弃任务

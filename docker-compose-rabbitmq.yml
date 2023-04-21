@@ -4,6 +4,12 @@ services:
   rabbitmq:
     hostname: rabbitmq
     image: rabbitmq:management
+    volumes:
+      - /opt/rabbitMQ/enabled_plugins:/etc/rabbitmq/enabled_plugins
+      - /opt/rabbitMQ/rabbitmq_delayed_message_exchange-3.11.1.ez:/plugins/rabbitmq_delayed_message_exchange-3.11.1.ez
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
     ports:
       - 15672:15672
       - 5672:5672
