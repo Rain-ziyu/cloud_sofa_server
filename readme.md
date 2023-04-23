@@ -1,5 +1,16 @@
-本项目基于https://github.com/linhaojun857/aurora项目修改
-待办事项：
+# 鸣谢：
+
+本项目基于 [Aurora---前后端分离博客](https://github.com/linhaojun857/aurora)项目进行的二次开发
+
+感谢[jetbrains](https://jb.gg/OpenSourceSupport)提供的开源开发许可证
+
+![IntelliJ IDEA logo](https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA.svg)
+
+![IntelliJ IDEA logo](https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA_icon.svg)
+
+![JetBrains Logo (Main) logo](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)
+
+# 待办事项：
 
 1.server_system使用feign调用server_file (已完成)
 
