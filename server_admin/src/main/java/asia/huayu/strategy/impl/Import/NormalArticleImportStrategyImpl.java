@@ -53,6 +53,8 @@ public class NormalArticleImportStrategyImpl implements ArticleImportStrategy {
             Article article = list.get(0);
             // 更新内容
             article.setArticleContent(articleContent.toString());
+            // 清除原有更新时间 触发自动填充
+            article.setUpdateTime(null);
             articleService.saveOrUpdate(article);
             articleId = article.getId().toString();
         } else {
