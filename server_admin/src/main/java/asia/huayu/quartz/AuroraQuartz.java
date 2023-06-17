@@ -111,14 +111,11 @@ public class AuroraQuartz {
     public void baiduSeo() {
         List<Integer> ids = articleService.list().stream().map(Article::getId).collect(Collectors.toList());
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Host", "data.zz.baidu.com");
-        headers.add("User-Agent", "curl/7.12.1");
-        headers.add("Content-Length", "83");
         headers.add("Content-Type", "text/plain");
         ids.forEach(item -> {
             String url = websiteUrl + "/articles/" + item;
             HttpEntity<String> entity = new HttpEntity<>(url, headers);
-            restService.restTemplate.postForObject("https://www.baidu.com", entity, String.class);
+            restService.restTemplate.postForObject("http://data.zz.baidu.com/urls?site=https://prod.huayu.asia&token=B3ynQmuVjFB964l1", entity, String.class);
         });
     }
 
